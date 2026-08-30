@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://csgxu2tllta24"]
+
+[ext_resource type="Texture2D" uid="uid://bct0t1ftkqwdr" path="res://Sprites/90c49cf9fabd4294bf131a4f8a77895c~tplv-jj85edgx6n-image-medium.jpeg" id="1_oav3u"]
+[ext_resource type="Script" uid="uid://ce367o8576qhx" path="res://Scripts/DestructibleWall.cs" id="1_spyre"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spyre"]
+albedo_texture = ExtResource("1_oav3u")
+
+[sub_resource type="BoxMesh" id="BoxMesh_kedfu"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kedfu"]
+size = Vector3(0.96118164, 1.1299438, 1.7260742)
+
+[node name="DestructibleWall" type="Node3D" unique_id=1819706334]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=334126644]
+script = ExtResource("1_spyre")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=944632460]
+transform = Transform3D(0.41990533, 0, 0, 0, 1, 0, 0, 0, 1.489954, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_spyre")
+mesh = SubResource("BoxMesh_kedfu")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=650795581]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.006713867, 0.029876709, 0.022216797)
+shape = SubResource("BoxShape3D_kedfu")

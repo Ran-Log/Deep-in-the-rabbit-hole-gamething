@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://cua84ntm3augn"]
+
+[ext_resource type="Texture2D" uid="uid://r7uodak81iuk" path="res://Sprites/idkskdai.png" id="1_agfsv"]
+[ext_resource type="Texture2D" uid="uid://dlqtv7580bi2v" path="res://Sprites/2c0ea7981e7242d99a04303b98991647~tplv-jj85edgx6n-image-medium.jpeg" id="2_wjf51"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1fqph"]
+albedo_texture = ExtResource("1_agfsv")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ugy24"]
+albedo_texture = ExtResource("2_wjf51")
+
+[node name="Floor" type="Node3D" unique_id=1951126590]
+
+[node name="Floor" type="CSGBox3D" parent="." unique_id=2100461664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0021572113, 0.008235812, -0.0039486885)
+use_collision = true
+size = Vector3(20, 0.2, 20)
+material = SubResource("StandardMaterial3D_1fqph")
+
+[node name="Wall" type="CSGBox3D" parent="." unique_id=444829918]
+transform = Transform3D(-0.0069588297, 0, 0.9999758, 0, 1, 0, -0.9999758, 0, -0.0069588297, -9.698693, 1.2879953, -0.025214672)
+use_collision = true
+size = Vector3(20.174347, 2.6385803, 0.5239258)
+material = SubResource("StandardMaterial3D_ugy24")
+
+[node name="Wall" type="CSGBox3D" parent="Wall" unique_id=1989139480]
+transform = Transform3D(-0.006958807, 0, 0.9999789, 0, 1, 0, -0.9999789, 0, -0.006958807, -9.775816, 0.0142560005, 9.918082)
+use_collision = true
+size = Vector3(19.291275, 2.6385803, 0.5239258)
+material = SubResource("StandardMaterial3D_ugy24")
+
+[node name="Wall" type="CSGBox3D" parent="Wall/Wall" unique_id=706325670]
+transform = Transform3D(-0.006958807, 0, 0.9999789, 0, 1, 0, -0.9999789, 0, -0.006958807, -9.775816, 0.0142560005, 9.918082)
+use_collision = true
+size = Vector3(19.291275, 2.6385803, 0.5239258)
+material = SubResource("StandardMaterial3D_ugy24")
+
+[node name="Wall" type="CSGBox3D" parent="Wall/Wall/Wall" unique_id=735335882]
+transform = Transform3D(-0.006958518, 0, 0.9999702, 0, 1, 0, -0.9999702, 0, -0.006958518, -9.818582, 0.0142560005, 3.772884)
+use_collision = true
+size = Vector3(7.000618, 2.6385803, 0.5239258)
+material = SubResource("StandardMaterial3D_ugy24")
+
+[node name="Wall" type="CSGBox3D" parent="Wall/Wall/Wall/Wall" unique_id=1893835372]
+transform = Transform3D(-0.99961, 0, 0.027726129, 0, 1, 0, -0.027726129, 0, -0.99961, -11.334547, 0.0142560005, -0.07267298)
+use_collision = true
+size = Vector3(8.413883, 2.6385803, 0.5239258)
+material = SubResource("StandardMaterial3D_ugy24")

@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bhgv744qtngyn"]
+
+[ext_resource type="Script" uid="uid://dgosg32u2sdk4" path="res://Scripts/Player.cs" id="1_cvnsp"]
+[ext_resource type="Script" uid="uid://bpe7uch7mgjfc" path="res://Scripts/CameraRig.cs" id="2_cvnsp"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_kedfu"]
+top_radius = 0.53515625
+bottom_radius = 0.53515625
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8gbba"]
+radius = 0.6665039
+height = 2.9710693
+
+[node name="Player" type="CharacterBody3D" unique_id=904985128]
+script = ExtResource("1_cvnsp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=230319548]
+mesh = SubResource("CylinderMesh_kedfu")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=204674019]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1496582, 0)
+shape = SubResource("CapsuleShape3D_8gbba")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1008787768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2523193, 0)
+script = ExtResource("2_cvnsp")
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=992359853]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8395996, -0.25653076, 1.9982219)

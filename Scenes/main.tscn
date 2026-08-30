@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dd4r57kagt8u"]
+
+[ext_resource type="PackedScene" uid="uid://bhgv744qtngyn" path="res://Scenes/player.tscn" id="1_jjgbg"]
+[ext_resource type="PackedScene" uid="uid://cua84ntm3augn" path="res://Scenes/floor.tscn" id="2_bo1nx"]
+[ext_resource type="PackedScene" uid="uid://b0j2ov2ou3duf" path="res://Scenes/Tunnel.tscn" id="3_8gbba"]
+[ext_resource type="PackedScene" uid="uid://csgxu2tllta24" path="res://Scenes/DestructibleWall.tscn" id="4_jjvhh"]
+
+[node name="Main" type="Node3D" unique_id=788570738]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1703694510]
+transform = Transform3D(0.67900294, 0.42072445, -0.6016195, 0, 0.8194937, 0.5730882, 0.73413557, -0.3891286, 0.5564386, -5.2374105, 11.717903, 9.802239)
+
+[node name="Player" parent="." unique_id=904985128 groups=["player"] instance=ExtResource("1_jjgbg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.33284432, 10.427873, 0)
+
+[node name="Floor" parent="." unique_id=1951126590 instance=ExtResource("2_bo1nx")]
+transform = Transform3D(-0.99999565, 0, 0.0029445526, 0, 1, 0, -0.0029445526, 0, -0.99999565, 1, 0, 0)
+
+[node name="Floor2" parent="." unique_id=1323762567 instance=ExtResource("2_bo1nx")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30.471722)
+
+[node name="Tunnel" parent="." unique_id=83949998 instance=ExtResource("3_8gbba")]
+transform = Transform3D(0.005013002, 0, 1.1443478, 0, 1, 0, -0.5546369, 0, 0.010343015, 0.6941619, 0, 15.074734)
+
+[node name="DestructibleWall" parent="." unique_id=1819706334 instance=ExtResource("4_jjvhh")]
+transform = Transform3D(-4.3711385e-08, 0, 3.465, 0, 3.3600004, 0, -0.99999994, 0, -1.5145997e-07, 0, 1, 10)
+
+[node name="DestructibleWall2" parent="." unique_id=1571421606 instance=ExtResource("4_jjvhh")]
+transform = Transform3D(-4.3711385e-08, 0, 3.465, 0, 3.3600004, 0, -0.99999994, 0, -1.5145997e-07, 0, 1, 20)
+
+[node name="DestructibleWall3" parent="." unique_id=1737950071 instance=ExtResource("4_jjvhh")]
+transform = Transform3D(-4.3711385e-08, 0, 3.465, 0, 3.3600004, 0, -0.99999994, 0, -1.5145997e-07, 0, 1, 12)
+
+[node name="DestructibleWall4" parent="." unique_id=965371339 instance=ExtResource("4_jjvhh")]
+transform = Transform3D(-4.3711385e-08, 0, 3.465, 0, 3.3600004, 0, -0.99999994, 0, -1.5145997e-07, 0, 1, 15)
+
+[node name="DestructibleWall5" parent="." unique_id=1600678472 instance=ExtResource("4_jjvhh")]
+transform = Transform3D(-4.3711385e-08, 0, 3.465, 0, 3.3600004, 0, -0.99999994, 0, -1.5145997e-07, 0, 1, 18)
