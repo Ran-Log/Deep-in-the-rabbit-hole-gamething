@@ -1,0 +1,39 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Room.cs" id="1_room"]
+[ext_resource type="PackedScene" path="res://Scenes/DestructibleBlock.tscn" id="2_room"]
+[ext_resource type="Texture2D" uid="uid://r7uodak81iuk" path="res://Sprites/idkskdai.png" id="3_room"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_texture = ExtResource("3_room")
+uv1_triplanar = true
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+resource_local_to_scene = true
+size = Vector3(20, 2, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+resource_local_to_scene = true
+size = Vector3(20, 2, 20)
+
+[node name="Room" type="Node3D" node_paths=PackedStringArray("FloorBody", "FloorMesh", "FloorCollision", "BlockContainer")]
+script = ExtResource("1_room")
+BlockScene = ExtResource("2_room")
+FloorBody = NodePath("Floor")
+FloorMesh = NodePath("Floor/MeshInstance3D")
+FloorCollision = NodePath("Floor/CollisionShape3D")
+BlockContainer = NodePath("Blocks")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+material_override = SubResource("StandardMaterial3D_floor")
+mesh = SubResource("BoxMesh_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Blocks" type="Node3D" parent="."]

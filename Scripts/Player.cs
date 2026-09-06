@@ -1,5 +1,8 @@
 using Godot;
 
+/// <summary>
+/// Movimiento del jugador. El minado vive en <see cref="MiningComponent"/>.
+/// </summary>
 public partial class Player : CharacterBody3D
 {
 	[Export]
@@ -13,115 +16,66 @@ public partial class Player : CharacterBody3D
 
 	[Export]
 	public float Gravity = 20.0f;
-	
+
 	[Export]
-	public int MiningDamage = 1;
+	public CameraRig CameraRig;
+
+	public override void _Ready()
+	{
+		if (CameraRig == null)
+		{
+			GD.PushError($"{Name}: falta asignar CameraRig; el movimiento va a ignorar la cámara.");
+		}
+	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		// Get movement input
+		Vector3 horizontal = ReadHorizontalVelocity();
+		float vertical = ReadVerticalVelocity((float)delta);
+
+		Velocity = new Vector3(horizontal.X, vertical, horizontal.Z);
+
+		MoveAndSlide();
+	}
+
+	private Vector3 ReadHorizontalVelocity()
+	{
+		if (CameraRig == null)
+		{
+			return Vector3.Zero;
+		}
+
 		Vector2 inputDir = Input.GetVector(
 			"move_left",
 			"move_right",
 			"move_up",
 			"move_down"
 		);
-		
-		if (
-			Input.MouseMode == Input.MouseModeEnum.Captured &&
-			Input.IsActionJustPressed("mine")
-		)
-		{
-			TryMine();
-		}
 
-		// Get movement directions relative to the camera
-		CameraRig cameraRig = GetNode<CameraRig>("CameraRig");
+		Vector3 direction = (
+			CameraRig.GetRightDirection() * inputDir.X +
+			CameraRig.GetForwardDirection() * -inputDir.Y
+		).Normalized();
 
-		Vector3 direction =
-			cameraRig.GetRightDirection() * inputDir.X +
-			cameraRig.GetForwardDirection() * -inputDir.Y;
+		float currentSpeed = Input.IsActionPressed("run")
+			? Speed * RunMultiplier
+			: Speed;
 
-		direction = direction.Normalized();
-
-		// Running
-		float currentSpeed = Speed;
-
-		if (Input.IsActionPressed("run"))
-		{
-			currentSpeed *= RunMultiplier;
-		}
-
-		// Horizontal movement
-		if (direction != Vector3.Zero)
-		{
-			Velocity = new Vector3(
-				direction.X * currentSpeed,
-				Velocity.Y,
-				direction.Z * currentSpeed
-			);
-		}
-		else
-		{
-			Velocity = new Vector3(
-				0,
-				Velocity.Y,
-				0
-			);
-		}
-
-		// Jump
-		if (Input.IsActionJustPressed("jump") && IsOnFloor())
-		{
-			Velocity = new Vector3(
-				Velocity.X,
-				JumpVelocity,
-				Velocity.Z
-			);
-		}
-
-		// Gravity
-		if (!IsOnFloor())
-		{
-			Velocity += Vector3.Down * Gravity * (float)delta;
-		}
-		else if (Velocity.Y < 0)
-		{
-			Velocity = new Vector3(
-				Velocity.X,
-				0,
-				Velocity.Z
-			);
-		}
-
-		MoveAndSlide();
+		return direction * currentSpeed;
 	}
-	
-	private void TryMine()
+
+	private float ReadVerticalVelocity(float delta)
 	{
-		Camera3D camera = GetNode<Camera3D>("CameraRig/Camera3D");
-
-		Vector3 start = camera.GlobalPosition;
-		Vector3 end = start + -camera.GlobalTransform.Basis.Z * 5.0f;
-
-		PhysicsRayQueryParameters3D query =
-			PhysicsRayQueryParameters3D.Create(start, end);
-
-		query.Exclude = new Godot.Collections.Array<Rid>
+		if (IsOnFloor())
 		{
-			GetRid()
-		};
-
-		var result = GetWorld3D().DirectSpaceState.IntersectRay(query);
-
-		if (result.Count > 0)
-		{
-			Node collider = result["collider"].AsGodotObject() as Node;
-
-			if (collider is DestructibleWall wall)
+			if (Input.IsActionJustPressed("jump"))
 			{
-				wall.TakeDamage(MiningDamage);
+				return JumpVelocity;
 			}
+
+			return Mathf.Max(0.0f, Velocity.Y);
 		}
+
+		return Velocity.Y - Gravity * delta;
 	}
 }

@@ -15,6 +15,10 @@ run/main_scene="res://Scenes/main.tscn"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+BlockGrid="*res://Scripts/BlockGrid.cs"
+
 [display]
 
 window/size/viewport_width=960
@@ -71,6 +75,9 @@ mine={
 [physics]
 
 3d/physics_engine="Jolt Physics"
+; Cada bloque es un cuerpo físico. El default (10240) se agota apenas el
+; jugador excava un poco; ver la medición en DEVELOPMENT_PLAN.md.
+jolt_physics_3d/limits/max_bodies=65536
 
 [rendering]
 

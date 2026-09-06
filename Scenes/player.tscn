@@ -1,7 +1,9 @@
-[gd_scene format=3 uid="uid://bhgv744qtngyn"]
+[gd_scene load_steps=7 format=3 uid="uid://bhgv744qtngyn"]
 
 [ext_resource type="Script" uid="uid://dgosg32u2sdk4" path="res://Scripts/Player.cs" id="1_cvnsp"]
 [ext_resource type="Script" uid="uid://bpe7uch7mgjfc" path="res://Scripts/CameraRig.cs" id="2_cvnsp"]
+[ext_resource type="Script" path="res://Scripts/MiningComponent.cs" id="3_mining"]
+[ext_resource type="PackedScene" path="res://Scenes/Hud.tscn" id="4_hud"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_kedfu"]
 top_radius = 0.53515625
@@ -11,19 +13,28 @@ bottom_radius = 0.53515625
 radius = 0.6665039
 height = 2.9710693
 
-[node name="Player" type="CharacterBody3D" unique_id=904985128]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CameraRig")]
 script = ExtResource("1_cvnsp")
+CameraRig = NodePath("CameraRig")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=230319548]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CylinderMesh_kedfu")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=204674019]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1496582, 0)
 shape = SubResource("CapsuleShape3D_8gbba")
 
-[node name="CameraRig" type="Node3D" parent="." unique_id=1008787768]
+[node name="CameraRig" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2523193, 0)
 script = ExtResource("2_cvnsp")
 
-[node name="Camera3D" type="Camera3D" parent="CameraRig" unique_id=992359853]
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8395996, -0.25653076, 1.9982219)
+
+[node name="MiningComponent" type="Node3D" parent="." node_paths=PackedStringArray("Camera", "ExcludedBody")]
+script = ExtResource("3_mining")
+Camera = NodePath("../CameraRig/Camera3D")
+ExcludedBody = NodePath("..")
+
+[node name="Hud" parent="." node_paths=PackedStringArray("Mining") instance=ExtResource("4_hud")]
+Mining = NodePath("../MiningComponent")
