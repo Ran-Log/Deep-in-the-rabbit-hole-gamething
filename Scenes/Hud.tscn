@@ -2,11 +2,12 @@
 
 [ext_resource type="Script" path="res://Scripts/Hud.cs" id="1_hud"]
 
-[node name="Hud" type="CanvasLayer" node_paths=PackedStringArray("Crosshair", "TargetLabel", "DebugLabel")]
+[node name="Hud" type="CanvasLayer" node_paths=PackedStringArray("Crosshair", "TargetLabel", "DebugLabel", "HealthLabel")]
 script = ExtResource("1_hud")
 Crosshair = NodePath("Crosshair")
 TargetLabel = NodePath("TargetLabel")
 DebugLabel = NodePath("DebugLabel")
+HealthLabel = NodePath("HealthLabel")
 
 [node name="Crosshair" type="Control" parent="."]
 anchors_preset = 8
@@ -69,5 +70,18 @@ anchors_preset = 0
 offset_left = 12.0
 offset_top = 8.0
 offset_right = 260.0
-offset_bottom = 32.0
+offset_bottom = 56.0
 mouse_filter = 2
+
+[node name="HealthLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 8.0
+offset_right = -12.0
+offset_bottom = 32.0
+grow_horizontal = 0
+mouse_filter = 2
+horizontal_alignment = 2
+text = "Vida: 100/100"

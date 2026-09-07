@@ -1,8 +1,19 @@
-<Project Sdk="Godot.NET.Sdk/4.7.1">
+<Project Sdk="Godot.NET.Sdk/4.7.2">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>AfterlifeThingy</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Tests/ tiene su propio .csproj (Tests/GameLogic.Tests), independiente
+         de este. Sin este Remove, el globbing por defecto de este proyecto
+         (que incluye TODO *.cs bajo esta carpeta) también intenta compilar
+         Program.cs de ahí adentro, y como tiene top-level statements pero
+         este proyecto no es un ejecutable, tira CS8805. -->
+    <Compile Remove="Tests/**/*.cs" />
+    <Compile Remove="ELIMINABLE/**/*.cs" />
+    <Compile Remove="_to_delete/**/*.cs" />
+  </ItemGroup>
 </Project>

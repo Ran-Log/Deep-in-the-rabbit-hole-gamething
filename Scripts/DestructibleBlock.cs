@@ -49,6 +49,8 @@ public partial class DestructibleBlock : StaticBody3D
 	{
 		health = MaxHealth;
 
+		ApplyMineralMaterial();
+
 		if (AlignToGrid)
 		{
 			SnapToGrid();
@@ -103,6 +105,14 @@ public partial class DestructibleBlock : StaticBody3D
 		}
 
 		MeshInstance.MaterialOverlay = highlighted ? GetHighlightOverlay() : null;
+	}
+
+	private void ApplyMineralMaterial()
+	{
+		if (MeshInstance != null)
+		{
+			MeshInstance.MaterialOverride = MineralTextureFactory.GetBlockMaterial(Mineral);
+		}
 	}
 
 	private void SnapToGrid()

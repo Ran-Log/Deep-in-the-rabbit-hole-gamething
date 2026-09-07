@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/GasZone.cs" id="1_gas"]
+
+[node name="GasZone" type="Area3D" node_paths=PackedStringArray("Fog")]
+script = ExtResource("1_gas")
+Fog = NodePath("Fog")
+
+[node name="Fog" type="MeshInstance3D" parent="."]

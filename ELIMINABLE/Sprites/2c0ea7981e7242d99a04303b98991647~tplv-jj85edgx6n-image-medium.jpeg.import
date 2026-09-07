@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://r7uodak81iuk"
-path.s3tc="res://.godot/imported/idkskdai.png-a7f0914ec927c2f6e255c67008c18bcd.s3tc.ctex"
+uid="uid://dlqtv7580bi2v"
+path.s3tc="res://.godot/imported/2c0ea7981e7242d99a04303b98991647~tplv-jj85edgx6n-image-medium.jpeg-f217a680b4198e854355a57374ade6c8.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Sprites/idkskdai.png"
-dest_files=["res://.godot/imported/idkskdai.png-a7f0914ec927c2f6e255c67008c18bcd.s3tc.ctex"]
+source_file="res://ELIMINABLE/Sprites/2c0ea7981e7242d99a04303b98991647~tplv-jj85edgx6n-image-medium.jpeg"
+dest_files=["res://.godot/imported/2c0ea7981e7242d99a04303b98991647~tplv-jj85edgx6n-image-medium.jpeg-f217a680b4198e854355a57374ade6c8.s3tc.ctex"]
 
 [params]
 

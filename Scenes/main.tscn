@@ -1,42 +1,38 @@
-[gd_scene load_steps=4 format=3 uid="uid://dd4r57kagt8u"]
+[gd_scene format=3 uid="uid://dd4r57kagt8u"]
 
 [ext_resource type="PackedScene" uid="uid://bhgv744qtngyn" path="res://Scenes/player.tscn" id="1_jjgbg"]
 [ext_resource type="PackedScene" path="res://Scenes/Room.tscn" id="2_room"]
-[ext_resource type="PackedScene" path="res://Scenes/BoundaryWall.tscn" id="3_boundary"]
+[ext_resource type="Script" path="res://Scripts/WorldStreamer.cs" id="4_worldstreamer"]
+[ext_resource type="PackedScene" path="res://Scenes/GameOverScreen.tscn" id="5_gameover"]
+[ext_resource type="PackedScene" path="res://Scenes/InventoryScreen.tscn" id="6_inventory"]
 
-[node name="Main" type="Node3D"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_main")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_energy = 0.6
+
+[node name="Main" type="Node3D" unique_id=1258096073]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=316089265]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=450944471]
 transform = Transform3D(0.67900294, 0.42072445, -0.6016195, 0, 0.8194937, 0.5730882, 0.73413557, -0.3891286, 0.5564386, -5.2374105, 11.717903, 9.802239)
 
-[node name="Player" parent="." groups=["player"] instance=ExtResource("1_jjgbg")]
+[node name="Player" parent="." unique_id=10465824 groups=["player"] instance=ExtResource("1_jjgbg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
-[node name="Rooms" type="Node3D" parent="."]
+[node name="WorldStreamer" type="Node3D" parent="." node_paths=PackedStringArray("Player")]
+script = ExtResource("4_worldstreamer")
+RoomScene = ExtResource("2_room")
+Player = NodePath("../Player")
 
-[node name="RoomStart" parent="Rooms" instance=ExtResource("2_room")]
-Width = 12
-Depth = 12
-WallHeight = 3
-WallMineral = 0
-WallBlockHealth = 5
+[node name="GameOverScreen" parent="." node_paths=PackedStringArray("Health") instance=ExtResource("5_gameover")]
+Health = NodePath("../Player/PlayerHealth")
 
-[node name="RoomNorth" parent="Rooms" instance=ExtResource("2_room")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 24)
-Width = 12
-Depth = 12
-WallHeight = 3
-WallMineral = 1
-WallBlockHealth = 7
-
-[node name="RoomEast" parent="Rooms" instance=ExtResource("2_room")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, 0)
-Width = 12
-Depth = 12
-WallHeight = 3
-WallMineral = 2
-WallBlockHealth = 9
-
-[node name="BoundaryWall" parent="." instance=ExtResource("3_boundary")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 10, 12)
-InnerSize = Vector3(120, 60, 120)
+[node name="InventoryScreen" parent="." instance=ExtResource("6_inventory")]

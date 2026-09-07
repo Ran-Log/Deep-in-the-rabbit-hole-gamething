@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bct0t1ftkqwdr"
-path.s3tc="res://.godot/imported/90c49cf9fabd4294bf131a4f8a77895c~tplv-jj85edgx6n-image-medium.jpeg-af9c9243486726774fd682322f8be600.s3tc.ctex"
+uid="uid://doy1mkniubc1j"
+path.s3tc="res://.godot/imported/1f011c08eccf4fbf9a48d055224019fa~tplv-jj85edgx6n-image-medium.jpeg-43472e585f301b90ee712a8de3f3169a.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Sprites/90c49cf9fabd4294bf131a4f8a77895c~tplv-jj85edgx6n-image-medium.jpeg"
-dest_files=["res://.godot/imported/90c49cf9fabd4294bf131a4f8a77895c~tplv-jj85edgx6n-image-medium.jpeg-af9c9243486726774fd682322f8be600.s3tc.ctex"]
+source_file="res://ELIMINABLE/Sprites/1f011c08eccf4fbf9a48d055224019fa~tplv-jj85edgx6n-image-medium.jpeg"
+dest_files=["res://.godot/imported/1f011c08eccf4fbf9a48d055224019fa~tplv-jj85edgx6n-image-medium.jpeg-43472e585f301b90ee712a8de3f3169a.s3tc.ctex"]
 
 [params]
 

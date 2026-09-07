@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>GameLogic.Tests</RootNamespace>
+    <!-- A propósito SIN paquetes NuGet (nada de xUnit/NUnit): así
+         "dotnet run" compila y corre sin necesitar red, y sin arrastrar el
+         SDK de Godot (que sí hace falta para el proyecto principal). -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Se compila directo desde Scripts/, no se referencia el .csproj de
+         Godot completo, solo se incluyen archivos que NO dependen de
+         GodotSharp (cada uno lo dice en su propio comentario). -->
+    <Compile Include="../../Scripts/RoomMath.cs" Link="RoomMath.cs" />
+    <Compile Include="../../Scripts/DeterministicHash.cs" Link="DeterministicHash.cs" />
+    <Compile Include="../../Scripts/RoomMineralTable.cs" Link="RoomMineralTable.cs" />
+    <Compile Include="../../Scripts/MineralType.cs" Link="MineralType.cs" />
+    <Compile Include="../../Scripts/WorldSaveData.cs" Link="WorldSaveData.cs" />
+    <Compile Include="../../Scripts/WorldSaveState.cs" Link="WorldSaveState.cs" />
+    <Compile Include="../../Scripts/ProceduralNoise.cs" Link="ProceduralNoise.cs" />
+    <Compile Include="../../Scripts/MineralMaterialProfile.cs" Link="MineralMaterialProfile.cs" />
+  </ItemGroup>
+
+</Project>

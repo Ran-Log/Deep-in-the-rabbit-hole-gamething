@@ -7,10 +7,10 @@ public partial class CameraRig : Node3D
 
 	// Límites de la cámara
 	[Export]
-	public float MinPitch = -30.0f;
+	public float MinPitch = -80.0f;
 
 	[Export]
-	public float MaxPitch = 30.0f;
+	public float MaxPitch = 80.0f;
 
 	private float pitch = 0.0f;
 

@@ -11,6 +11,12 @@ public partial class Hud : CanvasLayer
 	public MiningComponent Mining;
 
 	[Export]
+	public PlayerHealth Health;
+
+	[Export]
+	public Label HealthLabel;
+
+	[Export]
 	public Control Crosshair;
 
 	[Export]
@@ -45,6 +51,12 @@ public partial class Hud : CanvasLayer
 		Mining.TargetAcquired += OnTargetAcquired;
 		Mining.TargetLost += OnTargetLost;
 
+		if (Health != null)
+		{
+			Health.HealthChanged += OnHealthChanged;
+			OnHealthChanged(Health.Current, Health.MaxHealth);
+		}
+
 		OnTargetLost();
 	}
 
@@ -54,6 +66,11 @@ public partial class Hud : CanvasLayer
 		{
 			Mining.TargetAcquired -= OnTargetAcquired;
 			Mining.TargetLost -= OnTargetLost;
+		}
+
+		if (Health != null)
+		{
+			Health.HealthChanged -= OnHealthChanged;
 		}
 
 		StopWatching();
@@ -74,8 +91,42 @@ public partial class Hud : CanvasLayer
 		}
 
 		int blockCount = BlockGrid.Instance?.BlockCount ?? 0;
+		string inventoryLine = BuildInventorySummary();
 
-		DebugLabel.Text = $"FPS {Engine.GetFramesPerSecond():0}   Bloques {blockCount}";
+		DebugLabel.Text = string.IsNullOrEmpty(inventoryLine)
+			? $"FPS {Engine.GetFramesPerSecond():0}   Bloques {blockCount}"
+			: $"FPS {Engine.GetFramesPerSecond():0}   Bloques {blockCount}\n{inventoryLine}";
+	}
+
+	/// <summary>
+	/// Resumen de minerales minados, ej. "Stone 4  Coal 1", leído directo de
+	/// WorldState (autoload — es la misma fuente que se guarda en disco).
+	/// Vacío si todavía no se minó nada, así el overlay no muestra una línea
+	/// vacía de entrada.
+	/// </summary>
+	private string BuildInventorySummary()
+	{
+		if (WorldState.Instance == null)
+		{
+			return string.Empty;
+		}
+
+		var parts = new System.Collections.Generic.List<string>();
+
+		foreach (var (mineral, count) in WorldState.Instance.GetMineralCounts())
+		{
+			parts.Add($"{mineral} {count}");
+		}
+
+		return string.Join("  ", parts);
+	}
+
+	private void OnHealthChanged(int current, int max)
+	{
+		if (HealthLabel != null)
+		{
+			HealthLabel.Text = $"Vida: {current}/{max}";
+		}
 	}
 
 	private void OnTargetAcquired(DestructibleBlock block)

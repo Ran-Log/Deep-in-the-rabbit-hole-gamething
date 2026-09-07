@@ -26,6 +26,22 @@ public partial class Player : CharacterBody3D
 		{
 			GD.PushError($"{Name}: falta asignar CameraRig; el movimiento va a ignorar la cámara.");
 		}
+
+		// WorldState es autoload: ya corrió su _Ready (y por lo tanto ya
+		// cargó el save, si había uno) antes que la escena principal.
+		if (WorldState.Instance?.LoadedPlayerPosition is Vector3 savedPosition)
+		{
+			GlobalPosition = savedPosition;
+		}
+	}
+
+	/// <summary>Tecla "save" (F5 por defecto): guarda semilla, bloques minados e inventario.</summary>
+	public override void _Input(InputEvent @event)
+	{
+		if (@event.IsActionPressed("save"))
+		{
+			WorldState.Instance?.Save(GlobalPosition);
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
