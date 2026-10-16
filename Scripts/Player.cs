@@ -1,7 +1,15 @@
 using Godot;
 
 /// <summary>
-/// Movimiento del jugador. El minado vive en <see cref="MiningComponent"/>.
+/// Movimiento del jugador. Lo demás vive en componentes hijos, cada uno con
+/// una sola responsabilidad: MiningComponent (minar), CombatComponent
+/// (pegarle a enemigos), InteractionComponent (usar objetos con E),
+/// BuildComponent (construir defensas), EatComponent (comer),
+/// HealthComponent (vida) y PlayerEquipment (nivel del pico).
+///
+/// Health y Equipment se exponen acá para que los Interactable (cama,
+/// cofres, estación) reciban un solo parámetro — el Player — en vez de
+/// conocer la estructura interna de la escena del jugador.
 /// </summary>
 public partial class Player : CharacterBody3D
 {
@@ -19,6 +27,23 @@ public partial class Player : CharacterBody3D
 
 	[Export]
 	public CameraRig CameraRig;
+
+	[Export]
+	public HealthComponent Health;
+
+	[Export]
+	public PlayerEquipment Equipment;
+
+	/// <summary>Velocidad de vuelo en modo debug (<see cref="NoClip"/>).</summary>
+	[Export]
+	public float FlySpeed = 14.0f;
+
+	/// <summary>
+	/// Modo debug: vuela hacia donde mira la cámara y atraviesa bloques
+	/// (se mueve sin MoveAndSlide, así que no choca con nada). Lo activa
+	/// DebugTools; en un build exportado no se puede activar.
+	/// </summary>
+	public bool NoClip { get; set; }
 
 	public override void _Ready()
 	{
@@ -46,6 +71,12 @@ public partial class Player : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (NoClip)
+		{
+			Fly((float)delta);
+			return;
+		}
+
 		Vector3 horizontal = ReadHorizontalVelocity();
 		float vertical = ReadVerticalVelocity((float)delta);
 
@@ -56,7 +87,9 @@ public partial class Player : CharacterBody3D
 
 	private Vector3 ReadHorizontalVelocity()
 	{
-		if (CameraRig == null)
+		// Sin control (inventario, nota o menú abiertos) no se camina: el
+		// GDD pide que revisar la mochila deje al jugador vulnerable.
+		if (CameraRig == null || !CrosshairRay.PlayerHasControl())
 		{
 			return Vector3.Zero;
 		}
@@ -80,11 +113,42 @@ public partial class Player : CharacterBody3D
 		return direction * currentSpeed;
 	}
 
+	/// <summary>W/S hacia donde mira la cámara, A/D de costado, Espacio sube, Ctrl baja, Shift más rápido.</summary>
+	private void Fly(float delta)
+	{
+		Velocity = Vector3.Zero;
+
+		if (CameraRig == null || !CrosshairRay.PlayerHasControl())
+		{
+			return;
+		}
+
+		Vector2 inputDir = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+
+		Vector3 direction =
+			CameraRig.GetRightDirection() * inputDir.X +
+			CameraRig.GetLookDirection() * -inputDir.Y;
+
+		if (Input.IsActionPressed("jump"))
+		{
+			direction += Vector3.Up;
+		}
+
+		if (Input.IsKeyPressed(Key.Ctrl))
+		{
+			direction += Vector3.Down;
+		}
+
+		float speed = Input.IsActionPressed("run") ? FlySpeed * 2.5f : FlySpeed;
+
+		GlobalPosition += direction.LimitLength(1.0f) * speed * delta;
+	}
+
 	private float ReadVerticalVelocity(float delta)
 	{
 		if (IsOnFloor())
 		{
-			if (Input.IsActionJustPressed("jump"))
+			if (Input.IsActionJustPressed("jump") && CrosshairRay.PlayerHasControl())
 			{
 				return JumpVelocity;
 			}

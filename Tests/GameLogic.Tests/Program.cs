@@ -207,6 +207,90 @@ Check(
 	})
 );
 
+// --- WorldSaveState: mochila con capacidad ---
+
+{
+	var state = new WorldSaveState { Capacity = 5 };
+
+	Check("mochila: agrega si cabe", state.TryAddItem("Stone", 3));
+	Check("mochila: rechaza si NO cabe todo (todo o nada)", !state.TryAddItem("Coal", 3) && state.GetMineralCount("Coal") == 0);
+	Check("mochila: el total cuenta todos los ítems", state.TotalItems == 3 && state.FreeSpace == 2);
+	Check("mochila: quitar más de lo que hay falla y no cambia nada", !state.RemoveItem("Stone", 4) && state.GetMineralCount("Stone") == 3);
+	Check("mochila: quitar todo borra la entrada", state.RemoveItem("Stone", 3) && !state.MineralCounts.ContainsKey("Stone"));
+}
+
+// --- WorldSaveState: cobrar costos (mejoras / defensas) ---
+
+{
+	var state = new WorldSaveState();
+	state.AddMineral("Stone", 8);
+	state.AddMineral("Coal", 3);
+
+	UpgradeTable.TryGetNext(ToolTier.Basic, out ToolTier next, out var cost);
+
+	Check("mejora: de Básico se pasa a Reforzado", next == ToolTier.Reinforced);
+	Check("mejora: sin carbón suficiente no se cobra nada", !state.TrySpend(cost) && state.GetMineralCount("Stone") == 8);
+
+	state.AddMineral("Coal", 1);
+
+	Check("mejora: con todo lo necesario se cobra el costo completo", state.TrySpend(cost) && state.GetMineralCount("Stone") == 0 && state.GetMineralCount("Coal") == 0);
+	Check("mejora: el pico avanzado es el máximo", !UpgradeTable.TryGetNext(ToolTier.Advanced, out _, out _));
+}
+
+// --- Reglas de minerales ---
+
+Check("reglas: la piedra se rompe con el pico básico", MineralRules.RequiredTool(MineralType.Stone) == ToolTier.Basic);
+Check("reglas: el hierro exige pico reforzado", MineralRules.RequiredTool(MineralType.Iron) == ToolTier.Reinforced);
+Check("reglas: mejor pico = más daño", MineralRules.ToolDamage(ToolTier.Advanced) > MineralRules.ToolDamage(ToolTier.Basic));
+
+// --- Nivel 1 ---
+
+{
+	Check("nivel 1: el campamento (0,0) no tiene gas ni cofre", LevelOneLayout.TryGet(0, 0, out var camp) && !camp.HasGas && camp.Loot == ChestLoot.None);
+	Check(
+		"nivel 1: la sala de salida existe y exige pico reforzado (hierro)",
+		LevelOneLayout.TryGet(LevelOneLayout.ExitRoomX, LevelOneLayout.ExitRoomZ, out var exit)
+			&& exit.HasExit
+			&& MineralRules.RequiredTool(exit.Mineral) == ToolTier.Reinforced
+	);
+	Check("nivel 1: hay un pico abandonado en el nivel (la salida es alcanzable sin farmear)", LevelOneLayout.TryGet(1, -1, out var tool) && tool.Loot == ChestLoot.Pickaxe);
+	Check("nivel 1: salas lejanas quedan para la generación procedural", !LevelOneLayout.TryGet(20, 20, out _));
+	Check("nivel 1: la pista desde el campamento apunta al este y al norte", LevelOneLayout.HintTowardsExit(0, 0).Contains("este") && LevelOneLayout.HintTowardsExit(0, 0).Contains("norte"));
+}
+
+// --- WorldSaveState: round-trip de los datos nuevos ---
+
+{
+	var original = new WorldSaveState { Capacity = 45, ToolLevel = 2 };
+	original.MarkChestOpened(1, -1);
+	original.AddDefense(2, 0, -3);
+
+	string json = JsonSerializer.Serialize(original.ToDto(0, 0, 0));
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(json));
+
+	Check("guardado: conserva capacidad y nivel del pico", restored.Capacity == 45 && restored.ToolLevel == 2);
+	Check("guardado: conserva cofres abiertos y defensas", restored.IsChestOpened(1, -1) && restored.PlacedDefenses.Contains((2, 0, -3)));
+
+	WorldSaveState fromOldSave = WorldSaveState.FromDto(new WorldSaveData());
+	Check("guardado: un save viejo (sin campos nuevos) arranca con mochila y pico por defecto", fromOldSave.Capacity == WorldSaveState.DefaultCapacity && fromOldSave.ToolLevel == 1);
+}
+
+// --- Salas visitadas y antorchas ---
+
+{
+	var state = new WorldSaveState();
+
+	Check("salas: una sala nueva no está visitada", !state.IsRoomVisited(1, 0));
+	Check("salas: la primera visita devuelve true (sala descubierta)", state.MarkRoomVisited(1, 0));
+	Check("salas: la segunda visita devuelve false (ya se conocía)", !state.MarkRoomVisited(1, 0));
+
+	state.AddTorch(3, 0, -2);
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+
+	Check("guardado: conserva salas visitadas y antorchas", restored.IsRoomVisited(1, 0) && restored.PlacedTorches.Contains((3, 0, -2)));
+}
+
 Console.WriteLine();
 Console.WriteLine($"{total - failures}/{total} tests OK");
 

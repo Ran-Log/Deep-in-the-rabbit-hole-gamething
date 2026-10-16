@@ -1,8 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/Room.cs" id="1_room"]
 [ext_resource type="PackedScene" path="res://Scenes/DestructibleBlock.tscn" id="2_room"]
 [ext_resource type="PackedScene" path="res://Scenes/GasZone.tscn" id="4_gas"]
+[ext_resource type="PackedScene" path="res://Scenes/Chest.tscn" id="5_chest"]
+[ext_resource type="PackedScene" path="res://Scenes/ExitCrack.tscn" id="6_exit"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 resource_local_to_scene = true
@@ -16,6 +18,8 @@ size = Vector3(20, 2, 20)
 script = ExtResource("1_room")
 BlockScene = ExtResource("2_room")
 GasZoneScene = ExtResource("4_gas")
+ChestScene = ExtResource("5_chest")
+ExitScene = ExtResource("6_exit")
 FloorBody = NodePath("Floor")
 FloorMesh = NodePath("Floor/MeshInstance3D")
 FloorCollision = NodePath("Floor/CollisionShape3D")

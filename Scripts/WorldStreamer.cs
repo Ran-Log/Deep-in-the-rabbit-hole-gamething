@@ -82,9 +82,16 @@ public partial class WorldStreamer : Node3D
 
 		Vector2I center = WorldToRoomGrid(Player.GlobalPosition);
 
+		// "Un jugador ya pasó por aquí": solo las salas visitadas pueden
+		// tener enemigos de noche (ver EnemySpawner).
+		WorldState.Instance?.MarkRoomVisited(center);
+
 		LoadNearbyRooms(center);
 		UnloadFarRooms(center);
 	}
+
+	/// <summary>Salas cargadas ahora mismo (EnemySpawner elige entre estas dónde hacer aparecer zombies).</summary>
+	public IEnumerable<Room> LoadedRooms => loadedRooms.Values;
 
 	private float CellSize => BlockGrid.Instance?.CellSize ?? 2.0f;
 
@@ -150,6 +157,9 @@ public partial class WorldStreamer : Node3D
 		room.WallBlockHealth = spec.WallBlockHealth;
 		room.RoomGridCoord = spec.GridCoord;
 		room.HasGas = spec.HasGas;
+		room.Loot = spec.Loot;
+		room.NoteText = spec.NoteText;
+		room.HasExit = spec.HasExit;
 
 		// La posición se fija ANTES de AddChild, mismo criterio que en todo
 		// el resto del proyecto (ver Room.SpawnBlock/LevelBuilder.SpawnRoom):

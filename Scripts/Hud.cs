@@ -1,9 +1,11 @@
 using Godot;
 
 /// <summary>
-/// HUD del jugador: crosshair, información del bloque apuntado y overlay de
-/// debug. Solo escucha señales del <see cref="MiningComponent"/>; no toca el
-/// mundo ni consulta bloques por su cuenta.
+/// HUD del jugador: crosshair, bloque apuntado, texto de interacción,
+/// mensajes cortos, notas encontradas, estado de la mochila/pico y overlay
+/// de debug. Solo ESCUCHA señales (de sus componentes hermanos, de
+/// WorldState y de GameEvents); no toca el mundo ni consulta bloques por su
+/// cuenta.
 /// </summary>
 public partial class Hud : CanvasLayer
 {
@@ -11,7 +13,43 @@ public partial class Hud : CanvasLayer
 	public MiningComponent Mining;
 
 	[Export]
-	public PlayerHealth Health;
+	public HealthComponent Health;
+
+	[Export]
+	public InteractionComponent Interaction;
+
+	[Export]
+	public BuildComponent Build;
+
+	[Export]
+	public PlayerEquipment Equipment;
+
+	[Export]
+	public Label PromptLabel;
+
+	[Export]
+	public Label MessageLabel;
+
+	[Export]
+	public Label StatusLabel;
+
+	[Export]
+	public Label BuildHintLabel;
+
+	[Export]
+	public Control HelpPanel;
+
+	[Export]
+	public Control NotePanel;
+
+	[Export]
+	public Label NoteLabel;
+
+	[Export]
+	public float MessageSeconds = 3.0f;
+
+	[Export]
+	public float NoteSeconds = 14.0f;
 
 	[Export]
 	public Label HealthLabel;
@@ -39,6 +77,8 @@ public partial class Hud : CanvasLayer
 	public bool ShowDebug = true;
 
 	private DestructibleBlock watchedBlock;
+	private float messageTimeLeft;
+	private float noteTimeLeft;
 
 	public override void _Ready()
 	{
@@ -57,7 +97,48 @@ public partial class Hud : CanvasLayer
 			OnHealthChanged(Health.Current, Health.MaxHealth);
 		}
 
+		if (Interaction != null)
+		{
+			Interaction.PromptChanged += OnPromptChanged;
+		}
+
+		if (Build != null)
+		{
+			Build.BuildModeChanged += OnBuildModeChanged;
+			Build.SelectionChanged += OnBuildSelectionChanged;
+		}
+
+		if (Equipment != null)
+		{
+			Equipment.ToolChanged += OnToolChanged;
+		}
+
+		if (WorldState.Instance != null)
+		{
+			WorldState.Instance.InventoryChanged += RefreshStatus;
+		}
+
+		if (HelpPanel != null)
+		{
+			HelpPanel.Visible = false;
+		}
+
+		if (GameEvents.Instance != null)
+		{
+			GameEvents.Instance.MessagePosted += OnMessagePosted;
+			GameEvents.Instance.NoteOpened += OnNoteOpened;
+		}
+
 		OnTargetLost();
+		OnPromptChanged("");
+		OnBuildModeChanged(false);
+		SetNoteVisible(false);
+		RefreshStatus();
+
+		if (MessageLabel != null)
+		{
+			MessageLabel.Text = "";
+		}
 	}
 
 	public override void _ExitTree()
@@ -73,11 +154,41 @@ public partial class Hud : CanvasLayer
 			Health.HealthChanged -= OnHealthChanged;
 		}
 
+		if (Interaction != null)
+		{
+			Interaction.PromptChanged -= OnPromptChanged;
+		}
+
+		if (Build != null)
+		{
+			Build.BuildModeChanged -= OnBuildModeChanged;
+			Build.SelectionChanged -= OnBuildSelectionChanged;
+		}
+
+		if (Equipment != null)
+		{
+			Equipment.ToolChanged -= OnToolChanged;
+		}
+
+		if (WorldState.Instance != null)
+		{
+			WorldState.Instance.InventoryChanged -= RefreshStatus;
+		}
+
+		if (GameEvents.Instance != null)
+		{
+			GameEvents.Instance.MessagePosted -= OnMessagePosted;
+			GameEvents.Instance.NoteOpened -= OnNoteOpened;
+		}
+
 		StopWatching();
 	}
 
 	public override void _Process(double delta)
 	{
+		TickMessage((float)delta);
+		TickNote((float)delta);
+
 		if (DebugLabel == null)
 		{
 			return;
@@ -85,40 +196,156 @@ public partial class Hud : CanvasLayer
 
 		DebugLabel.Visible = ShowDebug;
 
-		if (!ShowDebug)
+		if (ShowDebug)
+		{
+			int blockCount = BlockGrid.Instance?.BlockCount ?? 0;
+			DebugLabel.Text = $"FPS {Engine.GetFramesPerSecond():0}   Bloques {blockCount}";
+		}
+	}
+
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		if (@event.IsActionPressed("toggle_help") && HelpPanel != null)
+		{
+			HelpPanel.Visible = !HelpPanel.Visible;
+		}
+
+		if (noteTimeLeft > 0.0f && (@event.IsActionPressed("ui_cancel") || @event.IsActionPressed("toggle_inventory")))
+		{
+			SetNoteVisible(false);
+		}
+	}
+
+	/// <summary>Línea de estado: mochila, comida y pico. Se refresca solo cuando cambia algo (señales), no cada frame.</summary>
+	private void RefreshStatus()
+	{
+		if (StatusLabel == null || WorldState.Instance == null)
 		{
 			return;
 		}
 
-		int blockCount = BlockGrid.Instance?.BlockCount ?? 0;
-		string inventoryLine = BuildInventorySummary();
+		WorldState world = WorldState.Instance;
+		string tool = ItemCatalog.ToolName(Equipment?.Tool ?? ToolTier.Basic);
 
-		DebugLabel.Text = string.IsNullOrEmpty(inventoryLine)
-			? $"FPS {Engine.GetFramesPerSecond():0}   Bloques {blockCount}"
-			: $"FPS {Engine.GetFramesPerSecond():0}   Bloques {blockCount}\n{inventoryLine}";
+		StatusLabel.Text =
+			$"Mochila {world.TotalItems}/{world.Capacity}   " +
+			$"Comida {world.GetItemCount(ItemCatalog.Food)} [Q]   " +
+			$"{tool}";
 	}
 
-	/// <summary>
-	/// Resumen de minerales minados, ej. "Stone 4  Coal 1", leído directo de
-	/// WorldState (autoload — es la misma fuente que se guarda en disco).
-	/// Vacío si todavía no se minó nada, así el overlay no muestra una línea
-	/// vacía de entrada.
-	/// </summary>
-	private string BuildInventorySummary()
+	private void OnToolChanged(int tier)
 	{
-		if (WorldState.Instance == null)
+		RefreshStatus();
+	}
+
+	private void OnPromptChanged(string prompt)
+	{
+		if (PromptLabel != null)
 		{
-			return string.Empty;
+			PromptLabel.Text = string.IsNullOrEmpty(prompt) ? "" : $"[E] {prompt}";
+		}
+	}
+
+	private void OnBuildModeChanged(bool active)
+	{
+		if (BuildHintLabel != null)
+		{
+			BuildHintLabel.Visible = active;
 		}
 
-		var parts = new System.Collections.Generic.List<string>();
+		RefreshBuildMenu();
+	}
 
-		foreach (var (mineral, count) in WorldState.Instance.GetMineralCounts())
+	private void OnBuildSelectionChanged(int index)
+	{
+		RefreshBuildMenu();
+	}
+
+	/// <summary>Lista de construcciones con la elegida marcada. Sale de BuildComponent.Options, así una opción nueva aparece sola.</summary>
+	private void RefreshBuildMenu()
+	{
+		if (BuildHintLabel == null)
 		{
-			parts.Add($"{mineral} {count}");
+			return;
 		}
 
-		return string.Join("  ", parts);
+		var text = new System.Text.StringBuilder("CONSTRUIR   [B] cerrar\n");
+		int selected = Build?.Selected ?? 0;
+
+		for (int i = 0; i < BuildComponent.Options.Length; i++)
+		{
+			BuildComponent.BuildOption option = BuildComponent.Options[i];
+			string marker = i == selected ? "►" : "  ";
+
+			text.Append($"{marker} [{i + 1}] {option.Name} — {option.CostText}\n");
+		}
+
+		text.Append("Clic izquierdo: colocar");
+		BuildHintLabel.Text = text.ToString();
+	}
+
+	private void OnMessagePosted(string text)
+	{
+		if (MessageLabel == null)
+		{
+			return;
+		}
+
+		MessageLabel.Text = text;
+		MessageLabel.Modulate = Colors.White;
+		messageTimeLeft = MessageSeconds;
+	}
+
+	/// <summary>El mensaje se queda fijo y se desvanece en el último medio segundo.</summary>
+	private void TickMessage(float delta)
+	{
+		if (MessageLabel == null || messageTimeLeft <= 0.0f)
+		{
+			return;
+		}
+
+		messageTimeLeft -= delta;
+		MessageLabel.Modulate = new Color(1, 1, 1, Mathf.Clamp(messageTimeLeft / 0.5f, 0.0f, 1.0f));
+
+		if (messageTimeLeft <= 0.0f)
+		{
+			MessageLabel.Text = "";
+		}
+	}
+
+	private void OnNoteOpened(string text)
+	{
+		if (NoteLabel != null)
+		{
+			NoteLabel.Text = text;
+		}
+
+		SetNoteVisible(true);
+	}
+
+	private void TickNote(float delta)
+	{
+		if (noteTimeLeft <= 0.0f)
+		{
+			return;
+		}
+
+		noteTimeLeft -= delta;
+
+		if (noteTimeLeft <= 0.0f)
+		{
+			SetNoteVisible(false);
+		}
+	}
+
+	private void SetNoteVisible(bool visible)
+	{
+		noteTimeLeft = visible ? NoteSeconds : 0.0f;
+
+		if (NotePanel != null)
+		{
+			NotePanel.Visible = visible;
+		}
 	}
 
 	private void OnHealthChanged(int current, int max)
@@ -166,8 +393,8 @@ public partial class Hud : CanvasLayer
 		if (TargetLabel != null)
 		{
 			TargetLabel.Text = minable
-				? $"{watchedBlock.Mineral}   {currentHealth}/{maxHealth}"
-				: $"{watchedBlock.Mineral}   requiere {watchedBlock.RequiredTool}";
+				? $"{watchedBlock.Label}   {currentHealth}/{maxHealth}"
+				: $"{watchedBlock.Label}   requiere {ItemCatalog.ToolName(watchedBlock.RequiredTool)}";
 		}
 
 		if (Crosshair != null)

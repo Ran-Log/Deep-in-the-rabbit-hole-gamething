@@ -28,6 +28,15 @@ public readonly struct RoomSpec
 	/// <summary>Si es true, la sala sale con una GasZone en el centro (ver RoomGenerator/Room.SpawnGasZoneIfNeeded).</summary>
 	public readonly bool HasGas;
 
+	/// <summary>Qué hay en el cofre de la sala (None = sin cofre).</summary>
+	public readonly ChestLoot Loot;
+
+	/// <summary>Texto de la nota si <see cref="Loot"/> es Note.</summary>
+	public readonly string NoteText;
+
+	/// <summary>Si es true, la sala tiene la grieta de salida del nivel.</summary>
+	public readonly bool HasExit;
+
 	public RoomSpec(
 		string name,
 		Vector3 position,
@@ -37,7 +46,10 @@ public readonly struct RoomSpec
 		MineralType wallMineral,
 		int wallBlockHealth,
 		Vector2I gridCoord = default,
-		bool hasGas = false)
+		bool hasGas = false,
+		ChestLoot loot = ChestLoot.None,
+		string noteText = "",
+		bool hasExit = false)
 	{
 		Name = name;
 		Position = position;
@@ -48,5 +60,8 @@ public readonly struct RoomSpec
 		WallBlockHealth = wallBlockHealth;
 		GridCoord = gridCoord;
 		HasGas = hasGas;
+		Loot = loot;
+		NoteText = noteText ?? "";
+		HasExit = hasExit;
 	}
 }

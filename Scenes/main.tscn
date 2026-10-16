@@ -5,6 +5,13 @@
 [ext_resource type="Script" path="res://Scripts/WorldStreamer.cs" id="4_worldstreamer"]
 [ext_resource type="PackedScene" path="res://Scenes/GameOverScreen.tscn" id="5_gameover"]
 [ext_resource type="PackedScene" path="res://Scenes/InventoryScreen.tscn" id="6_inventory"]
+[ext_resource type="PackedScene" path="res://Scenes/Camp.tscn" id="7_camp"]
+[ext_resource type="Script" path="res://Scripts/DayNightCycle.cs" id="8_daynight"]
+[ext_resource type="Script" path="res://Scripts/EnemySpawner.cs" id="9_spawner"]
+[ext_resource type="PackedScene" path="res://Scenes/Zombie.tscn" id="10_zombie"]
+[ext_resource type="PackedScene" path="res://Scenes/WorldHud.tscn" id="11_worldhud"]
+[ext_resource type="Script" path="res://Scripts/TorchPlacer.cs" id="12_torchplacer"]
+[ext_resource type="PackedScene" path="res://Scenes/Torch.tscn" id="13_torch"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 
@@ -23,6 +30,12 @@ environment = SubResource("Environment_main")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=450944471]
 transform = Transform3D(0.67900294, 0.42072445, -0.6016195, 0, 0.8194937, 0.5730882, 0.73413557, -0.3891286, 0.5564386, -5.2374105, 11.717903, 9.802239)
+shadow_enabled = true
+
+[node name="DayNightCycle" type="Node" parent="." node_paths=PackedStringArray("Sun", "WorldEnvironment")]
+script = ExtResource("8_daynight")
+Sun = NodePath("../DirectionalLight3D")
+WorldEnvironment = NodePath("../WorldEnvironment")
 
 [node name="Player" parent="." unique_id=10465824 groups=["player"] instance=ExtResource("1_jjgbg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
@@ -32,7 +45,25 @@ script = ExtResource("4_worldstreamer")
 RoomScene = ExtResource("2_room")
 Player = NodePath("../Player")
 
-[node name="GameOverScreen" parent="." node_paths=PackedStringArray("Health") instance=ExtResource("5_gameover")]
-Health = NodePath("../Player/PlayerHealth")
+[node name="Camp" parent="." instance=ExtResource("7_camp")]
 
-[node name="InventoryScreen" parent="." instance=ExtResource("6_inventory")]
+[node name="PlacedTorches" type="Node3D" parent="."]
+script = ExtResource("12_torchplacer")
+TorchScene = ExtResource("13_torch")
+
+[node name="EnemySpawner" type="Node3D" parent="." node_paths=PackedStringArray("DayNight", "Streamer")]
+script = ExtResource("9_spawner")
+ZombieScene = ExtResource("10_zombie")
+DayNight = NodePath("../DayNightCycle")
+Streamer = NodePath("../WorldStreamer")
+
+[node name="WorldHud" parent="." node_paths=PackedStringArray("DayNight", "CampHealth") instance=ExtResource("11_worldhud")]
+DayNight = NodePath("../DayNightCycle")
+CampHealth = NodePath("../Camp/CampCore/Health")
+
+[node name="GameOverScreen" parent="." node_paths=PackedStringArray("PlayerHealth", "CampHealth") instance=ExtResource("5_gameover")]
+PlayerHealth = NodePath("../Player/Health")
+CampHealth = NodePath("../Camp/CampCore/Health")
+
+[node name="InventoryScreen" parent="." node_paths=PackedStringArray("Eat") instance=ExtResource("6_inventory")]
+Eat = NodePath("../Player/EatComponent")

@@ -1,0 +1,49 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Chest.cs" id="1_chest"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_wood"]
+albedo_color = Color(0.5, 0.32, 0.16, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_trim"]
+albedo_color = Color(0.75, 0.6, 0.25, 1)
+metallic = 0.7
+roughness = 0.4
+
+[sub_resource type="BoxMesh" id="Mesh_base"]
+material = SubResource("Mat_wood")
+size = Vector3(1.4, 0.8, 0.9)
+
+[sub_resource type="BoxMesh" id="Mesh_lid"]
+material = SubResource("Mat_wood")
+size = Vector3(1.45, 0.25, 0.95)
+
+[sub_resource type="BoxMesh" id="Mesh_lock"]
+material = SubResource("Mat_trim")
+size = Vector3(0.2, 0.25, 0.08)
+
+[sub_resource type="BoxShape3D" id="Shape_chest"]
+size = Vector3(1.4, 1.05, 0.9)
+
+[node name="Chest" type="StaticBody3D" node_paths=PackedStringArray("LidPivot")]
+script = ExtResource("1_chest")
+LidPivot = NodePath("LidPivot")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("Mesh_base")
+
+[node name="Lock" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.47)
+mesh = SubResource("Mesh_lock")
+
+[node name="LidPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.45)
+
+[node name="Lid" type="MeshInstance3D" parent="LidPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.125, 0.45)
+mesh = SubResource("Mesh_lid")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, 0)
+shape = SubResource("Shape_chest")

@@ -78,6 +78,32 @@ public partial class Room : Node3D
 	[Export]
 	public PackedScene GasZoneScene;
 
+	/// <summary>Contenido del cofre de la sala; None = sin cofre. Lo setea WorldStreamer desde el RoomSpec.</summary>
+	public ChestLoot Loot { get; set; } = ChestLoot.None;
+
+	public string NoteText { get; set; } = "";
+
+	public bool HasExit { get; set; }
+
+	[Export]
+	public PackedScene ChestScene;
+
+	[Export]
+	public PackedScene ExitScene;
+
+	/// <summary>
+	/// Centro aproximado del interior caminable, en coordenadas locales. Con
+	/// tamaño par el centro de la grilla queda corrido media celda (ver
+	/// RoomMath.CenterOffset), así que el interior no está centrado en el origen.
+	/// </summary>
+	private Vector3 InteriorCenter => new Vector3(-1.0f, FloorTopY, -1.0f);
+
+	/// <summary>Centro del interior en coordenadas globales (ej. para hacer aparecer enemigos adentro).</summary>
+	public Vector3 InteriorCenterGlobal => ToGlobal(InteriorCenter);
+
+	/// <summary>Altura local de la superficie del piso (media celda bajo el origen).</summary>
+	private float FloorTopY => -(BlockGrid.Instance?.CellSize ?? 2.0f) * 0.5f;
+
 	private Vector3I originCell;
 	private int spawnedBlocks;
 
@@ -96,6 +122,8 @@ public partial class Room : Node3D
 		ResizeFloor();
 		GenerateWalls();
 		SpawnGasZoneIfNeeded();
+		SpawnChestIfNeeded();
+		SpawnExitIfNeeded();
 	}
 
 	private void SnapOriginToGrid()
@@ -190,6 +218,52 @@ public partial class Room : Node3D
 		AddChild(gasZone);
 	}
 
+	private void SpawnChestIfNeeded()
+	{
+		if (Loot == ChestLoot.None)
+		{
+			return;
+		}
+
+		if (ChestScene == null)
+		{
+			GD.PushWarning($"{Name}: la sala tiene cofre pero falta asignar ChestScene.");
+			return;
+		}
+
+		var chest = ChestScene.Instantiate<Chest>();
+
+		chest.Loot = Loot;
+		chest.NoteText = NoteText;
+		chest.RoomCoord = RoomGridCoord;
+
+		// En una sala con gas, el cofre va justo en el medio del gas: el
+		// dilema "¿entro o no?" del GDD tiene que tener premio.
+		chest.Position = HasGas
+			? InteriorCenter
+			: InteriorCenter + new Vector3(4.0f, 0.0f, -4.0f);
+
+		AddChild(chest);
+	}
+
+	private void SpawnExitIfNeeded()
+	{
+		if (!HasExit)
+		{
+			return;
+		}
+
+		if (ExitScene == null)
+		{
+			GD.PushWarning($"{Name}: la sala tiene salida pero falta asignar ExitScene.");
+			return;
+		}
+
+		var exit = ExitScene.Instantiate<Node3D>();
+		exit.Position = InteriorCenter;
+		AddChild(exit);
+	}
+
 	private void SpawnBlock(Vector3I localCell)
 	{
 		BlockGrid grid = BlockGrid.Instance;
@@ -220,6 +294,7 @@ public partial class Room : Node3D
 
 		block.Mineral = WallMineral;
 		block.MaxHealth = WallBlockHealth;
+		block.RequiredTool = MineralRules.RequiredTool(WallMineral);
 
 		// La posición se fija ANTES de AddChild: al entrar al árbol el bloque
 		// corre su _Ready, y ahí ya necesita estar donde corresponde para
@@ -229,7 +304,9 @@ public partial class Room : Node3D
 		// "localCell" es un parámetro propio de ESTA llamada a SpawnBlock (no
 		// una variable de loop compartida), así que el lambda lo captura
 		// correctamente sin necesidad de copiarlo aparte.
-		block.Destroyed += (mineral) => WorldState.Instance?.MarkCellMined(RoomGridCoord, localCell, (MineralType)mineral);
+		// Se marca minada sin importar quién la rompió (jugador o zombie);
+		// el mineral lo suma MiningComponent solo cuando mina el jugador.
+		block.Destroyed += (_) => WorldState.Instance?.MarkCellMined(RoomGridCoord, localCell);
 
 		(BlockContainer ?? (Node3D)this).AddChild(block);
 

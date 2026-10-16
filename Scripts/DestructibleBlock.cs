@@ -29,6 +29,10 @@ public partial class DestructibleBlock : StaticBody3D
 	[Export]
 	public MeshInstance3D MeshInstance;
 
+	/// <summary>Nombre para el HUD. Vacío = el nombre del mineral (ej. "Barricada" para las defensas).</summary>
+	[Export]
+	public string DisplayName = "";
+
 	/// <summary>
 	/// Ajusta posición y escala a la grilla en _Ready. Se puede apagar para
 	/// bloques decorativos puestos a mano fuera de la grilla.
@@ -44,6 +48,10 @@ public partial class DestructibleBlock : StaticBody3D
 	public Vector3I Cell => cell;
 
 	public int Health => health;
+
+	public string Label => string.IsNullOrEmpty(DisplayName)
+		? ItemCatalog.DisplayName(ItemCatalog.IdOf(Mineral))
+		: DisplayName;
 
 	public override void _Ready()
 	{

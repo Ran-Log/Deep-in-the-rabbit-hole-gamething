@@ -1,13 +1,20 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/Hud.cs" id="1_hud"]
 
-[node name="Hud" type="CanvasLayer" node_paths=PackedStringArray("Crosshair", "TargetLabel", "DebugLabel", "HealthLabel")]
+[node name="Hud" type="CanvasLayer" node_paths=PackedStringArray("Crosshair", "TargetLabel", "DebugLabel", "HealthLabel", "PromptLabel", "MessageLabel", "StatusLabel", "BuildHintLabel", "NotePanel", "NoteLabel", "HelpPanel")]
 script = ExtResource("1_hud")
 Crosshair = NodePath("Crosshair")
 TargetLabel = NodePath("TargetLabel")
 DebugLabel = NodePath("DebugLabel")
 HealthLabel = NodePath("HealthLabel")
+PromptLabel = NodePath("PromptLabel")
+MessageLabel = NodePath("MessageLabel")
+StatusLabel = NodePath("StatusLabel")
+BuildHintLabel = NodePath("BuildHintLabel")
+NotePanel = NodePath("NotePanel")
+NoteLabel = NodePath("NotePanel/Margin/NoteLabel")
+HelpPanel = NodePath("HelpPanel")
 
 [node name="Crosshair" type="Control" parent="."]
 anchors_preset = 8
@@ -85,3 +92,155 @@ grow_horizontal = 0
 mouse_filter = 2
 horizontal_alignment = 2
 text = "Vida: 100/100"
+
+[node name="PromptLabel" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = 52.0
+offset_right = 260.0
+offset_bottom = 78.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.92, 0.6, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -300.0
+offset_top = 70.0
+offset_right = 300.0
+offset_bottom = 100.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="BuildHintLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 12.0
+offset_top = -60.0
+offset_right = 420.0
+offset_bottom = 40.0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.6, 1, 0.65, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+
+[node name="StatusLabel" type="Label" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -36.0
+offset_right = 600.0
+offset_bottom = -10.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+
+[node name="NotePanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -200.0
+offset_right = 260.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="NotePanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="NoteLabel" type="Label" parent="NotePanel/Margin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+autowrap_mode = 3
+
+[node name="HelpHint" type="Label" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -36.0
+offset_right = -12.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+horizontal_alignment = 2
+text = "[P] Controles"
+
+[node name="HelpPanel" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -200.0
+offset_right = -12.0
+offset_bottom = 200.0
+grow_horizontal = 0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="HelpPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="HelpLabel" type="Label" parent="HelpPanel/Margin"]
+layout_mode = 2
+text = "CONTROLES   [P] cerrar
+
+WASD — moverse      Shift — correr
+Espacio — saltar     Mouse — mirar
+Rueda — zoom         R — cambiar hombro
+
+Clic izq. (mantener) — minar / atacar
+E — usar (cama, cofre, estación, antorcha)
+Tab — mochila (usar / soltar)
+Q — comer una ración
+B — menú de construcción (1 / 2 elegir)
+F5 — guardar partida
+Esc — soltar el mouse
+
+DEBUG (solo en el editor)
+F1 — volar / atravesar bloques
+F2 — cambiar día / noche
+F3 — dar materiales"

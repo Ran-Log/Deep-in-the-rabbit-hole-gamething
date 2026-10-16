@@ -2,14 +2,14 @@ using Godot;
 
 /// <summary>
 /// Zona de gas venenoso (grisú): mientras el jugador esté dentro del
-/// Area3D, le hace daño por segundo a través de su PlayerHealth. El tamaño
+/// Area3D, le hace daño por segundo a través de su HealthComponent. El tamaño
 /// y el visual (niebla verde translúcida con un pulso suave) se arman en
 /// código, con los mismos enums fuertemente tipados que usa el highlight de
 /// DestructibleBlock (GetHighlightOverlay) — evita valores mágicos escritos
 /// a mano en el .tscn que no puedo verificar sin abrir el editor de Godot.
 ///
 /// Detecta al jugador por el grupo "player" (ver Player en main.tscn) y
-/// busca un hijo llamado "PlayerHealth" — no depende de Room ni de
+/// busca un hijo llamado "Health" — no depende de Room ni de
 /// WorldStreamer para nada más que su propia posición, que se la da quien
 /// la instancia (ver Room.SpawnGasZoneIfNeeded).
 /// </summary>
@@ -24,7 +24,7 @@ public partial class GasZone : Area3D
 	[Export]
 	public MeshInstance3D Fog;
 
-	private PlayerHealth playerInside;
+	private HealthComponent playerInside;
 	private float damageAccumulator;
 	private float pulseTime;
 	private StandardMaterial3D fogMaterial;
@@ -118,7 +118,7 @@ public partial class GasZone : Area3D
 	{
 		if (body is CharacterBody3D characterBody && characterBody.IsInGroup("player"))
 		{
-			playerInside = characterBody.GetNodeOrNull<PlayerHealth>("PlayerHealth");
+			playerInside = characterBody.GetNodeOrNull<HealthComponent>("Health");
 		}
 	}
 

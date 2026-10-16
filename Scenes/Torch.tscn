@@ -1,0 +1,52 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Scripts/Torch.cs" id="1_torch"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_post"]
+albedo_color = Color(0.35, 0.22, 0.12, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_flame"]
+albedo_color = Color(1, 0.6, 0.15, 1)
+emission_enabled = true
+emission = Color(1, 0.55, 0.1, 1)
+emission_energy_multiplier = 3.0
+shading_mode = 0
+
+[sub_resource type="CylinderMesh" id="Mesh_post"]
+material = SubResource("Mat_post")
+top_radius = 0.1
+bottom_radius = 0.13
+height = 1.8
+
+[sub_resource type="SphereMesh" id="Mesh_flame"]
+material = SubResource("Mat_flame")
+radius = 0.2
+height = 0.45
+
+[sub_resource type="CylinderShape3D" id="Shape_torch"]
+radius = 0.35
+height = 2.2
+
+[node name="Torch" type="StaticBody3D" node_paths=PackedStringArray("Light", "Flame")]
+script = ExtResource("1_torch")
+Light = NodePath("OmniLight3D")
+Flame = NodePath("Flame")
+
+[node name="Post" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("Mesh_post")
+
+[node name="Flame" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, 0)
+mesh = SubResource("Mesh_flame")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+light_color = Color(1, 0.7, 0.4, 1)
+light_energy = 2.0
+shadow_enabled = true
+omni_range = 11.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("Shape_torch")

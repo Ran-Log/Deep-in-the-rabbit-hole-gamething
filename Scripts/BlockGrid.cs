@@ -86,6 +86,24 @@ public partial class BlockGrid : Node
 		return blocks.ContainsKey(cell);
 	}
 
+	/// <summary>
+	/// True si algún cuerpo físico (jugador, zombie, cama, antorcha...) ocupa
+	/// la celda. Se consulta con una caja un poco más chica que la celda para
+	/// que no cuente el piso ni los bloques vecinos, que solo la tocan por el borde.
+	/// Lo usan quienes construyen (CampDefenses, TorchPlacer) antes de colocar algo.
+	/// </summary>
+	public bool HasBodyInCell(World3D world, Vector3I cell)
+	{
+		var query = new PhysicsShapeQueryParameters3D
+		{
+			Shape = new BoxShape3D { Size = Vector3.One * CellSize * 0.9f },
+			Transform = new Transform3D(Basis.Identity, GridToWorld(cell)),
+			CollisionMask = 1,
+		};
+
+		return world.DirectSpaceState.IntersectShape(query, 1).Count > 0;
+	}
+
 	public DestructibleBlock GetBlock(Vector3I cell)
 	{
 		return blocks.TryGetValue(cell, out DestructibleBlock block) ? block : null;

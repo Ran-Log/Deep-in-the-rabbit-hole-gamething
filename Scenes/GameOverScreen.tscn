@@ -1,11 +1,14 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/GameOverScreen.cs" id="1_gameover"]
 
-[node name="GameOverScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "RestartButton")]
+[node name="GameOverScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "TitleLabel", "SubtitleLabel", "RestartButton", "NewGameButton")]
 script = ExtResource("1_gameover")
 Panel = NodePath("Panel")
+TitleLabel = NodePath("Panel/Margin/VBoxContainer/Label")
+SubtitleLabel = NodePath("Panel/Margin/VBoxContainer/Subtitle")
 RestartButton = NodePath("Panel/Margin/VBoxContainer/RestartButton")
+NewGameButton = NodePath("Panel/Margin/VBoxContainer/NewGameButton")
 
 [node name="Panel" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -34,8 +37,18 @@ alignment = 1
 [node name="Label" type="Label" parent="Panel/Margin/VBoxContainer"]
 layout_mode = 2
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 28
 text = "Moriste"
+
+[node name="Subtitle" type="Label" parent="Panel/Margin/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+text = ""
 
 [node name="RestartButton" type="Button" parent="Panel/Margin/VBoxContainer"]
 layout_mode = 2
-text = "Reiniciar"
+text = "Reintentar desde el último guardado"
+
+[node name="NewGameButton" type="Button" parent="Panel/Margin/VBoxContainer"]
+layout_mode = 2
+text = "Nueva partida"

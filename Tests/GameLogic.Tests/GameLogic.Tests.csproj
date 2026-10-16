@@ -21,6 +21,12 @@
     <Compile Include="../../Scripts/WorldSaveState.cs" Link="WorldSaveState.cs" />
     <Compile Include="../../Scripts/ProceduralNoise.cs" Link="ProceduralNoise.cs" />
     <Compile Include="../../Scripts/MineralMaterialProfile.cs" Link="MineralMaterialProfile.cs" />
+    <Compile Include="../../Scripts/ToolTier.cs" Link="ToolTier.cs" />
+    <Compile Include="../../Scripts/ItemCatalog.cs" Link="ItemCatalog.cs" />
+    <Compile Include="../../Scripts/MineralRules.cs" Link="MineralRules.cs" />
+    <Compile Include="../../Scripts/UpgradeTable.cs" Link="UpgradeTable.cs" />
+    <Compile Include="../../Scripts/ChestLoot.cs" Link="ChestLoot.cs" />
+    <Compile Include="../../Scripts/LevelOneLayout.cs" Link="LevelOneLayout.cs" />
   </ItemGroup>
 
 </Project>

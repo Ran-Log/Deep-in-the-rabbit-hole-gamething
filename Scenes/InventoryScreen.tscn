@@ -1,11 +1,12 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://Scripts/InventoryScreen.cs" id="1_inventory"]
 
-[node name="InventoryScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "EntriesContainer")]
+[node name="InventoryScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "EntriesContainer", "CapacityLabel")]
 script = ExtResource("1_inventory")
 Panel = NodePath("Panel")
 EntriesContainer = NodePath("Panel/Margin/VBoxContainer/Entries")
+CapacityLabel = NodePath("Panel/Margin/VBoxContainer/CapacityLabel")
 
 [node name="Panel" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -36,7 +37,11 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="Panel/Margin/VBoxContainer"]
 layout_mode = 2
-text = "Inventario"
+theme_override_font_sizes/font_size = 22
+text = "Mochila  [Tab] cerrar"
+
+[node name="CapacityLabel" type="Label" parent="Panel/Margin/VBoxContainer"]
+layout_mode = 2
 
 [node name="Entries" type="VBoxContainer" parent="Panel/Margin/VBoxContainer"]
 layout_mode = 2
