@@ -4,6 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>GameLogic.Tests</RootNamespace>
+    <!-- Sin el .exe lanzador: con un SDK más nuevo (ej. .NET 10) el SDK
+         intentaría bajar el "apphost" de .NET 8 desde NuGet, y NuGet.Config
+         tiene las fuentes vacías a propósito. "dotnet run" sigue funcionando. -->
+    <UseAppHost>false</UseAppHost>
     <!-- A propósito SIN paquetes NuGet (nada de xUnit/NUnit): así
          "dotnet run" compila y corre sin necesitar red, y sin arrastrar el
          SDK de Godot (que sí hace falta para el proyecto principal). -->
