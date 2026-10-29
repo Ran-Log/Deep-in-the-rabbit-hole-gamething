@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Chest.cs" id="1_chest"]
+[ext_resource type="Script" uid="uid://dkqdfturoa1rn" path="res://World/Props/Chest.cs" id="1_chest"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_wood"]
 albedo_color = Color(0.5, 0.32, 0.16, 1)

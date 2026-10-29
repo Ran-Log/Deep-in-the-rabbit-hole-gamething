@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/UpgradeStation.cs" id="1_station"]
+[ext_resource type="Script" uid="uid://b6fhp3pruiwdh" path="res://Camp/UpgradeStation.cs" id="1_station"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_table"]
 albedo_color = Color(0.45, 0.3, 0.18, 1)

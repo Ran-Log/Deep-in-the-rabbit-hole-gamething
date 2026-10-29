@@ -1,7 +1,7 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Zombie.cs" id="1_zombie"]
-[ext_resource type="Script" path="res://Scripts/HealthComponent.cs" id="2_health"]
+[ext_resource type="Script" uid="uid://bi5mleqifl51e" path="res://Enemies/Zombie.cs" id="1_zombie"]
+[ext_resource type="Script" uid="uid://chxrdb0ssx83v" path="res://Shared/HealthComponent.cs" id="2_health"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_body"]
 albedo_color = Color(0.32, 0.45, 0.28, 1)
