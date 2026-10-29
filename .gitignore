@@ -3,6 +3,10 @@
 /android/
 *.md
 
+# Salida de compilación de .NET (se regenera con cada build)
+bin/
+obj/
+
 # Herramienta local para medir rendimiento. No es parte del juego: nada en
 # main.tscn la referencia. Ver "Riesgo conocido: rendimiento" en DEVELOPMENT_PLAN.md.
 /Scenes/Benchmark.tscn
