@@ -1,11 +1,11 @@
 [gd_scene format=3]
 
-[ext_resource type="PackedScene" path="res://Scenes/Bed.tscn" id="1_bed"]
-[ext_resource type="PackedScene" path="res://Scenes/UpgradeStation.tscn" id="2_station"]
-[ext_resource type="PackedScene" path="res://Scenes/Torch.tscn" id="3_torch"]
-[ext_resource type="Script" path="res://Scripts/CampDefenses.cs" id="4_defenses"]
-[ext_resource type="PackedScene" path="res://Scenes/DestructibleBlock.tscn" id="5_block"]
-[ext_resource type="Script" path="res://Scripts/HealthComponent.cs" id="6_health"]
+[ext_resource type="PackedScene" path="res://Camp/Bed.tscn" id="1_bed"]
+[ext_resource type="PackedScene" path="res://Camp/UpgradeStation.tscn" id="2_station"]
+[ext_resource type="PackedScene" path="res://World/Props/Torch.tscn" id="3_torch"]
+[ext_resource type="Script" uid="uid://ck0e8x28gwhl8" path="res://Camp/CampDefenses.cs" id="4_defenses"]
+[ext_resource type="PackedScene" path="res://World/Blocks/DestructibleBlock.tscn" id="5_block"]
+[ext_resource type="Script" uid="uid://chxrdb0ssx83v" path="res://Shared/HealthComponent.cs" id="6_health"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_logs"]
 albedo_color = Color(0.33, 0.2, 0.1, 1)

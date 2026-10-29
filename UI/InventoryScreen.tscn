@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/InventoryScreen.cs" id="1_inventory"]
+[ext_resource type="Script" uid="uid://d3kpbt3bln7pq" path="res://UI/InventoryScreen.cs" id="1_inventory"]
 
 [node name="InventoryScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "EntriesContainer", "CapacityLabel")]
 script = ExtResource("1_inventory")

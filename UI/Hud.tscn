@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Hud.cs" id="1_hud"]
+[ext_resource type="Script" uid="uid://bk461c8di1eck" path="res://UI/Hud.cs" id="1_hud"]
 
 [node name="Hud" type="CanvasLayer" node_paths=PackedStringArray("Crosshair", "TargetLabel", "DebugLabel", "HealthLabel", "PromptLabel", "MessageLabel", "StatusLabel", "BuildHintLabel", "NotePanel", "NoteLabel", "HelpPanel")]
 script = ExtResource("1_hud")

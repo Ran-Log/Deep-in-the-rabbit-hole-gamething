@@ -14,23 +14,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Se compila directo desde Scripts/, no se referencia el .csproj de
-         Godot completo, solo se incluyen archivos que NO dependen de
-         GodotSharp (cada uno lo dice en su propio comentario). -->
-    <Compile Include="../../Scripts/RoomMath.cs" Link="RoomMath.cs" />
-    <Compile Include="../../Scripts/DeterministicHash.cs" Link="DeterministicHash.cs" />
-    <Compile Include="../../Scripts/RoomMineralTable.cs" Link="RoomMineralTable.cs" />
-    <Compile Include="../../Scripts/MineralType.cs" Link="MineralType.cs" />
-    <Compile Include="../../Scripts/WorldSaveData.cs" Link="WorldSaveData.cs" />
-    <Compile Include="../../Scripts/WorldSaveState.cs" Link="WorldSaveState.cs" />
-    <Compile Include="../../Scripts/ProceduralNoise.cs" Link="ProceduralNoise.cs" />
-    <Compile Include="../../Scripts/MineralMaterialProfile.cs" Link="MineralMaterialProfile.cs" />
-    <Compile Include="../../Scripts/ToolTier.cs" Link="ToolTier.cs" />
-    <Compile Include="../../Scripts/ItemCatalog.cs" Link="ItemCatalog.cs" />
-    <Compile Include="../../Scripts/MineralRules.cs" Link="MineralRules.cs" />
-    <Compile Include="../../Scripts/UpgradeTable.cs" Link="UpgradeTable.cs" />
-    <Compile Include="../../Scripts/ChestLoot.cs" Link="ChestLoot.cs" />
-    <Compile Include="../../Scripts/LevelOneLayout.cs" Link="LevelOneLayout.cs" />
+    <!-- Se compilan directo los archivos del juego que NO dependen de
+         GodotSharp, sin referenciar el .csproj de Godot completo. -->
+    <Compile Include="../../World/Rooms/RoomMath.cs" Link="RoomMath.cs" />
+    <Compile Include="../../Shared/DeterministicHash.cs" Link="DeterministicHash.cs" />
+    <Compile Include="../../World/Rooms/RoomMineralTable.cs" Link="RoomMineralTable.cs" />
+    <Compile Include="../../World/Blocks/MineralType.cs" Link="MineralType.cs" />
+    <Compile Include="../../Systems/WorldSaveData.cs" Link="WorldSaveData.cs" />
+    <Compile Include="../../Systems/WorldSaveState.cs" Link="WorldSaveState.cs" />
+    <Compile Include="../../World/Blocks/ProceduralNoise.cs" Link="ProceduralNoise.cs" />
+    <Compile Include="../../World/Blocks/MineralMaterialProfile.cs" Link="MineralMaterialProfile.cs" />
+    <Compile Include="../../World/Blocks/ToolTier.cs" Link="ToolTier.cs" />
+    <Compile Include="../../Systems/ItemCatalog.cs" Link="ItemCatalog.cs" />
+    <Compile Include="../../World/Blocks/MineralRules.cs" Link="MineralRules.cs" />
+    <Compile Include="../../Camp/UpgradeTable.cs" Link="UpgradeTable.cs" />
+    <Compile Include="../../World/Props/ChestLoot.cs" Link="ChestLoot.cs" />
+    <Compile Include="../../World/Rooms/LevelOneLayout.cs" Link="LevelOneLayout.cs" />
   </ItemGroup>
 
 </Project>

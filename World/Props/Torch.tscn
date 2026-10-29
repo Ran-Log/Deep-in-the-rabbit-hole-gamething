@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/Torch.cs" id="1_torch"]
+[ext_resource type="Script" uid="uid://b0k0yp7sm4ulb" path="res://World/Props/Torch.cs" id="1_torch"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_post"]
 albedo_color = Color(0.35, 0.22, 0.12, 1)

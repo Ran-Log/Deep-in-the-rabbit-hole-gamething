@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/ExitCrack.cs" id="1_exit"]
+[ext_resource type="Script" uid="uid://55456522gji0" path="res://World/Props/ExitCrack.cs" id="1_exit"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_hole"]
 albedo_color = Color(0.02, 0.02, 0.03, 1)

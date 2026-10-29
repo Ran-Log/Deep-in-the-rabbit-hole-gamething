@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/GameOverScreen.cs" id="1_gameover"]
+[ext_resource type="Script" uid="uid://6xin2jvu77uf" path="res://UI/GameOverScreen.cs" id="1_gameover"]
 
 [node name="GameOverScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "TitleLabel", "SubtitleLabel", "RestartButton", "NewGameButton")]
 script = ExtResource("1_gameover")

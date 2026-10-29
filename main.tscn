@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://dd4r57kagt8u"]
+
+[ext_resource type="PackedScene" uid="uid://bhgv744qtngyn" path="res://Player/player.tscn" id="1_jjgbg"]
+[ext_resource type="PackedScene" path="res://World/Rooms/Room.tscn" id="2_room"]
+[ext_resource type="Script" uid="uid://bnxktpqoykc68" path="res://World/Rooms/WorldStreamer.cs" id="4_worldstreamer"]
+[ext_resource type="PackedScene" path="res://UI/GameOverScreen.tscn" id="5_gameover"]
+[ext_resource type="PackedScene" path="res://UI/InventoryScreen.tscn" id="6_inventory"]
+[ext_resource type="PackedScene" path="res://Camp/Camp.tscn" id="7_camp"]
+[ext_resource type="Script" uid="uid://yxjvxklr3oqq" path="res://Systems/DayNightCycle.cs" id="8_daynight"]
+[ext_resource type="Script" uid="uid://cyn3odhj7yfkm" path="res://Enemies/EnemySpawner.cs" id="9_spawner"]
+[ext_resource type="PackedScene" path="res://Enemies/Zombie.tscn" id="10_zombie"]
+[ext_resource type="PackedScene" path="res://UI/WorldHud.tscn" id="11_worldhud"]
+[ext_resource type="Script" uid="uid://gxmje6e1g85j" path="res://Camp/TorchPlacer.cs" id="12_torchplacer"]
+[ext_resource type="PackedScene" path="res://World/Props/Torch.tscn" id="13_torch"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ProceduralSkyMaterial_main")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_energy = 0.6
+
+[node name="Main" type="Node3D" unique_id=1258096073]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=316089265]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=450944471]
+transform = Transform3D(0.67900294, 0.42072445, -0.6016195, 0, 0.8194937, 0.5730882, 0.73413557, -0.3891286, 0.5564386, -5.2374105, 11.717903, 9.802239)
+shadow_enabled = true
+
+[node name="DayNightCycle" type="Node" parent="." unique_id=1315250443 node_paths=PackedStringArray("Sun", "WorldEnvironment")]
+script = ExtResource("8_daynight")
+Sun = NodePath("../DirectionalLight3D")
+WorldEnvironment = NodePath("../WorldEnvironment")
+
+[node name="Player" parent="." unique_id=10465824 groups=["player"] instance=ExtResource("1_jjgbg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+
+[node name="WorldStreamer" type="Node3D" parent="." unique_id=406421821 node_paths=PackedStringArray("Player")]
+script = ExtResource("4_worldstreamer")
+RoomScene = ExtResource("2_room")
+Player = NodePath("../Player")
+
+[node name="Camp" parent="." unique_id=802961381 instance=ExtResource("7_camp")]
+
+[node name="PlacedTorches" type="Node3D" parent="." unique_id=768074722]
+script = ExtResource("12_torchplacer")
+TorchScene = ExtResource("13_torch")
+
+[node name="EnemySpawner" type="Node3D" parent="." unique_id=636343879 node_paths=PackedStringArray("DayNight", "Streamer")]
+script = ExtResource("9_spawner")
+ZombieScene = ExtResource("10_zombie")
+DayNight = NodePath("../DayNightCycle")
+Streamer = NodePath("../WorldStreamer")
+
+[node name="WorldHud" parent="." unique_id=215380444 node_paths=PackedStringArray("DayNight", "CampHealth") instance=ExtResource("11_worldhud")]
+DayNight = NodePath("../DayNightCycle")
+CampHealth = NodePath("../Camp/CampCore/Health")
+
+[node name="GameOverScreen" parent="." unique_id=123004501 node_paths=PackedStringArray("PlayerHealth", "CampHealth") instance=ExtResource("5_gameover")]
+PlayerHealth = NodePath("../Player/Health")
+CampHealth = NodePath("../Camp/CampCore/Health")
+
+[node name="InventoryScreen" parent="." unique_id=737114943 node_paths=PackedStringArray("Eat") instance=ExtResource("6_inventory")]
+Eat = NodePath("../Player/EatComponent")

@@ -7,8 +7,5 @@
 bin/
 obj/
 
-# Herramienta local para medir rendimiento. No es parte del juego: nada en
-# main.tscn la referencia. Ver "Riesgo conocido: rendimiento" en DEVELOPMENT_PLAN.md.
-/Scenes/Benchmark.tscn
-/Scripts/BenchmarkProbe.cs
-/Scripts/BenchmarkProbe.cs.uid
+# Herramientas locales (ej. medición de rendimiento). No son parte del juego.
+/Tools/
