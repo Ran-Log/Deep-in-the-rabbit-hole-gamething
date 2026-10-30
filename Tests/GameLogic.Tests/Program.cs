@@ -2,13 +2,9 @@ using System;
 using System.Linq;
 using System.Text.Json;
 
-// Sin framework de testing: solo asserts a mano que imprimen PASS/FAIL y
-// devuelven código de salida != 0 si algo falla, para que CI lo detecte.
-// Cubre la lógica de Scripts/ que NO depende de GodotSharp: RoomMath (dónde
-// van las paredes de una Room), DeterministicHash + RoomMineralTable (la
-// generación procedural del mundo infinito) y WorldSaveState (el guardado).
-// Nada de esto se pudo probar dentro del proyecto de Godot en sí — eso
-// necesita abrirlo en el editor.
+// Tests de la lógica que no usa Godot (RoomMath, RoomMineralTable, WorldSaveState...).
+// Imprime PASS/FAIL y sale con código != 0 si algo falla, para que el CI lo detecte.
+// Lo que usa Godot se prueba con GdUnit4 en Tests/Integration.
 
 int total = 0;
 int failures = 0;
@@ -43,9 +39,7 @@ Check("centro: offset(0, 12) es -6", RoomMath.CenterOffset(0, 12) == -6);
 Check("centro: offset(11, 12) es 5", RoomMath.CenterOffset(11, 12) == 5);
 Check("centro: el ancho total (max-min) es width-1", RoomMath.CenterOffset(11, 12) - RoomMath.CenterOffset(0, 12) == 11);
 
-// --- Regresión: dos Rooms de 12x12 (CellSize=2m) separadas 24m en el mundo
-// quedan ADYACENTES, sin hueco entre ellas (ver game_architecture_review.md
-// en la memoria del proyecto).
+// --- Regresión: dos salas de 12x12 (celdas de 2 m) separadas 24 m quedan pegadas, sin hueco.
 {
 	const float cellSize = 2.0f;
 	const int width = 12;
@@ -59,25 +53,6 @@ Check("centro: el ancho total (max-min) es width-1", RoomMath.CenterOffset(11, 1
 		northNearWallCell - startFarWallCell == 1
 	);
 }
-
-// --- DeterministicHash ---
-
-Check(
-	"hash: misma semilla y coordenada siempre dan el mismo resultado",
-	DeterministicHash.Combine(42, 3, -7) == DeterministicHash.Combine(42, 3, -7)
-);
-Check(
-	"hash: coordenadas distintas casi seguro dan resultados distintos",
-	DeterministicHash.Combine(42, 3, -7) != DeterministicHash.Combine(42, 3, -8)
-);
-Check(
-	"hash: semillas distintas casi seguro dan resultados distintos para la misma coordenada",
-	DeterministicHash.Combine(1, 0, 0) != DeterministicHash.Combine(2, 0, 0)
-);
-Check(
-	"hash: no explota con coordenadas negativas grandes",
-	DeterministicHash.Combine(0, int.MinValue, int.MaxValue) == DeterministicHash.Combine(0, int.MinValue, int.MaxValue)
-);
 
 // --- RoomMineralTable ---
 
@@ -139,50 +114,6 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("guardado: el estado restaurado NO inventa celdas minadas que no estaban", !restored.IsCellMined(0, 0, 9, 9, 9));
 	Check("guardado: el estado restaurado conserva el inventario", restored.GetMineralCount("Stone") == 4 && restored.GetMineralCount("Coal") == 1);
 }
-
-// --- ProceduralNoise ---
-
-Check(
-	"ruido: Hash01 es determinístico (misma semilla+coordenada = mismo valor)",
-	ProceduralNoise.Hash01(7, 3, -4) == ProceduralNoise.Hash01(7, 3, -4)
-);
-Check(
-	"ruido: Hash01 cae siempre en [0,1)",
-	Enumerable.Range(0, 50).All(i => {
-		double h = ProceduralNoise.Hash01(123, i, i * 2 - 10);
-		return h >= 0.0 && h < 1.0;
-	})
-);
-Check(
-	"ruido: ValueNoise es determinístico",
-	ProceduralNoise.ValueNoise(42, 1.5, 2.25) == ProceduralNoise.ValueNoise(42, 1.5, 2.25)
-);
-Check(
-	"ruido: ValueNoise se mantiene en [0,1] (interpola entre hashes que ya están en ese rango)",
-	Enumerable.Range(0, 50).All(i => {
-		double v = ProceduralNoise.ValueNoise(99, i * 0.37, i * 1.11);
-		return v >= 0.0 && v <= 1.0;
-	})
-);
-Check(
-	"ruido: Fbm es determinístico",
-	ProceduralNoise.Fbm(5, 4.0, 4.0, 4) == ProceduralNoise.Fbm(5, 4.0, 4.0, 4)
-);
-Check(
-	"ruido: Fbm se mantiene en [0,1] (promedio ponderado de ValueNoise, cada uno ya acotado)",
-	Enumerable.Range(0, 50).All(i => {
-		double v = ProceduralNoise.Fbm(2024, i * 0.53, i * 0.29, 4);
-		return v >= 0.0 && v <= 1.0;
-	})
-);
-Check(
-	"ruido: coordenadas bien distintas casi seguro dan Fbm distinto (no está devolviendo una constante)",
-	ProceduralNoise.Fbm(1, 0.0, 0.0, 4) != ProceduralNoise.Fbm(1, 37.0, 91.0, 4)
-);
-Check(
-	"ruido: octaves=0 no explota (se trata como mínimo 1 octava)",
-	ProceduralNoise.Fbm(1, 1.0, 1.0, 0) == ProceduralNoise.Fbm(1, 1.0, 1.0, 1)
-);
 
 // --- MineralMaterialProfile ---
 

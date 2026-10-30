@@ -11,16 +11,22 @@ public static class RoomGenerator
 	public const int RoomDepth = 12;
 	public const int RoomWallHeight = 3;
 
-	// Probabilidad (0-100) de que una sala procedural tenga cofre.
+	// Probabilidades (0-100).
 	public const int ChestChancePercent = 20;
+	public const int GasChancePercent = 30;
+	public const int NoteChancePercent = 40;
 
 	public static RoomSpec Generate(ulong seed, Vector2I gridCoord, float cellSize)
 	{
 		float spacing = RoomWidth * cellSize;
 		Vector3 position = new Vector3(gridCoord.X * spacing, 0.0f, gridCoord.Y * spacing);
 		string name = $"Room_{gridCoord.X}_{gridCoord.Y}";
-		ulong hash = DeterministicHash.Combine(seed, gridCoord.X, gridCoord.Y);
-		int health = 4 + (int)((hash >> 8) % 5); // 4..8
+
+		// Un generador con semilla propia por sala: la misma semilla del mundo y la misma
+		// coordenada dan siempre los mismos números, en el mismo orden (clase 3).
+		var rng = new RandomNumberGenerator { Seed = (uint)GD.Hash($"{seed}:{gridCoord.X}:{gridCoord.Y}") };
+
+		int health = rng.RandiRange(4, 8);
 
 		// Salas del nivel 1 hechas a mano: iguales con cualquier semilla.
 		if (LevelOneLayout.TryGet(gridCoord.X, gridCoord.Y, out LevelOneLayout.RoomDesign design))
@@ -29,18 +35,18 @@ public static class RoomGenerator
 				design.HasGas, design.Loot, design.NoteText, design.HasExit);
 		}
 
-		MineralType mineral = RoomMineralTable.Pick((int)(hash % 100));
+		MineralType mineral = RoomMineralTable.Pick(rng.RandiRange(0, 99));
 
-		// Gas en ~30% de las salas de carbón. Usa otros bits del hash para no depender del mineral.
-		bool hasGas = mineral == MineralType.Coal && (hash >> 16) % 100 < 30;
+		// Gas solo en algunas salas de carbón.
+		bool hasGas = mineral == MineralType.Coal && rng.RandiRange(0, 99) < GasChancePercent;
 
 		// Cofres al azar: comida o una nota que orienta hacia la salida (GDD).
 		ChestLoot loot = ChestLoot.None;
 		string noteText = "";
 
-		if ((hash >> 24) % 100 < ChestChancePercent)
+		if (rng.RandiRange(0, 99) < ChestChancePercent)
 		{
-			bool isNote = (hash >> 40) % 100 < 40;
+			bool isNote = rng.RandiRange(0, 99) < NoteChancePercent;
 
 			loot = isNote ? ChestLoot.Note : ChestLoot.Food;
 			noteText = isNote ? LevelOneLayout.HintTowardsExit(gridCoord.X, gridCoord.Y) : "";
