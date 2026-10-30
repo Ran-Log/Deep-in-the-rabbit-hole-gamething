@@ -10,6 +10,8 @@
   </RunConfiguration>
 
   <GdUnit4>
+    <!-- Sin ventana: el CI (Linux) no tiene pantalla y los tests no dibujan nada. -->
+    <Parameters>--headless</Parameters>
     <DisplayName>FullyQualifiedName</DisplayName>
     <CaptureStdOut>true</CaptureStdOut>
     <CompileProcessTimeout>120000</CompileProcessTimeout>
