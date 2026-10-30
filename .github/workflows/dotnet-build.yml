@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   build-game:
@@ -34,3 +34,26 @@ jobs:
       - name: Compilar y correr los tests de lógica pura
         working-directory: Tests/GameLogic.Tests
         run: dotnet run
+
+  test-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Instalar Godot 4.7.1 (.NET)
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.1
+          use-dotnet: true
+
+      - name: Importar el proyecto (crea la carpeta .godot)
+        run: godot --headless --import --path . || true
+
+      - name: Correr los tests de integración (GdUnit4)
+        run: |
+          export GODOT_BIN="$(which godot)"
+          dotnet test "Afterlife Thingy.csproj" --settings .runsettings
