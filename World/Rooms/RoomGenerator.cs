@@ -1,17 +1,9 @@
 using Godot;
 
 /// <summary>
-/// Genera la configuración de una Room de forma determinística a partir de
-/// su coordenada en la grilla infinita y la semilla del mundo: la misma
-/// coordenada siempre da la misma sala, sin importar el orden en que se
-/// visite — clave para poder cargar y descargar salas libremente mientras
-/// el jugador se mueve (ver WorldStreamer). La coordenada (0,0) es especial:
-/// siempre es una sala "segura" de Stone (el campamento), y las salas del
-/// Nivel 1 cercanas a ella vienen fijas desde LevelOneLayout.
-///
-/// La matemática pura (hash, tabla de minerales) vive en DeterministicHash
-/// y RoomMineralTable — testeadas aparte, sin GodotSharp, en
-/// Tests/GameLogic.Tests.
+/// Decide cómo es cada sala a partir de la semilla y su coordenada. La misma
+/// coordenada siempre da la misma sala, así se puede descargar y volver a cargar.
+/// Las salas cercanas al campamento salen fijas de LevelOneLayout.
 /// </summary>
 public static class RoomGenerator
 {
@@ -19,7 +11,7 @@ public static class RoomGenerator
 	public const int RoomDepth = 12;
 	public const int RoomWallHeight = 3;
 
-	/// <summary>Probabilidad (0-100) de que una sala procedural tenga un cofre.</summary>
+	// Probabilidad (0-100) de que una sala procedural tenga cofre.
 	public const int ChestChancePercent = 20;
 
 	public static RoomSpec Generate(ulong seed, Vector2I gridCoord, float cellSize)
@@ -30,8 +22,7 @@ public static class RoomGenerator
 		ulong hash = DeterministicHash.Combine(seed, gridCoord.X, gridCoord.Y);
 		int health = 4 + (int)((hash >> 8) % 5); // 4..8
 
-		// Salas del Nivel 1 diseñadas a mano (campamento, cofres, gas, salida):
-		// mismo contenido sin importar la semilla. Ver LevelOneLayout.
+		// Salas del nivel 1 hechas a mano: iguales con cualquier semilla.
 		if (LevelOneLayout.TryGet(gridCoord.X, gridCoord.Y, out LevelOneLayout.RoomDesign design))
 		{
 			return new RoomSpec(name, position, RoomWidth, RoomDepth, RoomWallHeight, design.Mineral, health, gridCoord,
@@ -40,13 +31,10 @@ public static class RoomGenerator
 
 		MineralType mineral = RoomMineralTable.Pick((int)(hash % 100));
 
-		// Grisú: solo en salas de Coal, y ni siquiera en todas — un ~30% de
-		// ellas. Usa otro "canal" del mismo hash (bits altos) para que no
-		// esté correlacionado con qué mineral o salud salió.
+		// Gas en ~30% de las salas de carbón. Usa otros bits del hash para no depender del mineral.
 		bool hasGas = mineral == MineralType.Coal && (hash >> 16) % 100 < 30;
 
-		// Cofres al azar en el resto del mundo: comida o una nota que orienta
-		// hacia la salida (GDD: las notas indican qué hay cerca, no un mapa).
+		// Cofres al azar: comida o una nota que orienta hacia la salida (GDD).
 		ChestLoot loot = ChestLoot.None;
 		string noteText = "";
 

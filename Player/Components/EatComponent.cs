@@ -1,14 +1,14 @@
 using Godot;
 
 /// <summary>
-/// Consumir alimento (GDD 2.1.11): gasta una ración de la mochila y
-/// recupera vida. Se usa con la acción "eat" (Q) o con el botón "Usar" del
-/// inventario (InventoryScreen llama <see cref="TryEat"/>).
+/// Comer (GDD 2.1.11): gasta una ración y recupera vida. Con Q o con el botón
+/// "Usar" del inventario.
 /// </summary>
 public partial class EatComponent : Node
 {
-	[Export]
-	public HealthComponent Health;
+	[ExportCategory("EatComponent")]
+	[ExportGroup("Referencias")]
+	[Export] public HealthComponent Health;
 
 	public override void _UnhandledInput(InputEvent @event)
 	{

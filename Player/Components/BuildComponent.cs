@@ -1,19 +1,13 @@
 using Godot;
 
 /// <summary>
-/// Menú de construcción (GDD 2.1.8): con la acción "build" (B) se abre/cierra.
-/// Mientras está abierto, 1/2 eligen qué construir (ver <see cref="Options"/>),
-/// un fantasma muestra dónde iría (verde = se puede, rojo = no) y "mine"
-/// (clic izquierdo) lo coloca. Las reglas de cada construcción (dónde,
-/// cuánto cuesta) las decide su IStructurePlacer; este componente solo
-/// apunta, muestra y delega.
-///
-/// Al abrirse apaga MiningComponent, para que el clic no mine y construya
-/// al mismo tiempo.
+/// Modo construcción (GDD 2.1.8): B abre o cierra, 1/2 eligen qué construir,
+/// un fantasma verde o rojo muestra dónde iría y el clic lo coloca.
+/// Dónde se puede y cuánto cuesta lo decide cada IStructurePlacer.
 /// </summary>
 public partial class BuildComponent : Node3D
 {
-	/// <summary>Una entrada del menú: qué es, cuánto cuesta (texto) y qué grupo tiene el nodo que la coloca.</summary>
+	// Una entrada del menú: nombre, costo (texto) y el grupo del nodo que la coloca.
 	public readonly struct BuildOption
 	{
 		public readonly string Name;
@@ -42,23 +36,18 @@ public partial class BuildComponent : Node3D
 	[Signal]
 	public delegate void SelectionChangedEventHandler(int index);
 
-	[Export]
-	public Camera3D Camera;
+	[ExportCategory("BuildComponent")]
+	[ExportGroup("Referencias")]
+	[Export] public Camera3D Camera;
+	[Export] public CollisionObject3D ExcludedBody;
+	[Export] public MiningComponent Mining;
 
-	[Export]
-	public CollisionObject3D ExcludedBody;
+	[ExportGroup("Construcción")]
+	[Export] public float Range = 8.0f;
 
-	[Export]
-	public MiningComponent Mining;
-
-	[Export]
-	public float Range = 8.0f;
-
-	[Export]
-	public Color ValidColor = new Color(0.3f, 1.0f, 0.4f, 0.35f);
-
-	[Export]
-	public Color InvalidColor = new Color(1.0f, 0.3f, 0.3f, 0.35f);
+	[ExportGroup("Visual")]
+	[Export] public Color ValidColor = new Color(0.3f, 1.0f, 0.4f, 0.35f);
+	[Export] public Color InvalidColor = new Color(1.0f, 0.3f, 0.3f, 0.35f);
 
 	private bool active;
 	private int selected;
@@ -144,11 +133,8 @@ public partial class BuildComponent : Node3D
 		EmitSignal(SignalName.SelectionChanged, selected);
 	}
 
-	/// <summary>
-	/// Celda vacía pegada a la cara apuntada (como en cualquier juego de
-	/// voxels). <paramref name="onTop"/> = se apuntó a la cara de arriba de
-	/// algo (piso o bloque), que es donde puede ir una antorcha.
-	/// </summary>
+	// La celda vacía pegada a la cara apuntada. onTop = se apuntó a la cara de
+	// arriba de algo, que es donde puede ir una antorcha.
 	private bool FindTarget(out Vector3I cell, out bool onTop)
 	{
 		cell = default;

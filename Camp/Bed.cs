@@ -1,16 +1,15 @@
 using Godot;
 
 /// <summary>
-/// Cama del campamento (GDD 2.1.6): recupera toda la vida y, si es de
-/// noche, salta al amanecer — pero solo si no hay enemigos cerca ("si está
-/// protegido"). Así las defensas tienen sentido: con la base bien cerrada
-/// se puede dormir antes.
+/// Cama (GDD 2.1.6): recupera toda la vida y de noche salta al amanecer,
+/// pero solo si no hay enemigos cerca ("si está protegido").
 /// </summary>
 public partial class Bed : Interactable
 {
-	/// <summary>Radio en metros dentro del cual un zombie impide dormir.</summary>
-	[Export]
-	public float SafeRadius = 14.0f;
+	[ExportCategory("Bed")]
+	[ExportGroup("Descanso")]
+	// Un zombie a menos de esta distancia (metros) impide dormir.
+	[Export] public float SafeRadius = 14.0f;
 
 	public override string GetPrompt(Player player)
 	{

@@ -1,11 +1,6 @@
 /// <summary>
-/// Hash determinístico y sin estado (variante de splitmix64): los mismos
-/// argumentos siempre dan el mismo resultado, sin importar el orden en que
-/// se llame. Se usa para generar el mundo infinito de forma reproducible
-/// (misma semilla + misma coordenada de sala = siempre la misma sala), algo
-/// que un RandomNumberGenerator con estado secuencial no puede garantizar
-/// cuando las salas se generan en cualquier orden según por dónde camine el
-/// jugador. No es para criptografía.
+/// Combina la semilla con una coordenada en un número: la misma sala sale
+/// siempre igual, sin importar en qué orden se visiten.
 /// </summary>
 public static class DeterministicHash
 {

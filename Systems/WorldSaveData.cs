@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// DTOs planos para el archivo de guardado (JSON vía System.Text.Json).
-/// Deliberadamente sin Vector2I/Vector3I/MineralType de Godot: así
-/// WorldSaveState se puede testear sin GodotSharp (ver Tests/GameLogic.Tests)
-/// y el formato de guardado no queda atado a cómo Godot serializa sus tipos.
+/// Clases simples que se guardan como JSON en el archivo de la partida.
 /// </summary>
 public sealed class WorldSaveData
 {
@@ -18,10 +15,9 @@ public sealed class WorldSaveData
 	public int ToolLevel { get; set; }
 	public List<RoomCoordDto> OpenedChests { get; set; } = new();
 
-	/// <summary>Celdas GLOBALES de la grilla de bloques con una defensa construida por el jugador.</summary>
+	// Celdas globales (de BlockGrid) con barricadas y antorchas del jugador.
 	public List<MinedCellDto> PlacedDefenses { get; set; } = new();
 
-	/// <summary>Celdas GLOBALES con una antorcha puesta por el jugador.</summary>
 	public List<MinedCellDto> PlacedTorches { get; set; } = new();
 
 	public List<RoomCoordDto> VisitedRooms { get; set; } = new();

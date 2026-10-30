@@ -1,24 +1,19 @@
 using Godot;
 
 /// <summary>
-/// HUD de lo que NO es del jugador: hora del día y vida del campamento.
-/// Vive en main.tscn (no dentro de player.tscn como Hud) porque necesita
-/// referencias a nodos del mundo — DayNightCycle y el núcleo del
-/// campamento — que solo se pueden asignar en la escena principal.
+/// HUD del mundo: hora del día y vida del campamento. Está en main.tscn porque
+/// necesita nodos que solo existen ahí (DayNightCycle y el campamento).
 /// </summary>
 public partial class WorldHud : CanvasLayer
 {
-	[Export]
-	public DayNightCycle DayNight;
+	[ExportCategory("WorldHud")]
+	[ExportGroup("Referencias")]
+	[Export] public DayNightCycle DayNight;
+	[Export] public HealthComponent CampHealth;
 
-	[Export]
-	public HealthComponent CampHealth;
-
-	[Export]
-	public Label TimeLabel;
-
-	[Export]
-	public Label CampLabel;
+	[ExportGroup("Nodos de UI")]
+	[Export] public Label TimeLabel;
+	[Export] public Label CampLabel;
 
 	public override void _Ready()
 	{

@@ -6,14 +6,13 @@ using Godot;
 /// </summary>
 public partial class Torch : Interactable
 {
-	[Export]
-	public OmniLight3D Light;
+	[ExportCategory("Torch")]
+	[ExportGroup("Referencias")]
+	[Export] public OmniLight3D Light;
+	[Export] public Node3D Flame;
 
-	[Export]
-	public Node3D Flame;
-
-	[Export]
-	public bool StartLit = false;
+	[ExportGroup("Estado inicial")]
+	[Export] public bool StartLit = false;
 
 	private bool lit;
 

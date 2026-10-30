@@ -1,27 +1,23 @@
 using Godot;
 
 /// <summary>
-/// Borde invisible del mapa. Genera una caja de colisión hueca (4 costados,
-/// más techo y piso opcionales) para que el jugador no se pueda salir del
-/// mundo minando hacia afuera. Sin mesh: solo colisión.
+/// Borde invisible del mapa: una caja de colisión hueca, para no salir del mundo
+/// minando hacia afuera. Sin mesh, solo colisión. (Hoy no se usa; ver el plan.)
 /// </summary>
 public partial class BoundaryWall : Node3D
 {
-	/// <summary>Medidas interiores del área jugable, en metros.</summary>
-	[Export]
-	public Vector3 InnerSize = new Vector3(200.0f, 60.0f, 200.0f);
+	[ExportCategory("BoundaryWall")]
+	[ExportGroup("Tamaño")]
+	// Medidas interiores del área jugable, en metros.
+	[Export] public Vector3 InnerSize = new Vector3(200.0f, 60.0f, 200.0f);
+	[Export] public float Thickness = 4.0f;
 
-	[Export]
-	public float Thickness = 4.0f;
+	[ExportGroup("Caras")]
+	[Export] public bool IncludeCeiling = true;
+	[Export] public bool IncludeFloor = true;
 
-	[Export]
-	public bool IncludeCeiling = true;
-
-	[Export]
-	public bool IncludeFloor = true;
-
-	[Export(PropertyHint.Layers3DPhysics)]
-	public uint CollisionLayer3D = 1;
+	[ExportGroup("Colisión")]
+	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionLayer3D = 1;
 
 	public override void _Ready()
 	{
@@ -44,10 +40,7 @@ public partial class BoundaryWall : Node3D
 		}
 	}
 
-	/// <summary>
-	/// Tamaño de un costado: fino en el eje que tapa, y sobredimensionado en
-	/// los otros dos para que las esquinas queden selladas.
-	/// </summary>
+	// Fino en el eje que tapa y más grande en los otros, para sellar las esquinas.
 	private Vector3 SideSize(Vector3.Axis normal)
 	{
 		Vector3 outer = InnerSize + Vector3.One * (Thickness * 2.0f);

@@ -1,14 +1,8 @@
 using Godot;
 
 /// <summary>
-/// Ciclo día/noche (recurso "Tiempo del Día/Noche" del GDD): de día se
-/// explora tranquilo; al caer la noche baja la luz y EnemySpawner manda una
-/// oleada de zombies hacia el campamento. Dormir en la cama de noche salta
-/// al amanecer (<see cref="SkipToMorning"/>).
-///
-/// Solo maneja el reloj y la luz; quién reacciona a la noche lo decide cada
-/// uno escuchando <see cref="NightStarted"/>/<see cref="DayStarted"/>.
-/// Los demás nodos lo encuentran por el grupo "day_night".
+/// Ciclo día y noche (GDD): maneja el reloj y la luz. Quien reacciona a la noche
+/// (como EnemySpawner) escucha NightStarted y DayStarted.
 /// </summary>
 public partial class DayNightCycle : Node
 {
@@ -20,40 +14,29 @@ public partial class DayNightCycle : Node
 	[Signal]
 	public delegate void DayStartedEventHandler(int day);
 
-	[Export]
-	public DirectionalLight3D Sun;
+	[ExportCategory("DayNightCycle")]
+	[ExportGroup("Referencias")]
+	[Export] public DirectionalLight3D Sun;
+	[Export] public WorldEnvironment WorldEnvironment;
 
-	[Export]
-	public WorldEnvironment WorldEnvironment;
+	[ExportGroup("Tiempos")]
+	// En segundos reales.
+	[Export] public float DayLength = 150.0f;
+	[Export] public float NightLength = 90.0f;
+	// Cuánto tarda en oscurecer o aclarar.
+	[Export] public float TransitionSeconds = 8.0f;
 
-	/// <summary>Segundos de día real por día de juego.</summary>
-	[Export]
-	public float DayLength = 150.0f;
-
-	[Export]
-	public float NightLength = 90.0f;
-
-	/// <summary>Segundos que tarda en oscurecer/aclarar, para que la noche no "se prenda" de golpe.</summary>
-	[Export]
-	public float TransitionSeconds = 8.0f;
-
-	[Export]
-	public float DaySunEnergy = 1.0f;
-
-	[Export]
-	public float NightSunEnergy = 0.02f;
-
-	[Export]
-	public float DayAmbientEnergy = 0.6f;
-
-	[Export]
-	public float NightAmbientEnergy = 0.08f;
+	[ExportGroup("Luz")]
+	[Export] public float DaySunEnergy = 1.0f;
+	[Export] public float NightSunEnergy = 0.02f;
+	[Export] public float DayAmbientEnergy = 0.6f;
+	[Export] public float NightAmbientEnergy = 0.08f;
 
 	private bool isNight;
 	private float phaseElapsed;
 	private int day = 1;
 
-	/// <summary>0 = día pleno, 1 = noche plena. Se mueve suave hacia el objetivo.</summary>
+	// 0 = día pleno, 1 = noche plena.
 	private float darkness;
 
 	public bool IsNight => isNight;
@@ -94,7 +77,7 @@ public partial class DayNightCycle : Node
 		ApplyLighting();
 	}
 
-	/// <summary>Termina la noche ya (dormir en la cama). No hace nada de día.</summary>
+	// Al dormir en la cama. De día no hace nada.
 	public void SkipToMorning()
 	{
 		if (isNight)
@@ -105,7 +88,7 @@ public partial class DayNightCycle : Node
 		}
 	}
 
-	/// <summary>Debug: pasa de día a noche (con su oleada) o de noche a día, al instante.</summary>
+	// Debug (F2): cambia de día a noche (con oleada) o al revés, al instante.
 	public void TogglePhaseDebug()
 	{
 		if (isNight)

@@ -1,16 +1,8 @@
 using Godot;
 
 /// <summary>
-/// Vida genérica: la usan el jugador, el campamento y los enemigos. Solo
-/// lleva el número y avisa por señal: quien inflige daño (GasZone, Zombie,
-/// CombatComponent) llama <see cref="TakeDamage"/>; quien la muestra (Hud,
-/// WorldHud) escucha <see cref="HealthChanged"/>; quien reacciona a la
-/// muerte (GameOverScreen, Zombie) escucha <see cref="Died"/>. No sabe nada
-/// de quién es dueño — mismo criterio de componentes desacoplados que el
-/// resto del proyecto (ver MiningComponent/Hud).
-///
-/// Reemplaza a PlayerHealth: era lo mismo pero atado al nombre "jugador",
-/// y el campamento y los enemigos también necesitan vida.
+/// Componente de vida del jugador, el campamento y los enemigos. Quien hace daño
+/// llama TakeDamage; el HUD y quien reacciona a la muerte escuchan sus señales.
 /// </summary>
 public partial class HealthComponent : Node
 {
@@ -20,8 +12,9 @@ public partial class HealthComponent : Node
 	[Signal]
 	public delegate void DiedEventHandler();
 
-	[Export]
-	public int MaxHealth = 100;
+	[ExportCategory("HealthComponent")]
+	[ExportGroup("Vida")]
+	[Export] public int MaxHealth = 100;
 
 	private int current;
 	private bool dead;
@@ -37,7 +30,7 @@ public partial class HealthComponent : Node
 		current = MaxHealth;
 	}
 
-	/// <summary>No hace nada si ya está muerto, para no re-emitir Died mientras se procesa la muerte.</summary>
+	// Si ya está muerto no hace nada, para no emitir Died dos veces.
 	public void TakeDamage(int amount)
 	{
 		if (dead || amount <= 0)
@@ -56,7 +49,7 @@ public partial class HealthComponent : Node
 		}
 	}
 
-	/// <summary>Recupera vida sin pasar del máximo (comer, descansar).</summary>
+	// Comer o descansar. No pasa del máximo.
 	public void Heal(int amount)
 	{
 		if (dead || amount <= 0)

@@ -1,26 +1,22 @@
 using Godot;
 
 /// <summary>
-/// Detecta el <see cref="Interactable"/> apuntado con la mira y lo activa
-/// con la acción "interact" (E). Avisa al HUD qué texto mostrar con
-/// <see cref="PromptChanged"/> (vacío = nada apuntado).
+/// Activa con E el Interactable apuntado (cama, cofre, estación...) y le dice
+/// al HUD qué texto mostrar (vacío = nada apuntado).
 /// </summary>
 public partial class InteractionComponent : Node3D
 {
 	[Signal]
 	public delegate void PromptChangedEventHandler(string prompt);
 
-	[Export]
-	public Camera3D Camera;
+	[ExportCategory("InteractionComponent")]
+	[ExportGroup("Referencias")]
+	[Export] public Camera3D Camera;
+	[Export] public Player Player;
 
-	[Export]
-	public Player Player;
-
-	[Export]
-	public float Range = 5.0f;
-
-	[Export(PropertyHint.Layers3DPhysics)]
-	public uint TargetLayers = 1;
+	[ExportGroup("Alcance")]
+	[Export] public float Range = 5.0f;
+	[Export(PropertyHint.Layers3DPhysics)] public uint TargetLayers = 1;
 
 	private Interactable current;
 	private string lastPrompt = "";
@@ -34,8 +30,7 @@ public partial class InteractionComponent : Node3D
 
 		current = FindTarget();
 
-		// El texto se recalcula cada frame: puede cambiar sin cambiar de
-		// objetivo (ej. la estación pasa a "puedes mejorar" al juntar mineral).
+		// Se recalcula cada frame: el texto puede cambiar sin cambiar de objetivo.
 		string prompt = current != null ? current.GetPrompt(Player) : "";
 
 		if (prompt != lastPrompt)

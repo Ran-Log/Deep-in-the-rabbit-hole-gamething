@@ -1,17 +1,12 @@
 /// <summary>
-/// Catálogo de ítems del inventario. Los minerales se identifican por el
-/// nombre de su <see cref="MineralType"/> ("Stone", "Coal"...), así el
-/// inventario guardado sigue siendo compatible con partidas anteriores; los
-/// ítems que no son minerales tienen su propio id acá.
-///
-/// Sin dependencia de GodotSharp para poder testearlo (ver
-/// Tests/GameLogic.Tests).
+/// Ítems del inventario. Los minerales usan el nombre de su MineralType como id
+/// ("Stone", "Coal"...); los demás tienen su id acá.
 /// </summary>
 public static class ItemCatalog
 {
 	public const string Food = "Food";
 
-	/// <summary>Vida que recupera comer una ración.</summary>
+	// Vida que recupera una ración.
 	public const int FoodHeal = 30;
 
 	public static string IdOf(MineralType mineral)

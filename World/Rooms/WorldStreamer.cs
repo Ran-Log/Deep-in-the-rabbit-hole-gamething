@@ -3,43 +3,23 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Genera y descarga Rooms alrededor del jugador para simular un mundo
-/// infinito sin que la cantidad de nodos/cuerpos físicos crezca sin límite
-/// (el problema de escalabilidad de la revisión original: Jolt se quedaba
-/// sin cuerpos físicos apenas se cavaba un poco). Reemplaza a LevelBuilder,
-/// que generaba un layout fijo una sola vez — ver LevelLayout.cs, que ya no
-/// se usa desde main.tscn pero se dejó por si en algún momento quieren un
-/// modo de nivel fijo además del infinito.
-///
-/// Cada Room vive en una celda de una grilla infinita de salas (no de
-/// bloques), separada RoomGenerator.RoomWidth*CellSize del resto — el mismo
-/// espaciado que usaba el layout fijo, así que las salas vecinas quedan
-/// adyacentes igual que antes.
-///
-/// LoadRadius/UnloadRadius con histéresis (Unload &gt; Load): una sala se
-/// descarga solo cuando queda claramente lejos, no apenas sale del radio de
-/// carga — evita crear y destruir la misma sala en cada actualización
-/// cuando el jugador camina justo en el borde.
+/// Carga las salas cercanas al jugador y descarga las lejanas, para que el mundo
+/// sea infinito sin pasarse del límite de cuerpos físicos.
 /// </summary>
 public partial class WorldStreamer : Node3D
 {
-	[Export]
-	public PackedScene RoomScene;
+	[ExportCategory("WorldStreamer")]
+	[ExportGroup("Referencias")]
+	[Export] public PackedScene RoomScene;
+	[Export] public Node3D Player;
 
-	[Export]
-	public Node3D Player;
-
-	/// <summary>Radio, en salas, que se mantiene siempre generado alrededor del jugador.</summary>
-	[Export]
-	public int LoadRadius = 2;
-
-	/// <summary>Radio, en salas, a partir del cual una sala se descarga. Debe ser mayor que LoadRadius.</summary>
-	[Export]
-	public int UnloadRadius = 4;
-
-	/// <summary>Cada cuántos segundos se revisa si hay que cargar/descargar salas.</summary>
-	[Export]
-	public float UpdateInterval = 0.5f;
+	[ExportGroup("Carga")]
+	// Radios en salas. UnloadRadius es mayor a propósito, para no cargar y
+	// descargar la misma sala si el jugador camina justo en el borde.
+	[Export] public int LoadRadius = 2;
+	[Export] public int UnloadRadius = 4;
+	// Cada cuántos segundos se revisa qué cargar o descargar.
+	[Export] public float UpdateInterval = 0.5f;
 
 	private readonly Dictionary<Vector2I, Room> loadedRooms = new();
 	private float timeSinceUpdate;
@@ -58,9 +38,7 @@ public partial class WorldStreamer : Node3D
 			return;
 		}
 
-		// Fuerza una primera pasada inmediata en el próximo _Process en vez
-		// de esperar UpdateInterval completo (si no, el jugador arranca sin
-		// nada generado alrededor por medio segundo).
+		// Para que la primera carga sea inmediata y no después de UpdateInterval.
 		timeSinceUpdate = UpdateInterval;
 	}
 
@@ -82,15 +60,14 @@ public partial class WorldStreamer : Node3D
 
 		Vector2I center = WorldToRoomGrid(Player.GlobalPosition);
 
-		// "Un jugador ya pasó por aquí": solo las salas visitadas pueden
-		// tener enemigos de noche (ver EnemySpawner).
+		// Solo las salas visitadas pueden tener enemigos de noche (EnemySpawner).
 		WorldState.Instance?.MarkRoomVisited(center);
 
 		LoadNearbyRooms(center);
 		UnloadFarRooms(center);
 	}
 
-	/// <summary>Salas cargadas ahora mismo (EnemySpawner elige entre estas dónde hacer aparecer zombies).</summary>
+	// EnemySpawner elige entre estas dónde hacer aparecer zombies.
 	public IEnumerable<Room> LoadedRooms => loadedRooms.Values;
 
 	private float CellSize => BlockGrid.Instance?.CellSize ?? 2.0f;
@@ -161,10 +138,7 @@ public partial class WorldStreamer : Node3D
 		room.NoteText = spec.NoteText;
 		room.HasExit = spec.HasExit;
 
-		// La posición se fija ANTES de AddChild, mismo criterio que en todo
-		// el resto del proyecto (ver Room.SpawnBlock/LevelBuilder.SpawnRoom):
-		// al entrar al árbol la Room corre su _Ready y ahí ya necesita estar
-		// en su lugar.
+		// Antes de AddChild: en su _Ready la sala ya necesita estar en su lugar.
 		room.Position = spec.Position;
 
 		AddChild(room);

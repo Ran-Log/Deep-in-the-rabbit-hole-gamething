@@ -1,7 +1,5 @@
 /// <summary>
-/// Traduce un roll 0-99 al mineral de una sala generada, ponderado para que
-/// Stone sea común y Bedrock casi no aparezca. Separada de RoomGenerator
-/// para poder testearla sin GodotSharp (ver Tests/GameLogic.Tests).
+/// Convierte un número 0-99 en el mineral de una sala: piedra es común, bedrock casi no sale.
 /// </summary>
 public static class RoomMineralTable
 {

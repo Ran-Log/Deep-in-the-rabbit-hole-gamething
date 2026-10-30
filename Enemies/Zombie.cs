@@ -1,57 +1,33 @@
 using Godot;
 
 /// <summary>
-/// Zombie minero (GDD: "se mueven directamente hacia el campamento del
-/// jugador aunque él no esté ahí, tienen más daño hacia estructuras").
-///
-/// Comportamiento, a propósito simple (la IA no se evalúa en la alfa):
-/// 1. Si el jugador está a menos de <see cref="AggroRange"/>, lo persigue.
-/// 2. Si no, camina en línea recta al núcleo del campamento (grupo
-///    "camp_core") y le pega al llegar.
-/// 3. Si choca con un bloque (una barricada o una pared), lo golpea hasta
-///    romperlo — por eso construir defensas lo frena.
+/// Zombie minero: persigue al jugador si está cerca y si no, va al campamento.
+/// Si choca con un bloque lo golpea hasta romperlo (por eso las barricadas lo frenan).
 /// </summary>
 public partial class Zombie : CharacterBody3D
 {
 	public const string Group = "enemies";
 	public const string CampCoreGroup = "camp_core";
 
-	[Export]
-	public HealthComponent Health;
+	[ExportCategory("Zombie")]
+	[ExportGroup("Referencias")]
+	[Export] public HealthComponent Health;
+	[Export] public MeshInstance3D Body;
 
-	[Export]
-	public MeshInstance3D Body;
+	[ExportGroup("Movimiento")]
+	[Export] public float Speed = 2.6f;
+	[Export] public float Gravity = 20.0f;
+	[Export] public float KnockbackStrength = 7.0f;
 
-	[Export]
-	public float Speed = 2.6f;
-
-	[Export]
-	public float Gravity = 20.0f;
-
-	[Export]
-	public float AggroRange = 9.0f;
-
-	[Export]
-	public float AttackRange = 2.0f;
-
-	[Export]
-	public float CampAttackRange = 2.8f;
-
-	[Export]
-	public int PlayerDamage = 10;
-
-	[Export]
-	public int CampDamage = 8;
-
-	/// <summary>Daño por golpe a bloques. Alto a propósito: según el GDD los zombies son buenos rompiendo estructuras.</summary>
-	[Export]
-	public int BlockDamage = 3;
-
-	[Export]
-	public float AttackCooldown = 1.2f;
-
-	[Export]
-	public float KnockbackStrength = 7.0f;
+	[ExportGroup("Combate")]
+	[Export] public float AggroRange = 9.0f;
+	[Export] public float AttackRange = 2.0f;
+	[Export] public float CampAttackRange = 2.8f;
+	[Export] public int PlayerDamage = 10;
+	[Export] public int CampDamage = 8;
+	// Alto a propósito: según el GDD los zombies son buenos rompiendo estructuras.
+	[Export] public int BlockDamage = 3;
+	[Export] public float AttackCooldown = 1.2f;
 
 	private const float FallLimitY = -40.0f;
 

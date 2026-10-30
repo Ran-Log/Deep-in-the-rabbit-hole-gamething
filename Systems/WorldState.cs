@@ -2,28 +2,16 @@ using Godot;
 using System.Text.Json;
 
 /// <summary>
-/// Autoload: punto de acceso único al estado guardable del mundo (semilla,
-/// bloques minados, inventario, nivel del pico, cofres abiertos, defensas
-/// construidas) y a guardar/cargar desde disco (user://savegame.json). La
-/// lógica de datos vive en WorldSaveState (testeada aparte, sin GodotSharp,
-/// ver Tests/GameLogic.Tests) — esta clase solo la conecta con Godot: tipos
-/// (Vector2I/Vector3I/MineralType/ToolTier), FileAccess y señales para quien
-/// quiera mostrar el estado (Hud, InventoryScreen, PlayerEquipment).
-///
-/// Se carga sola al iniciar (_Ready): si hay un savegame.json válido, lo usa
-/// (y expone la posición guardada del jugador en LoadedPlayerPosition, que
-/// Player.cs aplica); si no, arranca una partida nueva. Guardar es manual —
-/// ver la acción de entrada "save" (F5 por defecto) en Player.cs.
-///
-/// Al ser autoload, sobrevive a ReloadCurrentScene: morir y reiniciar NO
-/// borra el progreso desde el último guardado. Para empezar de cero (ej.
-/// después de ganar) está <see cref="StartNewGame"/>.
+/// Autoload con el estado guardable del mundo (semilla, bloques minados, inventario,
+/// pico, cofres, defensas) y el guardado en user://savegame.json. Los datos viven en
+/// WorldSaveState; esta clase los conecta con Godot (tipos, archivos y señales).
+/// Carga sola al iniciar; se guarda con F5. Ojo: al morir NO se borra lo no guardado (ver bugs del plan).
 /// </summary>
 public partial class WorldState : Node
 {
 	public static WorldState Instance { get; private set; }
 
-	/// <summary>Cambió cualquier cosa del inventario (cantidad o capacidad).</summary>
+	// Cambió algo del inventario (cantidad o capacidad).
 	[Signal]
 	public delegate void InventoryChangedEventHandler();
 
@@ -32,7 +20,7 @@ public partial class WorldState : Node
 
 	private static readonly string SavePath = "user://savegame.json";
 
-	/// <summary>Raciones con las que arranca una partida nueva.</summary>
+	// Raciones con las que empieza una partida nueva.
 	private const int StartingFood = 2;
 
 	private WorldSaveState state = new();
@@ -43,7 +31,7 @@ public partial class WorldState : Node
 		private set => state.Seed = value;
 	}
 
-	/// <summary>Posición guardada del jugador, o null si no había save (partida nueva).</summary>
+	// null si es partida nueva.
 	public Vector3? LoadedPlayerPosition { get; private set; }
 
 	public override void _EnterTree()
@@ -67,7 +55,7 @@ public partial class WorldState : Node
 		}
 	}
 
-	/// <summary>Descarta todo el progreso (en memoria y en disco) y arranca con una semilla nueva.</summary>
+	// Borra todo el progreso (en memoria y en disco) y empieza con otra semilla.
 	public void StartNewGame()
 	{
 		state = new WorldSaveState
@@ -96,12 +84,7 @@ public partial class WorldState : Node
 		return state.IsCellMined(room.X, room.Y, localCell.X, localCell.Y, localCell.Z);
 	}
 
-	/// <summary>
-	/// Registra que se rompió una celda de una sala, para que el streaming
-	/// no la regenere. Lo llama Room cuando uno de sus bloques se destruye
-	/// (sea el jugador o un enemigo). Sumar el mineral al inventario es
-	/// trabajo de quien mina (MiningComponent), no de esta función.
-	/// </summary>
+	// Para que la sala no regenere el bloque al volver a cargarse. Lo llama Room.
 	public void MarkCellMined(Vector2I room, Vector3I localCell)
 	{
 		state.MarkCellMined(room.X, room.Y, localCell.X, localCell.Y, localCell.Z);
@@ -118,7 +101,7 @@ public partial class WorldState : Node
 		return state.GetMineralCount(itemId);
 	}
 
-	/// <summary>Todos los ítems con cantidad &gt; 0 (id, cantidad), para mostrarlos en la UI.</summary>
+	// Ítems con cantidad > 0, para la UI.
 	public System.Collections.Generic.IEnumerable<(string ItemId, int Count)> GetItems()
 	{
 		foreach (var entry in state.MineralCounts)
@@ -130,7 +113,7 @@ public partial class WorldState : Node
 		}
 	}
 
-	/// <summary>Agrega si cabe todo. Devuelve false con la mochila llena.</summary>
+	// Agrega solo si cabe todo.
 	public bool TryAddItem(string itemId, int amount = 1)
 	{
 		if (!state.TryAddItem(itemId, amount))
@@ -228,7 +211,7 @@ public partial class WorldState : Node
 
 	public bool IsRoomVisited(Vector2I room) => state.IsRoomVisited(room.X, room.Y);
 
-	/// <summary>True solo la primera vez que se pisa la sala.</summary>
+	// true solo la primera vez que se entra a la sala.
 	public bool MarkRoomVisited(Vector2I room) => state.MarkRoomVisited(room.X, room.Y);
 
 	// --- Disco ---

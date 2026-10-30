@@ -2,21 +2,16 @@ using Godot;
 using System.Linq;
 
 /// <summary>
-/// Antorchas que el jugador construye desde el menú de construcción (B →
-/// 2). A diferencia de las barricadas, se pueden poner en CUALQUIER suelo
-/// (no solo en el campamento): la idea es iluminar los túneles que uno
-/// abre, porque de noche la mina queda casi a oscuras.
-///
-/// Igual que CampDefenses, vive fuera del WorldStreamer (no se descarga) y
-/// guarda las celdas en WorldState. BuildComponent lo encuentra por el
-/// grupo "torch_placer".
+/// Antorchas que construye el jugador (B, luego 2). Van en cualquier suelo, para
+/// iluminar los túneles. Igual que CampDefenses: no se descargan y se guardan en WorldState.
 /// </summary>
 public partial class TorchPlacer : Node3D, IStructurePlacer
 {
 	public const string Group = "torch_placer";
 
-	[Export]
-	public PackedScene TorchScene;
+	[ExportCategory("TorchPlacer")]
+	[ExportGroup("Referencias")]
+	[Export] public PackedScene TorchScene;
 
 	public override void _EnterTree()
 	{
@@ -94,8 +89,7 @@ public partial class TorchPlacer : Node3D, IStructurePlacer
 		var torch = TorchScene.Instantiate<Torch>();
 		BlockGrid grid = BlockGrid.Instance;
 
-		// La antorcha tiene su origen en la base: va al fondo de la celda
-		// (= la superficie del piso o del bloque de abajo).
+		// El origen de la antorcha está en su base: va al fondo de la celda.
 		Vector3 floor = grid.GridToWorld(cell) - new Vector3(0.0f, grid.CellSize * 0.5f, 0.0f);
 
 		torch.StartLit = true;

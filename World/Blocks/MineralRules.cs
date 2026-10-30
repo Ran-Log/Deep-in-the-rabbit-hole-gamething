@@ -1,11 +1,6 @@
 /// <summary>
-/// Reglas de juego de cada mineral: qué herramienta hace falta para romperlo
-/// y cuánto daño hace cada nivel de pico. Separado de los nodos para que el
-/// balance se ajuste en un solo lugar y se pueda testear sin GodotSharp.
-///
-/// Regla del GDD: "ciertos bloques solo pueden ser destruidos por la
-/// herramienta indicada" y "el nivel de las herramientas determina qué
-/// bloques se pueden destruir y qué tan rápido".
+/// Qué pico hace falta para cada mineral y cuánto daño hace cada nivel de pico
+/// (GDD: ciertos bloques solo se rompen con la herramienta indicada).
 /// </summary>
 public static class MineralRules
 {

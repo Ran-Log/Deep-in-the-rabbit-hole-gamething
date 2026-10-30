@@ -1,28 +1,18 @@
 using Godot;
 
 /// <summary>
-/// Zona de gas venenoso (grisú): mientras el jugador esté dentro del
-/// Area3D, le hace daño por segundo a través de su HealthComponent. El tamaño
-/// y el visual (niebla verde translúcida con un pulso suave) se arman en
-/// código, con los mismos enums fuertemente tipados que usa el highlight de
-/// DestructibleBlock (GetHighlightOverlay) — evita valores mágicos escritos
-/// a mano en el .tscn que no puedo verificar sin abrir el editor de Godot.
-///
-/// Detecta al jugador por el grupo "player" (ver Player en main.tscn) y
-/// busca un hijo llamado "Health" — no depende de Room ni de
-/// WorldStreamer para nada más que su propia posición, que se la da quien
-/// la instancia (ver Room.SpawnGasZoneIfNeeded).
+/// Gas venenoso: mientras el jugador está dentro del Area3D, pierde vida por segundo.
+/// La niebla verde pulsa suavemente.
 /// </summary>
 public partial class GasZone : Area3D
 {
-	[Export]
-	public int DamagePerSecond = 8;
+	[ExportCategory("GasZone")]
+	[ExportGroup("Referencias")]
+	[Export] public MeshInstance3D Fog;
 
-	[Export]
-	public Vector3 Size = new Vector3(4.0f, 3.0f, 4.0f);
-
-	[Export]
-	public MeshInstance3D Fog;
+	[ExportGroup("Gas")]
+	[Export] public int DamagePerSecond = 8;
+	[Export] public Vector3 Size = new Vector3(4.0f, 3.0f, 4.0f);
 
 	private HealthComponent playerInside;
 	private float damageAccumulator;
@@ -80,7 +70,7 @@ public partial class GasZone : Area3D
 		Fog.MaterialOverride = fogMaterial;
 	}
 
-	/// <summary>Sube y baja la opacidad lentamente, para que la niebla se sienta "viva" en vez de un bloque de color fijo.</summary>
+	// Sube y baja la opacidad para que la niebla no sea un bloque fijo.
 	private void AnimateFog(float delta)
 	{
 		if (fogMaterial == null)

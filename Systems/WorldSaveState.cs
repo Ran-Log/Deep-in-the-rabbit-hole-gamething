@@ -1,16 +1,8 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Estado guardable del mundo: semilla, qué celdas ya se minaron (por sala) y
-/// cuántos minerales tiene el jugador. Sin dependencia de Godot para poder
-/// testearlo (ver Tests/GameLogic.Tests) — <see cref="WorldState"/> es el
-/// autoload que lo conecta con el juego (Vector2I/Vector3I, disco, señales).
-///
-/// Los minerales se guardan por nombre (string) y no como el enum
-/// MineralType de Godot, por la misma razón: para que este archivo no
-/// dependa de GodotSharp. El mismo diccionario guarda también ítems que no
-/// son minerales (ej. comida, ver ItemCatalog), con un límite total de
-/// <see cref="Capacity"/> (la mochila del GDD).
+/// Los datos de la partida: semilla, celdas minadas por sala, inventario (la mochila
+/// del GDD), pico, cofres, defensas, antorchas y salas visitadas. WorldState lo conecta con Godot.
 /// </summary>
 public sealed class WorldSaveState
 {
@@ -18,10 +10,10 @@ public sealed class WorldSaveState
 
 	public ulong Seed { get; set; }
 
-	/// <summary>Cuántos ítems caben en la mochila en total. Se amplía encontrando mochilas.</summary>
+	// Ítems que caben en la mochila. Crece al encontrar mochilas.
 	public int Capacity { get; set; } = DefaultCapacity;
 
-	/// <summary>Nivel del pico (valor de ToolTier), guardado como int igual que el resto del DTO.</summary>
+	// Nivel del pico (valor de ToolTier).
 	public int ToolLevel { get; set; } = 1;
 
 	private readonly HashSet<(int RoomX, int RoomZ)> openedChests = new();
@@ -82,10 +74,7 @@ public sealed class WorldSaveState
 
 	public int FreeSpace => System.Math.Max(0, Capacity - TotalItems);
 
-	/// <summary>
-	/// Agrega solo si cabe TODO (todo o nada): así la mochila nunca queda
-	/// por encima de su capacidad y quien llama puede avisar "mochila llena".
-	/// </summary>
+	// Todo o nada: si no cabe todo, no agrega nada (así se puede avisar "mochila llena").
 	public bool TryAddItem(string itemId, int amount = 1)
 	{
 		if (amount <= 0 || amount > FreeSpace)
@@ -97,7 +86,7 @@ public sealed class WorldSaveState
 		return true;
 	}
 
-	/// <summary>Quita ítems si hay suficientes. Al llegar a 0 la entrada desaparece (no se muestra "x0").</summary>
+	// Al llegar a 0 la entrada se borra, para no mostrar "x0".
 	public bool RemoveItem(string itemId, int amount = 1)
 	{
 		int current = GetMineralCount(itemId);
@@ -132,7 +121,7 @@ public sealed class WorldSaveState
 		return true;
 	}
 
-	/// <summary>Cobra un costo completo, o nada si falta algo.</summary>
+	// Cobra todo el costo, o nada si falta algo.
 	public bool TrySpend(IReadOnlyDictionary<string, int> cost)
 	{
 		if (!HasItems(cost))
@@ -162,10 +151,10 @@ public sealed class WorldSaveState
 
 	public void AddTorch(int x, int y, int z) => placedTorches.Add((x, y, z));
 
-	/// <summary>Salas por las que ya pasó el jugador: solo ahí pueden aparecer enemigos de noche.</summary>
+	// Solo en salas visitadas aparecen enemigos de noche.
 	public bool IsRoomVisited(int roomX, int roomZ) => visitedRooms.Contains((roomX, roomZ));
 
-	/// <summary>Devuelve true solo la primera vez (sala recién descubierta).</summary>
+	// true solo la primera vez (sala recién descubierta).
 	public bool MarkRoomVisited(int roomX, int roomZ) => visitedRooms.Add((roomX, roomZ));
 
 	public WorldSaveData ToDto(float playerX, float playerY, float playerZ)

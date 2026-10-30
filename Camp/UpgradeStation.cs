@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 /// <summary>
-/// Estación de mejora del campamento (GDD 2.1.4): gasta minerales para
-/// subir el pico un nivel. Los costos viven en UpgradeTable (testeada
-/// aparte); acá solo se arma el texto y se cobra.
+/// Estación de mejora (GDD 2.1.4): gasta minerales para subir el pico un nivel.
+/// Los costos están en UpgradeTable.
 /// </summary>
 public partial class UpgradeStation : Interactable
 {

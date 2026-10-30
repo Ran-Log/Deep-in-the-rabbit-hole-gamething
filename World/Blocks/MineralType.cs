@@ -1,5 +1,5 @@
 /// <summary>
-/// Tipo de mineral de un bloque. Determina (a futuro) qué se dropea al destruirlo.
+/// Tipo de mineral de un bloque. Es lo que se recoge al romperlo.
 /// </summary>
 public enum MineralType
 {

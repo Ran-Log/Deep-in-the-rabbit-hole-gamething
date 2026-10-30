@@ -2,29 +2,25 @@ using System.Collections.Generic;
 using Godot;
 
 /// <summary>
-/// Autoload. Única fuente de verdad de dónde vive cada bloque del mundo.
-///
-/// Convención de coordenadas: la celda (x, y, z) tiene su CENTRO en
-/// (x, y, z) * <see cref="CellSize"/>. O sea, un bloque en la celda (0,0,0)
-/// está centrado en el origen del mundo, no apoyado en él.
+/// Autoload con la grilla de bloques del mundo. La celda (x, y, z) tiene su
+/// centro en (x, y, z) * CellSize.
 /// </summary>
 public partial class BlockGrid : Node
 {
 	public static BlockGrid Instance { get; private set; }
 
-	[Export]
-	public float CellSize = 2.0f;
+	[ExportCategory("BlockGrid")]
+	[ExportGroup("Grilla")]
+	[Export] public float CellSize = 2.0f;
 
 	private readonly Dictionary<Vector3I, DestructibleBlock> blocks = new();
 
-	/// <summary>Cuántos bloques hay registrados. Se usa para medir rendimiento.</summary>
+	// Para el overlay de debug (FPS / cantidad de bloques).
 	public int BlockCount => blocks.Count;
 
 	public override void _EnterTree()
 	{
-		// _EnterTree y no _Ready: los autoloads entran al árbol antes que la
-		// escena principal, así que Instance ya está lista cuando los bloques
-		// corren su propio _Ready.
+		// En _EnterTree para que Instance exista antes del _Ready de los bloques.
 		Instance = this;
 	}
 
@@ -52,10 +48,7 @@ public partial class BlockGrid : Node
 		return new Vector3(cell.X, cell.Y, cell.Z) * CellSize;
 	}
 
-	/// <summary>
-	/// Registra un bloque en una celda. Devuelve false si la celda ya estaba
-	/// ocupada — el que llama decide qué hacer con el duplicado.
-	/// </summary>
+	// Devuelve false si la celda ya estaba ocupada.
 	public bool RegisterBlock(Vector3I cell, DestructibleBlock block)
 	{
 		if (blocks.ContainsKey(cell))
@@ -68,11 +61,7 @@ public partial class BlockGrid : Node
 		return true;
 	}
 
-	/// <summary>
-	/// Libera una celda. Solo la libera si el bloque que la ocupa es
-	/// exactamente <paramref name="block"/>, para que un duplicado que nunca
-	/// llegó a registrarse no borre la entrada del bloque legítimo.
-	/// </summary>
+	// Solo la libera si la ocupa ese mismo bloque (un duplicado no debe borrar al original).
 	public void RemoveBlock(Vector3I cell, DestructibleBlock block)
 	{
 		if (blocks.TryGetValue(cell, out DestructibleBlock current) && current == block)
@@ -86,12 +75,8 @@ public partial class BlockGrid : Node
 		return blocks.ContainsKey(cell);
 	}
 
-	/// <summary>
-	/// True si algún cuerpo físico (jugador, zombie, cama, antorcha...) ocupa
-	/// la celda. Se consulta con una caja un poco más chica que la celda para
-	/// que no cuente el piso ni los bloques vecinos, que solo la tocan por el borde.
-	/// Lo usan quienes construyen (CampDefenses, TorchPlacer) antes de colocar algo.
-	/// </summary>
+	// True si algo físico (jugador, zombie, cama...) ocupa la celda. La caja es un
+	// poco más chica que la celda para no contar el piso ni los vecinos.
 	public bool HasBodyInCell(World3D world, Vector3I cell)
 	{
 		var query = new PhysicsShapeQueryParameters3D
