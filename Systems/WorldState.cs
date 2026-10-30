@@ -5,7 +5,7 @@ using System.Text.Json;
 /// Autoload con el estado guardable del mundo (semilla, bloques minados, inventario,
 /// pico, cofres, defensas) y el guardado en user://savegame.json. Los datos viven en
 /// WorldSaveState; esta clase los conecta con Godot (tipos, archivos y señales).
-/// Carga sola al iniciar; se guarda con F5. Ojo: al morir NO se borra lo no guardado (ver bugs del plan).
+/// Carga sola al iniciar; se guarda con F5 o al dormir. Al morir, "Reintentar" vuelve al último guardado.
 /// </summary>
 public partial class WorldState : Node
 {
@@ -55,12 +55,12 @@ public partial class WorldState : Node
 		}
 	}
 
-	// Borra todo el progreso (en memoria y en disco) y empieza con otra semilla.
-	public void StartNewGame()
+	// Borra todo el progreso (en memoria y en disco). Sin semilla, usa una nueva al azar.
+	public void StartNewGame(ulong? seed = null)
 	{
 		state = new WorldSaveState
 		{
-			Seed = ((ulong)GD.Randi() << 32) | GD.Randi(),
+			Seed = seed ?? (((ulong)GD.Randi() << 32) | GD.Randi()),
 		};
 
 		state.TryAddItem(ItemCatalog.Food, StartingFood);
@@ -76,6 +76,21 @@ public partial class WorldState : Node
 		EmitSignal(SignalName.InventoryChanged);
 		EmitSignal(SignalName.ToolChanged, (int)Tool);
 	}
+
+	// "Reintentar" al morir: descarta lo no guardado. Si nunca se guardó, empieza de cero con la misma semilla.
+	public void RevertToLastSave()
+	{
+		if (!LoadFromDisk())
+		{
+			StartNewGame(Seed);
+		}
+	}
+
+	// --- Vida y día guardados ---
+
+	public int SavedDay => state.Day;
+
+	public bool TryGetSavedHealth(string id, out int value) => state.TryGetHealth(id, out value);
 
 	// --- Bloques minados ---
 
@@ -218,6 +233,8 @@ public partial class WorldState : Node
 
 	public void Save(Vector3 playerPosition)
 	{
+		CollectHealthAndDay();
+
 		WorldSaveData dto = state.ToDto(playerPosition.X, playerPosition.Y, playerPosition.Z);
 		string json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
 
@@ -230,7 +247,28 @@ public partial class WorldState : Node
 		}
 
 		file.StoreString(json);
+
+		// Para que "Reintentar" reaparezca aquí y no donde empezó la sesión.
+		LoadedPlayerPosition = playerPosition;
+
 		GD.Print($"WorldState: partida guardada en {SavePath}.");
+	}
+
+	// Junta la vida de cada HealthComponent con SaveId y el día actual.
+	private void CollectHealthAndDay()
+	{
+		foreach (Node node in GetTree().GetNodesInGroup(HealthComponent.SavedGroup))
+		{
+			if (node is HealthComponent health && !string.IsNullOrEmpty(health.SaveId))
+			{
+				state.SetHealth(health.SaveId, health.Current);
+			}
+		}
+
+		if (GetTree().GetFirstNodeInGroup(DayNightCycle.Group) is DayNightCycle dayNight)
+		{
+			state.Day = dayNight.Day;
+		}
 	}
 
 	private bool LoadFromDisk()

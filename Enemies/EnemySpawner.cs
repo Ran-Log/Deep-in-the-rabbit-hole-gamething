@@ -5,7 +5,7 @@ using System.Linq;
 /// Hace aparecer zombies de noche, de dos formas:
 /// 1. Una oleada en el borde del campamento, más grande cada noche.
 /// 2. En las salas que el jugador ya visitó: excavar mucho trae más amenazas (regla del GDD).
-/// TODO: de día deberían desaparecer o quedarse en salas con techo (ver plan, bugs).
+/// Al amanecer se van todos. (Cuando haya techos: de día solo en salas con techo, regla del GDD.)
 /// </summary>
 public partial class EnemySpawner : Node3D
 {
@@ -43,6 +43,7 @@ public partial class EnemySpawner : Node3D
 
 		rng.Randomize();
 		DayNight.NightStarted += OnNightStarted;
+		DayNight.DayStarted += OnDayStarted;
 	}
 
 	public override void _ExitTree()
@@ -50,6 +51,7 @@ public partial class EnemySpawner : Node3D
 		if (DayNight != null)
 		{
 			DayNight.NightStarted -= OnNightStarted;
+			DayNight.DayStarted -= OnDayStarted;
 		}
 	}
 
@@ -66,6 +68,22 @@ public partial class EnemySpawner : Node3D
 		{
 			trickleTimer = 0.0f;
 			SpawnInRandomExploredRoom();
+		}
+	}
+
+	// Al amanecer los enemigos se van (el GDD: de día se explora con libertad).
+	private void OnDayStarted(int day)
+	{
+		var enemies = GetTree().GetNodesInGroup(Zombie.Group);
+
+		foreach (Node enemy in enemies)
+		{
+			enemy.QueueFree();
+		}
+
+		if (enemies.Count > 0)
+		{
+			GameEvents.PostMessage("Con la luz del día, las criaturas huyen a la oscuridad");
 		}
 	}
 

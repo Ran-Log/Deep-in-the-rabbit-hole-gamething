@@ -42,6 +42,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8395996, -0.25653076, 1.998
 
 [node name="Health" type="Node" parent="."]
 script = ExtResource("5_health")
+SaveId = "player"
 
 [node name="Equipment" type="Node" parent="."]
 script = ExtResource("6_equipment")

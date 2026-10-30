@@ -12,9 +12,16 @@ public partial class HealthComponent : Node
 	[Signal]
 	public delegate void DiedEventHandler();
 
+	// Los HealthComponent con SaveId se guardan con la partida (WorldState los busca por este grupo).
+	public const string SavedGroup = "saved_health";
+
 	[ExportCategory("HealthComponent")]
 	[ExportGroup("Vida")]
 	[Export] public int MaxHealth = 100;
+
+	[ExportGroup("Guardado")]
+	// Vacío = no se guarda (ej. los enemigos). "player" y "camp" sí se guardan.
+	[Export] public string SaveId = "";
 
 	private int current;
 	private bool dead;
@@ -28,6 +35,18 @@ public partial class HealthComponent : Node
 	public override void _Ready()
 	{
 		current = MaxHealth;
+
+		if (string.IsNullOrEmpty(SaveId))
+		{
+			return;
+		}
+
+		AddToGroup(SavedGroup);
+
+		if (WorldState.Instance != null && WorldState.Instance.TryGetSavedHealth(SaveId, out int saved) && saved > 0)
+		{
+			current = Mathf.Min(saved, MaxHealth);
+		}
 	}
 
 	// Si ya está muerto no hace nada, para no emitir Died dos veces.

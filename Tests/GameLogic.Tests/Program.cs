@@ -192,6 +192,25 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("guardado: conserva salas visitadas y antorchas", restored.IsRoomVisited(1, 0) && restored.PlacedTorches.Contains((3, 0, -2)));
 }
 
+// --- Vida y día (bug 0.6) ---
+
+{
+	var state = new WorldSaveState { Day = 3 };
+	state.SetHealth("player", 40);
+	state.SetHealth("camp", 70);
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+
+	Check("guardado: conserva el día", restored.Day == 3);
+	Check("guardado: conserva la vida del jugador y del campamento",
+		restored.TryGetHealth("player", out int player) && player == 40
+		&& restored.TryGetHealth("camp", out int camp) && camp == 70);
+
+	WorldSaveState fromOldSave = WorldSaveState.FromDto(new WorldSaveData());
+	Check("guardado: un save viejo (sin día ni vida) arranca en el día 1 y sin vidas guardadas",
+		fromOldSave.Day == 1 && !fromOldSave.TryGetHealth("player", out _));
+}
+
 Console.WriteLine();
 Console.WriteLine($"{total - failures}/{total} tests OK");
 
