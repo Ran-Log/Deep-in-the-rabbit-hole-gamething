@@ -12,33 +12,23 @@ public partial class DestructibleBlock : StaticBody3D
 	[Signal]
 	public delegate void DestroyedEventHandler(int mineral);
 
-	[Export]
-	public MineralType Mineral = MineralType.Stone;
+	[ExportCategory("DestructibleBlock")]
+	[ExportGroup("Referencias")]
+	[Export] public MeshInstance3D MeshInstance;
 
-	[Export]
-	public int MaxHealth = 5;
+	[ExportGroup("Bloque")]
+	[Export] public MineralType Mineral = MineralType.Stone;
+	[Export] public int MaxHealth = 5;
+	// Nivel mínimo de pico para poder dañarlo.
+	[Export] public ToolTier RequiredTool = ToolTier.Basic;
+	// false = indestructible (ej. bedrock del borde).
+	[Export] public bool IsDestructible = true;
+	// Nombre para el HUD; vacío usa el del mineral (ej. "Barricada" en las defensas).
+	[Export] public string DisplayName = "";
 
-	/// <summary>Nivel mínimo de herramienta para poder dañar este bloque.</summary>
-	[Export]
-	public ToolTier RequiredTool = ToolTier.Basic;
-
-	/// <summary>Si es false, el bloque es indestructible (ej. bedrock del borde).</summary>
-	[Export]
-	public bool IsDestructible = true;
-
-	[Export]
-	public MeshInstance3D MeshInstance;
-
-	/// <summary>Nombre para el HUD. Vacío = el nombre del mineral (ej. "Barricada" para las defensas).</summary>
-	[Export]
-	public string DisplayName = "";
-
-	/// <summary>
-	/// Ajusta posición y escala a la grilla en _Ready. Se puede apagar para
-	/// bloques decorativos puestos a mano fuera de la grilla.
-	/// </summary>
-	[Export]
-	public bool AlignToGrid = true;
+	[ExportGroup("Grilla")]
+	// Se puede apagar para bloques decorativos fuera de la grilla.
+	[Export] public bool AlignToGrid = true;
 
 	private int health;
 	private Vector3I cell;
@@ -76,10 +66,7 @@ public partial class DestructibleBlock : StaticBody3D
 		}
 	}
 
-	/// <summary>
-	/// Aplica daño si la herramienta alcanza. Devuelve true si el golpe contó,
-	/// para que quien mina pueda dar feedback distinto cuando rebota.
-	/// </summary>
+	// Devuelve false si el pico no alcanza, para mostrar que el golpe rebotó.
 	public bool TakeDamage(int amount, ToolTier tool)
 	{
 		if (!IsDestructible || tool < RequiredTool)
@@ -135,8 +122,7 @@ public partial class DestructibleBlock : StaticBody3D
 
 		cell = grid.WorldToGrid(GlobalPosition);
 
-		// El bloque se modela como un cubo de 1x1x1, así que la escala ES el
-		// tamaño de celda. Un solo lugar define el tamaño del mundo.
+		// El mesh es un cubo de 1x1x1, así que la escala es el tamaño de celda.
 		GlobalTransform = new Transform3D(
 			Basis.Identity.Scaled(Vector3.One * grid.CellSize),
 			grid.GridToWorld(cell)
@@ -180,8 +166,7 @@ public partial class DestructibleBlock : StaticBody3D
 	{
 		EmitSignal(SignalName.Destroyed, (int)Mineral);
 
-		// La baja de la grilla la hace _ExitTree, así no depende de por dónde
-		// se libere el nodo.
+		// _ExitTree lo saca de la grilla.
 		QueueFree();
 	}
 }

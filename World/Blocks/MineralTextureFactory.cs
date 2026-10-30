@@ -2,17 +2,8 @@ using Godot;
 using System.Collections.Generic;
 
 /// <summary>
-/// Genera, por código y sin ningún archivo de imagen, las texturas y
-/// materiales de cada mineral y del piso de las salas — ver
-/// MineralMaterialProfile (paleta/PBR por mineral) y ProceduralNoise (el
-/// ruido en sí, testeado aparte porque no depende de GodotSharp). Esta
-/// clase es la única parte "Godot" del trío: arma el Image pixel a pixel y
-/// lo empaqueta en un StandardMaterial3D.
-///
-/// Cachea un material por mineral (y uno para el piso) la primera vez que
-/// se pide: generar una imagen de TextureSize x TextureSize por cada
-/// bloque individual sería carísimo con cientos de bloques por sala, y
-/// además todos los bloques del mismo mineral deben verse igual.
+/// Genera por código la textura y el material de cada mineral y del piso.
+/// Guarda uno por mineral (Flyweight): todos los bloques de piedra comparten el mismo.
 /// </summary>
 public static class MineralTextureFactory
 {
@@ -20,11 +11,7 @@ public static class MineralTextureFactory
 	private const int BaseOctaves = 4;
 	private const int VeinOctaves = 2;
 
-	/// <summary>
-	/// Semilla fija de las texturas — a propósito NO es la semilla del
-	/// mundo (WorldState.Seed), para que un mismo mineral se vea siempre
-	/// igual sin importar la partida.
-	/// </summary>
+	// Semilla fija (no la del mundo), para que cada mineral se vea igual en todas las partidas.
 	private const ulong TextureSeed = 918273645UL;
 
 	private static readonly Dictionary<MineralType, StandardMaterial3D> blockMaterialCache = new();
@@ -39,9 +26,7 @@ public static class MineralTextureFactory
 
 		MineralMaterialProfile profile = MineralMaterialProfile.For(mineral);
 
-		// Cada mineral usa su propia sub-semilla (vía DeterministicHash) para
-		// que, por ejemplo, Iron y Gold no compartan el mismo patrón de
-		// ruido con distinto color encima.
+		// Semilla distinta por mineral, para que no compartan el mismo patrón.
 		ulong seed = DeterministicHash.Combine(TextureSeed, (int)mineral, 0);
 
 		var material = new StandardMaterial3D
@@ -56,7 +41,7 @@ public static class MineralTextureFactory
 		return material;
 	}
 
-	/// <summary>Ícono para la UI de inventario: la misma textura que ya se generó para el bloque, sin generar nada aparte ni depender de un .png en disco.</summary>
+	// El inventario usa la misma textura del bloque como ícono.
 	public static Texture2D GetBlockIcon(MineralType mineral)
 	{
 		return GetBlockMaterial(mineral).AlbedoTexture;
@@ -80,9 +65,7 @@ public static class MineralTextureFactory
 			Metallic = profile.Metallic,
 			Roughness = profile.Roughness,
 
-			// El piso es un solo BoxMesh estirado a toda la sala (ver
-			// Room.ResizeFloor): con triplanar la textura se repite según el
-			// tamaño real en vez de estirarse en una sola pieza gigante.
+			// El piso es una sola caja estirada: con triplanar la textura se repite en vez de estirarse.
 			Uv1Triplanar = true,
 			Uv1Scale = new Vector3(0.25f, 0.25f, 0.25f),
 		};
@@ -90,21 +73,11 @@ public static class MineralTextureFactory
 		return floorMaterialCache;
 	}
 
-	/// <summary>
-	/// Pinta una imagen de TextureSize x TextureSize: ruido fBm de base
-	/// (BaseOctaves) para la variación de color, más una segunda capa de
-	/// ruido de mayor frecuencia y semilla distinta que decide dónde
-	/// aparecen las vetas/motas de color (VeinDensity de la paleta).
-	/// </summary>
+	// Una capa de ruido para el color base y otra para las vetas.
 	private static ImageTexture BuildTexture(MineralMaterialProfile profile, ulong seed, bool tileable)
 	{
 		var image = Image.CreateEmpty(TextureSize, TextureSize, false, Image.Format.Rgb8);
 
-		// Con tileable, el ruido se muestrea en un rango que se repite cada
-		// TextureSize píxeles (mod implícito de ValueNoise sobre enteros),
-		// para que el triplanar del piso no muestre una costura entre
-		// tiles. Con blocks (tileable=false) no importa: cada cara del
-		// cubo usa la textura completa una sola vez.
 		double uvScale = tileable ? TextureSize / 16.0 : TextureSize / 20.0;
 
 		for (int y = 0; y < TextureSize; y++)

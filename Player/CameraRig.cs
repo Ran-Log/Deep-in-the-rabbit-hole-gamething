@@ -1,54 +1,34 @@
 using Godot;
 
 /// <summary>
-/// Cámara en tercera persona sobre el hombro.
-/// - Mouse: girar (yaw en este nodo, pitch en la Camera3D hija).
-/// - Rueda: zoom (acciones "zoom_in"/"zoom_out").
-/// - R: cambiar de hombro (acción "swap_shoulder"), con transición suave.
-/// - Si hay un bloque entre el jugador y la cámara, la cámara se acerca
-///   para no quedar dentro de la pared (importante en túneles angostos).
+/// Cámara en tercera persona sobre el hombro: mouse para girar, rueda para zoom,
+/// R para cambiar de hombro. Se acerca sola si una pared la tapa (túneles angostos).
 /// </summary>
 public partial class CameraRig : Node3D
 {
-	[Export]
-	public float MouseSensitivity = 0.01f;
+	[ExportCategory("CameraRig")]
+	[ExportGroup("Mouse")]
+	[Export] public float MouseSensitivity = 0.01f;
+	[Export] public float MinPitch = -80.0f;
+	[Export] public float MaxPitch = 80.0f;
 
-	// Límites de la cámara
-	[Export]
-	public float MinPitch = -80.0f;
+	[ExportGroup("Posición")]
+	// Positivo = hombro derecho.
+	[Export] public float ShoulderOffset = 0.84f;
+	[Export] public float HeightOffset = -0.25f;
+	// Más alto = la cámara llega más brusco a su nueva posición.
+	[Export] public float SmoothSpeed = 10.0f;
 
-	[Export]
-	public float MaxPitch = 80.0f;
+	[ExportGroup("Zoom")]
+	[Export] public float Distance = 2.0f;
+	[Export] public float MinDistance = 0.8f;
+	[Export] public float MaxDistance = 7.0f;
+	[Export] public float ZoomStep = 0.5f;
 
-	/// <summary>Distancia lateral al hombro (positivo = hombro derecho).</summary>
-	[Export]
-	public float ShoulderOffset = 0.84f;
-
-	[Export]
-	public float HeightOffset = -0.25f;
-
-	[Export]
-	public float Distance = 2.0f;
-
-	[Export]
-	public float MinDistance = 0.8f;
-
-	[Export]
-	public float MaxDistance = 7.0f;
-
-	[Export]
-	public float ZoomStep = 0.5f;
-
-	/// <summary>Qué tan rápido la cámara llega a su nueva posición (zoom/hombro). Más alto = más brusco.</summary>
-	[Export]
-	public float SmoothSpeed = 10.0f;
-
-	/// <summary>Separación mínima entre la cámara y una pared que la tapa.</summary>
-	[Export]
-	public float CollisionMargin = 0.25f;
-
-	[Export(PropertyHint.Layers3DPhysics)]
-	public uint CollisionMask = 1;
+	[ExportGroup("Colisión")]
+	// Separación mínima con la pared que la tapa.
+	[Export] public float CollisionMargin = 0.25f;
+	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask = 1;
 
 	private float pitch = 0.0f;
 	private float side = 1.0f;
@@ -174,11 +154,7 @@ public partial class CameraRig : Node3D
 		return -camera.GlobalTransform.Basis.Z;
 	}
 
-	/// <summary>
-	/// Pone la cámara en su offset de hombro/zoom, rotado con el pitch para
-	/// que orbite alrededor del jugador al mirar arriba/abajo, y la acerca si
-	/// una pared se interpone.
-	/// </summary>
+	// Orbita alrededor del jugador según el pitch, y se acerca si una pared se interpone.
 	private void PlaceCamera()
 	{
 		Vector3 pivotLocal = new Vector3(0.0f, HeightOffset, 0.0f);

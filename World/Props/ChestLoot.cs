@@ -1,6 +1,5 @@
 /// <summary>
-/// Contenido de un cofre de "equipamiento abandonado" (GDD 2.1.5). Un cofre
-/// guarda una sola cosa, así cada hallazgo se siente distinto.
+/// Qué trae un cofre (GDD 2.1.5). Una sola cosa por cofre.
 /// </summary>
 public enum ChestLoot
 {

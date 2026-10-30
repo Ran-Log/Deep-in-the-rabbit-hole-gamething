@@ -1,15 +1,12 @@
 using Godot;
 
 /// <summary>
-/// Algo que el jugador puede construir desde el menú de construcción (B).
-/// BuildComponent solo apunta y muestra el fantasma; cada implementación
-/// decide sus propias reglas (dónde se puede, cuánto cuesta) y cómo se
-/// guarda. Agregar un tipo de construcción nuevo = una clase nueva que
-/// implemente esto + una línea en BuildComponent.Options.
+/// Algo que se construye con B. Cada implementación decide dónde se puede y cuánto cuesta.
+/// Para agregar uno nuevo: una clase que implemente esto y una línea en BuildComponent.Options.
 /// </summary>
 public interface IStructurePlacer
 {
-	/// <param name="onTopOfSurface">True si se apunta a la cara de ARRIBA de algo (piso o bloque).</param>
+	// onTopOfSurface = se apunta a la cara de arriba de algo.
 	bool CanPlace(Vector3I cell, bool onTopOfSurface, out string reason);
 
 	bool TryPlace(Vector3I cell, bool onTopOfSurface);

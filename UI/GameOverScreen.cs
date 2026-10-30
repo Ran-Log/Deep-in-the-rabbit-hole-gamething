@@ -1,46 +1,27 @@
 using Godot;
 
 /// <summary>
-/// Pantalla de fin de partida: pausa el juego y muestra por qué terminó.
-/// - Derrota (GDD): la vida del jugador llega a 0, o el campamento es
-///   destruido.
-/// - Victoria: el jugador bajó por la grieta al final del Nivel 1
-///   (GameEvents.LevelCompleted).
-///
-/// "Reintentar" recarga main.tscn — como WorldState es autoload, no se
-/// destruye al recargar: el jugador reaparece en la última posición
-/// GUARDADA (F5) con la vida llena, y el mundo conserva lo minado.
-/// "Nueva partida" además borra todo el progreso (WorldState.StartNewGame).
-///
-/// Solo escucha señales; no sabe nada del jugador ni del campamento.
+/// Fin de partida: pausa el juego y muestra por qué terminó. Derrota si el jugador
+/// o el campamento llegan a 0 (GDD); victoria al bajar por la grieta.
+/// "Reintentar" recarga la escena; "Nueva partida" además borra el progreso.
 /// </summary>
 public partial class GameOverScreen : CanvasLayer
 {
-	[Export]
-	public HealthComponent PlayerHealth;
+	[ExportCategory("GameOverScreen")]
+	[ExportGroup("Referencias")]
+	[Export] public HealthComponent PlayerHealth;
+	[Export] public HealthComponent CampHealth;
 
-	[Export]
-	public HealthComponent CampHealth;
-
-	[Export]
-	public Control Panel;
-
-	[Export]
-	public Label TitleLabel;
-
-	[Export]
-	public Label SubtitleLabel;
-
-	[Export]
-	public Button RestartButton;
-
-	[Export]
-	public Button NewGameButton;
+	[ExportGroup("Nodos de UI")]
+	[Export] public Control Panel;
+	[Export] public Label TitleLabel;
+	[Export] public Label SubtitleLabel;
+	[Export] public Button RestartButton;
+	[Export] public Button NewGameButton;
 
 	public override void _Ready()
 	{
-		// Tiene que seguir procesando input mientras el árbol está pausado,
-		// si no los botones nunca responderían al click.
+		// Always: si no, con el juego pausado los botones no responderían.
 		ProcessMode = ProcessModeEnum.Always;
 
 		if (PlayerHealth == null)

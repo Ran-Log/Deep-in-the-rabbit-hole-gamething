@@ -1,28 +1,23 @@
 using Godot;
 
 /// <summary>
-/// Autoload: bus de eventos globales que no tienen un dueño natural en el
-/// árbol. Ej. un cofre dentro de una sala generada (que se carga y descarga
-/// con el streaming) quiere mostrar "Encontraste una mochila" en el HUD del
-/// jugador, pero no conoce al HUD ni tiene cómo recibir su ruta en el
-/// editor. Con el bus, el cofre publica y el HUD escucha, sin conocerse.
-///
-/// Se usa SOLO para estos casos; cuando dos nodos sí se conocen por escena
-/// (ej. Hud ↔ MiningComponent) se conectan directo con señales.
+/// Autoload "Global Listener" (Observer, clase 11): para avisos entre nodos que no
+/// se conocen, como un cofre que quiere mostrar un mensaje en el HUD.
+/// Si dos nodos se conocen por la escena, se conectan directo con señales.
 /// </summary>
 public partial class GameEvents : Node
 {
 	public static GameEvents Instance { get; private set; }
 
-	/// <summary>Mensaje corto para el jugador ("Mochila llena", "Encontraste...").</summary>
+	// Mensaje corto ("Mochila llena", "Encontraste...").
 	[Signal]
 	public delegate void MessagePostedEventHandler(string text);
 
-	/// <summary>Texto largo para leer (notas abandonadas).</summary>
+	// Texto largo para leer (notas).
 	[Signal]
 	public delegate void NoteOpenedEventHandler(string text);
 
-	/// <summary>El jugador llegó al final del nivel.</summary>
+	// El jugador llegó al final del nivel.
 	[Signal]
 	public delegate void LevelCompletedEventHandler();
 

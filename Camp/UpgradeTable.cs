@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Costos de mejora del pico en la estación del campamento. Una mejora por
-/// nivel: Básico → Reforzado → Avanzado. Sin GodotSharp (testeable).
+/// Costos de mejora del pico (Básico → Reforzado → Avanzado) y de construir.
 /// </summary>
 public static class UpgradeTable
 {
@@ -10,10 +9,7 @@ public static class UpgradeTable
 
 	public const int TorchCoalCost = 1;
 
-	/// <summary>
-	/// Siguiente nivel y su costo (id de ítem → cantidad), o false si ya está
-	/// al máximo.
-	/// </summary>
+	// Siguiente nivel y su costo (ítem → cantidad). false si ya está al máximo.
 	public static bool TryGetNext(ToolTier current, out ToolTier next, out IReadOnlyDictionary<string, int> cost)
 	{
 		switch (current)

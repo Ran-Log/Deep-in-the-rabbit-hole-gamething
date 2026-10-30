@@ -1,10 +1,7 @@
 using Godot;
 
 /// <summary>
-/// Definición de una Room del nivel: nombre, posición y configuración de sus
-/// paredes. Es el "dato" que LevelBuilder lee para instanciar Room.tscn —
-/// agregar o ajustar una sala pasa a ser una línea en <see cref="LevelLayout"/>
-/// en vez de crear y configurar un nodo a mano en main.tscn.
+/// Los datos de una sala (los arma RoomGenerator y los usa WorldStreamer para crear la Room).
 /// </summary>
 public readonly struct RoomSpec
 {
@@ -16,25 +13,18 @@ public readonly struct RoomSpec
 	public readonly MineralType WallMineral;
 	public readonly int WallBlockHealth;
 
-	/// <summary>
-	/// Coordenada de la sala en la grilla infinita de salas (no en celdas de
-	/// bloque). La usa WorldStreamer para decidir qué cargar/descargar y
-	/// Room para llevar el registro de qué celdas ya se minaron ahí. Datos
-	/// del layout fijo antiguo (LevelLayout) la dejan en (0,0) por defecto,
-	/// ya que ese layout nunca la necesitó.
-	/// </summary>
+	// Posición en la grilla de salas (no de bloques).
 	public readonly Vector2I GridCoord;
 
-	/// <summary>Si es true, la sala sale con una GasZone en el centro (ver RoomGenerator/Room.SpawnGasZoneIfNeeded).</summary>
 	public readonly bool HasGas;
 
-	/// <summary>Qué hay en el cofre de la sala (None = sin cofre).</summary>
+	// None = sin cofre.
 	public readonly ChestLoot Loot;
 
-	/// <summary>Texto de la nota si <see cref="Loot"/> es Note.</summary>
+	// Solo si Loot es Note.
 	public readonly string NoteText;
 
-	/// <summary>Si es true, la sala tiene la grieta de salida del nivel.</summary>
+	// Tiene la grieta de salida del nivel.
 	public readonly bool HasExit;
 
 	public RoomSpec(

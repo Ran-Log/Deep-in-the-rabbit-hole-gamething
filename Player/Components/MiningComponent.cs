@@ -1,13 +1,8 @@
 using Godot;
 
 /// <summary>
-/// Toda la lógica de minar, separada del movimiento. Lanza un rayo por el
-/// centro de la pantalla (ver CrosshairRay), mantiene cuál es el bloque
-/// apuntado y lo golpea mientras se mantenga presionada la acción "mine".
-/// Al romper un bloque suma su mineral a la mochila (GDD 2.1.2: la
-/// recolección es automática al romper, si hay espacio).
-///
-/// No sabe nada del HUD: avisa hacia arriba con señales.
+/// Minar: golpea el bloque apuntado mientras se mantiene "mine", y al romperlo
+/// suma el mineral a la mochila (GDD 2.1.2). Avisa al HUD con señales.
 /// </summary>
 public partial class MiningComponent : Node3D
 {
@@ -24,25 +19,18 @@ public partial class MiningComponent : Node3D
 	[Signal]
 	public delegate void BlockDestroyedEventHandler(int mineral);
 
-	[Export]
-	public Camera3D Camera;
+	[ExportCategory("MiningComponent")]
+	[ExportGroup("Referencias")]
+	[Export] public Camera3D Camera;
+	// El rayo lo ignora (el propio jugador).
+	[Export] public CollisionObject3D ExcludedBody;
+	[Export] public PlayerEquipment Equipment;
 
-	/// <summary>Cuerpo a ignorar en el rayo (el propio jugador).</summary>
-	[Export]
-	public CollisionObject3D ExcludedBody;
-
-	[Export]
-	public PlayerEquipment Equipment;
-
-	[Export]
-	public float Range = 6.0f;
-
-	/// <summary>Segundos entre golpe y golpe mientras se mantiene presionado.</summary>
-	[Export]
-	public float HitCooldown = 0.3f;
-
-	[Export(PropertyHint.Layers3DPhysics)]
-	public uint TargetLayers = 1;
+	[ExportGroup("Minado")]
+	[Export] public float Range = 6.0f;
+	// Segundos entre golpe y golpe mientras se mantiene presionado.
+	[Export] public float HitCooldown = 0.3f;
+	[Export(PropertyHint.Layers3DPhysics)] public uint TargetLayers = 1;
 
 	private DestructibleBlock target;
 	private float cooldownLeft;
@@ -53,7 +41,7 @@ public partial class MiningComponent : Node3D
 
 	public ToolTier Tool => Equipment?.Tool ?? ToolTier.Basic;
 
-	/// <summary>Lo apaga BuildComponent mientras se construye, para que el mismo clic no mine y construya a la vez.</summary>
+	// BuildComponent lo apaga mientras se construye, para que el clic no haga las dos cosas.
 	public bool Enabled
 	{
 		get => enabled;
@@ -143,8 +131,7 @@ public partial class MiningComponent : Node3D
 			CollectMineral(block.Mineral);
 			EmitSignal(SignalName.BlockDestroyed, (int)block.Mineral);
 
-			// El bloque ya se liberó: soltar el target ahora evita que el HUD
-			// siga mostrando datos de un nodo muerto durante un frame.
+			// El bloque ya se liberó: se suelta ya para que el HUD no muestre un nodo muerto.
 			target = null;
 			EmitSignal(SignalName.TargetLost);
 		}

@@ -1,11 +1,8 @@
 using Godot;
 
 /// <summary>
-/// Raycast desde el centro exacto de la pantalla (donde está dibujado el
-/// crosshair). Lo comparten todos los componentes que "apuntan" —
-/// MiningComponent, CombatComponent, InteractionComponent y BuildComponent —
-/// para que los cuatro vean exactamente lo mismo que ve el jugador, aunque
-/// la cámara tenga offset de hombro respecto del cuerpo.
+/// Raycast desde el centro de la pantalla (donde está el crosshair). Lo usan
+/// minar, pelear, interactuar y construir, para apuntar a lo mismo que ve el jugador.
 /// </summary>
 public static class CrosshairRay
 {

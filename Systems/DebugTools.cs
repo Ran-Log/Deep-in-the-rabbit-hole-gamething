@@ -1,20 +1,14 @@
 using Godot;
 
 /// <summary>
-/// Atajos de debug para probar y para mostrar el juego en la presentación
-/// sin tener que jugar 20 minutos hasta cada parte:
-/// - F1: volar / atravesar bloques (Player.NoClip).
-/// - F2: pasar a noche (con su oleada de zombies) o volver al día.
-/// - F3: dar materiales y comida (para probar mejoras y defensas).
-///
-/// Solo funciona en builds de debug (jugando desde el editor): en un
-/// build exportado <see cref="OS.IsDebugBuild"/> es false y este nodo se
-/// apaga solo, así no hace falta acordarse de borrarlo para entregar.
+/// Atajos para probar y para la demo: F1 volar, F2 día/noche, F3 materiales.
+/// Solo funcionan jugando desde el editor (en un build exportado se apagan solos).
 /// </summary>
 public partial class DebugTools : Node
 {
-	[Export]
-	public Player Player;
+	[ExportCategory("DebugTools")]
+	[ExportGroup("Referencias")]
+	[Export] public Player Player;
 
 	public override void _Ready()
 	{

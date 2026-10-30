@@ -1,113 +1,58 @@
 using Godot;
 
 /// <summary>
-/// Una habitación: un piso, y un perímetro de bloques generado automáticamente
-/// alrededor según <see cref="Width"/> y <see cref="Depth"/>.
-///
-/// El origen de la Room coincide con el CENTRO de la primera capa de bloques
-/// (celda y = 0), así que la superficie del piso queda media celda más abajo.
-/// Conviene ubicar las Rooms en múltiplos de BlockGrid.CellSize para que las
-/// celdas de habitaciones vecinas calcen entre sí.
-///
-/// Orden de generación: las Rooms generan sus paredes en <see cref="_Ready"/>,
-/// en el mismo orden en que Godot recorre el árbol de la escena (o sea, el
-/// orden de los nodos hijos bajo "Rooms" en main.tscn). Si dos Rooms llegaran
-/// a pedir la MISMA celda de grilla, gana la que se registró primero — ver
-/// <see cref="SpawnBlock"/>. Con el espaciado actual (Room separadas
-/// Width/Depth * CellSize en el mundo) las paredes de Rooms vecinas quedan
-/// una al lado de la otra, no superpuestas, así que este caso hoy no ocurre
-/// en main.tscn; queda documentado para quien agregue Rooms más juntas o
-/// cambie el espaciado.
+/// Una sala: un piso y un perímetro de bloques generado según Width y Depth.
+/// También pone el gas, el cofre y la salida si la sala los tiene.
+/// El origen es el centro de la primera capa de bloques; el piso queda media celda abajo.
 /// </summary>
 public partial class Room : Node3D
 {
-	[Export]
-	public PackedScene BlockScene;
+	[ExportCategory("Room")]
+	[ExportGroup("Referencias")]
+	[Export] public PackedScene BlockScene;
+	[Export] public PackedScene GasZoneScene;
+	[Export] public PackedScene ChestScene;
+	[Export] public PackedScene ExitScene;
+	[Export] public StaticBody3D FloorBody;
+	[Export] public MeshInstance3D FloorMesh;
+	[Export] public CollisionShape3D FloorCollision;
+	[Export] public Node3D BlockContainer;
 
-	/// <summary>Ancho total en celdas, incluyendo las dos paredes.</summary>
-	[Export(PropertyHint.Range, "3,64,1")]
-	public int Width = 10;
+	[ExportGroup("Tamaño")]
+	// Ancho y profundidad totales en celdas, contando las dos paredes.
+	[Export(PropertyHint.Range, "3,64,1")] public int Width = 10;
+	[Export(PropertyHint.Range, "3,64,1")] public int Depth = 10;
+	[Export(PropertyHint.Range, "1,16,1")] public int WallHeight = 3;
 
-	/// <summary>Profundidad total en celdas, incluyendo las dos paredes.</summary>
-	[Export(PropertyHint.Range, "3,64,1")]
-	public int Depth = 10;
+	[ExportGroup("Paredes")]
+	[Export] public MineralType WallMineral = MineralType.Stone;
+	[Export] public int WallBlockHealth = 5;
 
-	/// <summary>Altura del muro perimetral, en celdas.</summary>
-	[Export(PropertyHint.Range, "1,16,1")]
-	public int WallHeight = 3;
+	[ExportGroup("Contenido")]
+	// Posición en la grilla de salas (no de bloques). La pone WorldStreamer.
+	[Export] public Vector2I RoomGridCoord = Vector2I.Zero;
+	[Export] public bool HasGas = false;
 
-	[Export]
-	public MineralType WallMineral = MineralType.Stone;
+	[ExportGroup("Debug")]
+	// Avisa en consola cuando dos salas piden la misma celda.
+	[Export] public bool LogSharedWalls = false;
 
-	[Export]
-	public int WallBlockHealth = 5;
-
-	[Export]
-	public StaticBody3D FloorBody;
-
-	[Export]
-	public MeshInstance3D FloorMesh;
-
-	[Export]
-	public CollisionShape3D FloorCollision;
-
-	[Export]
-	public Node3D BlockContainer;
-
-	/// <summary>
-	/// Si está activo, imprime en consola cada vez que esta Room se topa con
-	/// una celda ya ocupada por otra Room (ver <see cref="SpawnBlock"/>).
-	/// Apagado por defecto para no ensuciar la consola en juego normal.
-	/// </summary>
-	[Export]
-	public bool LogSharedWalls = false;
-
-	/// <summary>
-	/// Coordenada de esta sala en la grilla infinita de salas (no en celdas
-	/// de bloque). La setea WorldStreamer al generarla; queda en (0,0) para
-	/// una Room puesta a mano en una escena (comportamiento de antes: sin
-	/// mundo infinito, todo pasa en la sala "(0,0)").
-	/// </summary>
-	[Export]
-	public Vector2I RoomGridCoord = Vector2I.Zero;
-
-	/// <summary>Si es true, esta Room genera una GasZone en su centro al entrar al árbol (ver RoomGenerator).</summary>
-	[Export]
-	public bool HasGas = false;
-
-	[Export]
-	public PackedScene GasZoneScene;
-
-	/// <summary>Contenido del cofre de la sala; None = sin cofre. Lo setea WorldStreamer desde el RoomSpec.</summary>
+	// Los pone WorldStreamer desde el RoomSpec. Loot = None significa sin cofre.
 	public ChestLoot Loot { get; set; } = ChestLoot.None;
-
 	public string NoteText { get; set; } = "";
-
 	public bool HasExit { get; set; }
 
-	[Export]
-	public PackedScene ChestScene;
-
-	[Export]
-	public PackedScene ExitScene;
-
-	/// <summary>
-	/// Centro aproximado del interior caminable, en coordenadas locales. Con
-	/// tamaño par el centro de la grilla queda corrido media celda (ver
-	/// RoomMath.CenterOffset), así que el interior no está centrado en el origen.
-	/// </summary>
+	// Con tamaño par, el centro de la grilla queda corrido media celda (ver RoomMath.CenterOffset).
 	private Vector3 InteriorCenter => new Vector3(-1.0f, FloorTopY, -1.0f);
 
-	/// <summary>Centro del interior en coordenadas globales (ej. para hacer aparecer enemigos adentro).</summary>
+	// Ej. para hacer aparecer enemigos adentro de la sala.
 	public Vector3 InteriorCenterGlobal => ToGlobal(InteriorCenter);
 
-	/// <summary>Altura local de la superficie del piso (media celda bajo el origen).</summary>
 	private float FloorTopY => -(BlockGrid.Instance?.CellSize ?? 2.0f) * 0.5f;
 
 	private Vector3I originCell;
 	private int spawnedBlocks;
 
-	/// <summary>Cuántos bloques generó esta habitación. Útil para el paso de medición.</summary>
 	public int SpawnedBlocks => spawnedBlocks;
 
 	public override void _Ready()
@@ -133,10 +78,7 @@ public partial class Room : Node3D
 		GlobalPosition = grid.GridToWorld(grid.WorldToGrid(GlobalPosition));
 	}
 
-	/// <summary>
-	/// Estira el piso para que cubra exactamente la huella de la habitación.
-	/// Ocupa la capa de celdas y = -1, o sea justo debajo del primer nivel de muro.
-	/// </summary>
+	// Estira el piso a todo el tamaño de la sala, en la capa y = -1.
 	private void ResizeFloor()
 	{
 		float cell = BlockGrid.Instance.CellSize;
@@ -148,8 +90,6 @@ public partial class Room : Node3D
 			boxMesh.Size = size;
 			FloorMesh.Position = center;
 
-			// Textura de piso generada por código (ver MineralTextureFactory):
-			// reemplaza cualquier material puesto a mano en Room.tscn.
 			FloorMesh.MaterialOverride = MineralTextureFactory.GetFloorMaterial();
 		}
 
@@ -168,8 +108,7 @@ public partial class Room : Node3D
 			return;
 		}
 
-		// La habitación tiene que estar alineada a los ejes: las celdas se
-		// calculan como offsets locales sin rotar.
+		// La sala no puede estar rotada: las celdas se calculan sin rotación.
 		originCell = BlockGrid.Instance.WorldToGrid(GlobalPosition);
 
 		for (int x = 0; x < Width; x++)
@@ -189,7 +128,6 @@ public partial class Room : Node3D
 		}
 	}
 
-	/// <summary>La lógica real vive en RoomMath (testeada aparte, ver Tests/GameLogic.Tests).</summary>
 	private bool IsPerimeter(int x, int z)
 	{
 		return RoomMath.IsPerimeterCell(x, z, Width, Depth);
@@ -210,9 +148,7 @@ public partial class Room : Node3D
 
 		var gasZone = GasZoneScene.Instantiate<GasZone>();
 
-		// Centro de la sala, un poco levantado del piso — cubre bien la
-		// altura del jugador sin meterse en el techo bajo (WallHeight suele
-		// ser 3 celdas = 6m).
+		// Un poco sobre el piso, para cubrir la altura del jugador.
 		gasZone.Position = new Vector3(0.0f, 0.5f, 0.0f);
 
 		AddChild(gasZone);
@@ -237,8 +173,7 @@ public partial class Room : Node3D
 		chest.NoteText = NoteText;
 		chest.RoomCoord = RoomGridCoord;
 
-		// En una sala con gas, el cofre va justo en el medio del gas: el
-		// dilema "¿entro o no?" del GDD tiene que tener premio.
+		// Con gas, el cofre va en el medio: el dilema "¿entro o no?" del GDD necesita premio.
 		chest.Position = HasGas
 			? InteriorCenter
 			: InteriorCenter + new Vector3(4.0f, 0.0f, -4.0f);
@@ -270,9 +205,7 @@ public partial class Room : Node3D
 
 		if (grid.IsOccupied(originCell + localCell))
 		{
-			// Habitaciones vecinas pueden compartir pared: la primera en
-			// registrarse gana (ver el comentario de orden de generación en
-			// el doc-comment de la clase).
+			// Dos salas vecinas pueden pedir la misma celda: gana la primera.
 			if (LogSharedWalls)
 			{
 				GD.Print($"{Name}: celda {originCell + localCell} ya ocupada por otra Room; se omite este bloque.");
@@ -283,10 +216,7 @@ public partial class Room : Node3D
 
 		if (WorldState.Instance != null && WorldState.Instance.IsCellMined(RoomGridCoord, localCell))
 		{
-			// Ya lo habían minado en una visita anterior (mundo infinito
-			// descargado y vuelto a cargar) o en una partida guardada: no se
-			// regenera, para que el streaming no "repare" agujeros que hizo
-			// el jugador.
+			// Ya se había minado antes: no se regenera al volver a cargar la sala.
 			return;
 		}
 
@@ -296,16 +226,10 @@ public partial class Room : Node3D
 		block.MaxHealth = WallBlockHealth;
 		block.RequiredTool = MineralRules.RequiredTool(WallMineral);
 
-		// La posición se fija ANTES de AddChild: al entrar al árbol el bloque
-		// corre su _Ready, y ahí ya necesita estar donde corresponde para
-		// registrarse en la celda correcta.
+		// Antes de AddChild: en su _Ready el bloque se registra en la celda donde esté.
 		block.Position = grid.GridToWorld(localCell);
 
-		// "localCell" es un parámetro propio de ESTA llamada a SpawnBlock (no
-		// una variable de loop compartida), así que el lambda lo captura
-		// correctamente sin necesidad de copiarlo aparte.
-		// Se marca minada sin importar quién la rompió (jugador o zombie);
-		// el mineral lo suma MiningComponent solo cuando mina el jugador.
+		// Se marca minada la rompa quien la rompa (jugador o zombie).
 		block.Destroyed += (_) => WorldState.Instance?.MarkCellMined(RoomGridCoord, localCell);
 
 		(BlockContainer ?? (Node3D)this).AddChild(block);

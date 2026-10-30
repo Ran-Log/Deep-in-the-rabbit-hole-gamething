@@ -1,17 +1,10 @@
 /// <summary>
-/// Diseño a mano del Nivel 1 ("túneles superficiales", ver Beat Chart del
-/// GDD) puesto encima del mundo procedural: las salas cercanas al
-/// campamento tienen contenido fijo para que la primera partida siempre
-/// enseñe lo mismo en el mismo orden; el resto del mundo sigue saliendo de
-/// la semilla (ver RoomGenerator).
-///
-/// Coordenadas en la grilla de SALAS (no de bloques). -Z es "norte".
+/// Salas fijas del nivel 1 cerca del campamento (beat chart del GDD), para que
+/// la primera partida siempre enseñe lo mismo. Coordenadas de sala; -Z es el norte.
 ///
 ///            x=0          x=1           x=2            x=3
 ///   z=-1                Pico viejo    Nota          GRIETA (hierro)
 ///   z= 0   Campamento   Mochila       Gas + comida
-///
-/// Sin GodotSharp (testeable en Tests/GameLogic.Tests).
 /// </summary>
 public static class LevelOneLayout
 {
@@ -82,7 +75,7 @@ public static class LevelOneLayout
 		}
 	}
 
-	/// <summary>Nota genérica para cofres de nota en salas procedurales: orienta hacia la salida en vez de dar un mapa.</summary>
+	// Nota para los cofres de salas procedurales: orienta hacia la salida sin dar un mapa.
 	public static string HintTowardsExit(int roomX, int roomZ)
 	{
 		int dx = ExitRoomX - roomX;

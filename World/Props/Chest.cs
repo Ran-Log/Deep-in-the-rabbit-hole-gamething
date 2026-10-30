@@ -1,26 +1,20 @@
 using Godot;
 
 /// <summary>
-/// Cofre / restos de alguien que quedó atrapado antes (GDD 2.1.5:
-/// "encontrar equipamiento abandonado"). Lo genera Room según su RoomSpec;
-/// guarda una sola cosa (<see cref="ChestLoot"/>).
-///
-/// Que ya se abrió se guarda en WorldState por coordenada de sala: si el
-/// streaming descarga la sala y la vuelve a cargar, el cofre aparece
-/// abierto y vacío en vez de regalar el botín de nuevo.
+/// Cofre o restos de alguien atrapado antes (GDD 2.1.5). Guarda una sola cosa.
+/// Queda marcado como abierto en WorldState, para no regalar el botín dos veces.
 /// </summary>
 public partial class Chest : Interactable
 {
-	[Export]
-	public Node3D LidPivot;
+	[ExportCategory("Chest")]
+	[ExportGroup("Referencias")]
+	[Export] public Node3D LidPivot;
 
-	/// <summary>Raciones que trae un cofre de comida.</summary>
-	[Export]
-	public int FoodAmount = 2;
-
-	/// <summary>Espacio extra que da una mochila encontrada.</summary>
-	[Export]
-	public int BackpackSlots = 15;
+	[ExportGroup("Botín")]
+	// Raciones de un cofre de comida.
+	[Export] public int FoodAmount = 2;
+	// Espacio extra que da la mochila encontrada.
+	[Export] public int BackpackSlots = 15;
 
 	public ChestLoot Loot { get; set; } = ChestLoot.Food;
 
@@ -63,8 +57,7 @@ public partial class Chest : Interactable
 
 		if (!GiveLoot(player))
 		{
-			// No se pudo (ej. mochila llena): el cofre queda cerrado con su
-			// contenido, para volver más tarde.
+			// Ej. mochila llena: queda cerrado para volver más tarde.
 			return;
 		}
 

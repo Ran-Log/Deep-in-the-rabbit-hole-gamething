@@ -1,80 +1,44 @@
 using Godot;
 
 /// <summary>
-/// HUD del jugador: crosshair, bloque apuntado, texto de interacción,
-/// mensajes cortos, notas encontradas, estado de la mochila/pico y overlay
-/// de debug. Solo ESCUCHA señales (de sus componentes hermanos, de
-/// WorldState y de GameEvents); no toca el mundo ni consulta bloques por su
-/// cuenta.
+/// HUD del jugador: crosshair, bloque apuntado, texto de interacción, mensajes,
+/// notas, estado de mochila y pico, y debug. Solo escucha señales; no toca el mundo.
 /// </summary>
 public partial class Hud : CanvasLayer
 {
-	[Export]
-	public MiningComponent Mining;
+	[ExportCategory("Hud")]
+	[ExportGroup("Componentes del jugador")]
+	[Export] public MiningComponent Mining;
+	[Export] public HealthComponent Health;
+	[Export] public InteractionComponent Interaction;
+	[Export] public BuildComponent Build;
+	[Export] public PlayerEquipment Equipment;
 
-	[Export]
-	public HealthComponent Health;
+	[ExportGroup("Nodos de UI")]
+	[Export] public Control Crosshair;
+	[Export] public Label TargetLabel;
+	[Export] public Label PromptLabel;
+	[Export] public Label MessageLabel;
+	[Export] public Label StatusLabel;
+	[Export] public Label HealthLabel;
+	[Export] public Label BuildHintLabel;
+	[Export] public Control HelpPanel;
+	[Export] public Control NotePanel;
+	[Export] public Label NoteLabel;
+	[Export] public Label DebugLabel;
 
-	[Export]
-	public InteractionComponent Interaction;
+	[ExportGroup("Tiempos")]
+	[Export] public float MessageSeconds = 3.0f;
+	[Export] public float NoteSeconds = 14.0f;
 
-	[Export]
-	public BuildComponent Build;
+	[ExportGroup("Colores del crosshair")]
+	[Export] public Color IdleCrosshairColor = new Color(1.0f, 1.0f, 1.0f, 0.6f);
+	[Export] public Color TargetCrosshairColor = new Color(1.0f, 0.85f, 0.35f, 1.0f);
+	// Cuando el bloque apuntado pide un pico mejor.
+	[Export] public Color BlockedCrosshairColor = new Color(1.0f, 0.35f, 0.35f, 1.0f);
 
-	[Export]
-	public PlayerEquipment Equipment;
-
-	[Export]
-	public Label PromptLabel;
-
-	[Export]
-	public Label MessageLabel;
-
-	[Export]
-	public Label StatusLabel;
-
-	[Export]
-	public Label BuildHintLabel;
-
-	[Export]
-	public Control HelpPanel;
-
-	[Export]
-	public Control NotePanel;
-
-	[Export]
-	public Label NoteLabel;
-
-	[Export]
-	public float MessageSeconds = 3.0f;
-
-	[Export]
-	public float NoteSeconds = 14.0f;
-
-	[Export]
-	public Label HealthLabel;
-
-	[Export]
-	public Control Crosshair;
-
-	[Export]
-	public Label TargetLabel;
-
-	[Export]
-	public Label DebugLabel;
-
-	[Export]
-	public Color IdleCrosshairColor = new Color(1.0f, 1.0f, 1.0f, 0.6f);
-
-	[Export]
-	public Color TargetCrosshairColor = new Color(1.0f, 0.85f, 0.35f, 1.0f);
-
-	/// <summary>Crosshair cuando el bloque apuntado exige mejor herramienta.</summary>
-	[Export]
-	public Color BlockedCrosshairColor = new Color(1.0f, 0.35f, 0.35f, 1.0f);
-
-	[Export]
-	public bool ShowDebug = true;
+	[ExportGroup("Debug")]
+	[Export] public bool ShowDebug = true;
 
 	private DestructibleBlock watchedBlock;
 	private float messageTimeLeft;
@@ -216,7 +180,7 @@ public partial class Hud : CanvasLayer
 		}
 	}
 
-	/// <summary>Línea de estado: mochila, comida y pico. Se refresca solo cuando cambia algo (señales), no cada frame.</summary>
+	// Mochila, comida y pico. Se actualiza por señales, no cada frame.
 	private void RefreshStatus()
 	{
 		if (StatusLabel == null || WorldState.Instance == null)
@@ -261,7 +225,7 @@ public partial class Hud : CanvasLayer
 		RefreshBuildMenu();
 	}
 
-	/// <summary>Lista de construcciones con la elegida marcada. Sale de BuildComponent.Options, así una opción nueva aparece sola.</summary>
+	// Sale de BuildComponent.Options: una construcción nueva aparece sola.
 	private void RefreshBuildMenu()
 	{
 		if (BuildHintLabel == null)
@@ -296,7 +260,7 @@ public partial class Hud : CanvasLayer
 		messageTimeLeft = MessageSeconds;
 	}
 
-	/// <summary>El mensaje se queda fijo y se desvanece en el último medio segundo.</summary>
+	// El mensaje se desvanece en el último medio segundo.
 	private void TickMessage(float delta)
 	{
 		if (MessageLabel == null || messageTimeLeft <= 0.0f)

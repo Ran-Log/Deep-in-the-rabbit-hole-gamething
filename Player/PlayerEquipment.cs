@@ -1,23 +1,18 @@
 using Godot;
 
 /// <summary>
-/// Equipamiento del jugador (hoy: el pico). El nivel vive en WorldState
-/// para que se guarde con la partida y sobreviva a reiniciar la escena;
-/// este nodo es la cara "del jugador" de ese dato: los componentes que
-/// pegan (MiningComponent, CombatComponent) le preguntan el nivel y el
-/// daño acá, sin saber de WorldState.
-///
-/// El mismo pico sirve para minar y para pelear (GDD 2.1.7: "usa su
-/// herramienta o arma equipada"), así una mejora se nota en las dos cosas.
+/// Equipamiento del jugador (hoy, el pico). El nivel se guarda en WorldState;
+/// minar y pelear le preguntan el daño a este nodo. El mismo pico sirve para las dos cosas (GDD 2.1.7).
 /// </summary>
 public partial class PlayerEquipment : Node
 {
 	[Signal]
 	public delegate void ToolChangedEventHandler(int tier);
 
-	/// <summary>Daño extra contra enemigos sobre el daño del pico a bloques.</summary>
-	[Export]
-	public int CombatBonusDamage = 1;
+	[ExportCategory("PlayerEquipment")]
+	[ExportGroup("Combate")]
+	// Daño extra contra enemigos, sumado al daño del pico.
+	[Export] public int CombatBonusDamage = 1;
 
 	public ToolTier Tool => WorldState.Instance?.Tool ?? ToolTier.Basic;
 

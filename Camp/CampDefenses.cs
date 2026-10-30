@@ -2,35 +2,25 @@ using Godot;
 using System.Linq;
 
 /// <summary>
-/// Barricadas que el jugador construye dentro del campamento (GDD 2.1.8).
-/// Son DestructibleBlock normales — se registran en BlockGrid, los zombies
-/// las rompen a golpes y el jugador las puede volver a minar — pero viven
-/// acá, fuera del WorldStreamer, para que no se descarguen junto con la
-/// sala del campamento al alejarse.
-///
-/// Las celdas construidas se guardan en WorldState, así que sobreviven a
-/// reiniciar la escena (morir) y al guardado en disco.
-///
-/// BuildComponent (en el jugador) encuentra este nodo por el grupo
-/// "camp_defenses": el jugador y el campamento son escenas distintas y no
-/// se pueden referenciar por ruta en el editor.
+/// Barricadas del campamento (GDD 2.1.8). Son bloques normales que los zombies
+/// rompen a golpes. Viven acá y no en la sala, para que no se descarguen al alejarse.
+/// Se guardan en WorldState. BuildComponent encuentra este nodo por su grupo.
 /// </summary>
 public partial class CampDefenses : Node3D, IStructurePlacer
 {
 	public const string Group = "camp_defenses";
 
-	[Export]
-	public PackedScene BlockScene;
+	[ExportCategory("CampDefenses")]
+	[ExportGroup("Referencias")]
+	[Export] public PackedScene BlockScene;
 
-	[Export]
-	public int DefenseHealth = 12;
+	[ExportGroup("Barricada")]
+	[Export] public int DefenseHealth = 12;
 
-	/// <summary>Celda mínima (global, de BlockGrid) donde se puede construir. Por defecto, el interior de la sala (0,0).</summary>
-	[Export]
-	public Vector3I MinCell = new Vector3I(-5, 0, -5);
-
-	[Export]
-	public Vector3I MaxCell = new Vector3I(4, 1, 4);
+	[ExportGroup("Zona del campamento")]
+	// Celdas (de BlockGrid) donde se puede construir. Por defecto, el interior de la sala (0,0).
+	[Export] public Vector3I MinCell = new Vector3I(-5, 0, -5);
+	[Export] public Vector3I MaxCell = new Vector3I(4, 1, 4);
 
 	public override void _EnterTree()
 	{
@@ -50,8 +40,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 			return;
 		}
 
-		// Copia con ToList: SpawnDefense no modifica la lista, pero así el
-		// recorrido no depende de eso.
+		// Se recorre una copia, por si la lista cambia mientras se itera.
 		foreach (Vector3I cell in WorldState.Instance.GetPlacedDefenses().ToList())
 		{
 			SpawnDefense(cell);
@@ -65,7 +54,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 			&& cell.Z >= MinCell.Z && cell.Z <= MaxCell.Z;
 	}
 
-	/// <summary>Si no se puede, <paramref name="reason"/> dice por qué (para el HUD). Las barricadas se apilan, así que no exige apoyarse arriba de algo.</summary>
+	// reason explica por qué no (para el HUD). Las barricadas se apilan, no necesitan suelo.
 	public bool CanPlace(Vector3I cell, bool onTopOfSurface, out string reason)
 	{
 		BlockGrid grid = BlockGrid.Instance;
@@ -122,8 +111,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 		block.RequiredTool = ToolTier.Basic;
 		block.DisplayName = "Barricada";
 
-		// Igual que en Room.SpawnBlock: la posición va ANTES de AddChild,
-		// porque el bloque se alinea y registra en la grilla en su _Ready.
+		// Antes de AddChild: en su _Ready el bloque se registra en la grilla.
 		block.Position = ToLocal(BlockGrid.Instance.GridToWorld(cell));
 		block.Destroyed += (_) => WorldState.Instance?.RemoveDefense(cell);
 

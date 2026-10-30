@@ -1,31 +1,21 @@
 using Godot;
 
 /// <summary>
-/// Pantalla de mochila (GDD 2.1.3): se abre/cierra con "toggle_inventory"
-/// (Tab). Muestra cuánto espacio queda y, por cada ítem, permite USAR los
-/// consumibles (comida) y SOLTAR uno para hacer espacio. Mientras está
-/// abierta libera el mouse, y el jugador no puede caminar ni minar (todos
-/// los componentes miran CrosshairRay.PlayerHasControl), así que revisar
-/// la mochila lejos del campamento es un riesgo, como pide el GDD.
-///
-/// Lee directo de WorldState (autoload). Las filas se arman en código (no
-/// a mano en el .tscn) para no depender de una lista fija de nodos — un
-/// ítem nuevo aparece solo, sin tocar la escena.
+/// Mochila (GDD 2.1.3), con Tab: muestra el espacio libre y permite usar la comida
+/// o soltar ítems. Mientras está abierta el jugador no se mueve (el GDD quiere ese riesgo).
+/// Las filas se arman por código, así un ítem nuevo aparece sin tocar la escena.
 /// </summary>
 public partial class InventoryScreen : CanvasLayer
 {
-	[Export]
-	public Control Panel;
+	[ExportCategory("InventoryScreen")]
+	[ExportGroup("Referencias")]
+	// Para el botón "Usar" de la comida.
+	[Export] public EatComponent Eat;
 
-	[Export]
-	public VBoxContainer EntriesContainer;
-
-	[Export]
-	public Label CapacityLabel;
-
-	/// <summary>Para el botón "Usar" de la comida (vive en el jugador).</summary>
-	[Export]
-	public EatComponent Eat;
+	[ExportGroup("Nodos de UI")]
+	[Export] public Control Panel;
+	[Export] public VBoxContainer EntriesContainer;
+	[Export] public Label CapacityLabel;
 
 	private bool open;
 	private static Texture2D foodIcon;

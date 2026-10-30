@@ -1,34 +1,25 @@
 using Godot;
 
 /// <summary>
-/// Ataque cuerpo a cuerpo con el pico (GDD 2.1.7). Usa el mismo botón que
-/// minar ("mine"): si la mira apunta a un enemigo, le pega; si apunta a un
-/// bloque, MiningComponent se encarga. Los dos usan el mismo rayo
-/// (CrosshairRay), así que nunca reaccionan los dos al mismo objetivo.
+/// Ataque con el pico (GDD 2.1.7). Usa el mismo botón que minar: si la mira
+/// apunta a un enemigo le pega; si apunta a un bloque, se encarga MiningComponent.
 /// </summary>
 public partial class CombatComponent : Node3D
 {
 	[Signal]
 	public delegate void EnemyHitEventHandler(Zombie enemy);
 
-	[Export]
-	public Camera3D Camera;
+	[ExportCategory("CombatComponent")]
+	[ExportGroup("Referencias")]
+	[Export] public Camera3D Camera;
+	[Export] public CollisionObject3D ExcludedBody;
+	[Export] public PlayerEquipment Equipment;
 
-	[Export]
-	public CollisionObject3D ExcludedBody;
-
-	[Export]
-	public PlayerEquipment Equipment;
-
-	/// <summary>Alcance medido desde la cámara (que está ~2 m detrás del jugador).</summary>
-	[Export]
-	public float Range = 5.0f;
-
-	[Export]
-	public float AttackCooldown = 0.45f;
-
-	[Export(PropertyHint.Layers3DPhysics)]
-	public uint TargetLayers = 1;
+	[ExportGroup("Combate")]
+	// Se mide desde la cámara, que está ~2 m detrás del jugador.
+	[Export] public float Range = 5.0f;
+	[Export] public float AttackCooldown = 0.45f;
+	[Export(PropertyHint.Layers3DPhysics)] public uint TargetLayers = 1;
 
 	private float cooldownLeft;
 
