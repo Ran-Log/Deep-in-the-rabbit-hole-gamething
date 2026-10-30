@@ -28,16 +28,16 @@ public static class MineralTextureFactory
 			return cached;
 		}
 
-		MineralMaterialProfile profile = MineralMaterialProfile.For(mineral);
+		MineralDefinition look = GameData.Mineral(mineral);
 
 		// Semilla distinta por mineral, para que no compartan el mismo patrón.
 		int seed = TextureSeed + (int)mineral * 10;
 
 		var material = new StandardMaterial3D
 		{
-			AlbedoTexture = BuildTexture(profile, seed, tileable: false),
-			Metallic = profile.Metallic,
-			Roughness = profile.Roughness,
+			AlbedoTexture = BuildTexture(look, seed, tileable: false),
+			Metallic = look.Metallic,
+			Roughness = look.Roughness,
 		};
 
 		blockMaterialCache[mineral] = material;
@@ -58,13 +58,13 @@ public static class MineralTextureFactory
 			return floorMaterialCache;
 		}
 
-		MineralMaterialProfile profile = MineralMaterialProfile.Floor();
+		MineralDefinition look = GameData.Floor;
 
 		floorMaterialCache = new StandardMaterial3D
 		{
-			AlbedoTexture = BuildTexture(profile, FloorSeed, tileable: true),
-			Metallic = profile.Metallic,
-			Roughness = profile.Roughness,
+			AlbedoTexture = BuildTexture(look, FloorSeed, tileable: true),
+			Metallic = look.Metallic,
+			Roughness = look.Roughness,
 
 			// El piso es una sola caja estirada: con triplanar la textura se repite en vez de estirarse.
 			Uv1Triplanar = true,
@@ -75,7 +75,7 @@ public static class MineralTextureFactory
 	}
 
 	// Una imagen de ruido para el color base y otra para las vetas; se mezclan pixel a pixel.
-	private static ImageTexture BuildTexture(MineralMaterialProfile profile, int seed, bool tileable)
+	private static ImageTexture BuildTexture(MineralDefinition look, int seed, bool tileable)
 	{
 		Image baseNoise = MakeNoiseImage(seed, BaseFrequency, octaves: 4, tileable);
 		Image veinNoise = MakeNoiseImage(seed + 1, VeinFrequency, octaves: 2, tileable);
@@ -87,8 +87,8 @@ public static class MineralTextureFactory
 			for (int x = 0; x < TextureSize; x++)
 			{
 				// Las imágenes de ruido son en escala de grises: R va de 0 a 1.
-				Color color = BaseColor(profile, baseNoise.GetPixel(x, y).R);
-				color = AddVein(profile, color, veinNoise.GetPixel(x, y).R);
+				Color color = BaseColor(look, baseNoise.GetPixel(x, y).R);
+				color = AddVein(look, color, veinNoise.GetPixel(x, y).R);
 
 				image.SetPixel(x, y, color);
 			}
@@ -115,27 +115,26 @@ public static class MineralTextureFactory
 	}
 
 	// Varía el color base entre 70% y 115% según el ruido.
-	private static Color BaseColor(MineralMaterialProfile profile, float noise)
+	private static Color BaseColor(MineralDefinition look, float noise)
 	{
-		return new Color(
-			Mathf.Lerp(profile.BaseR * 0.7f, profile.BaseR * 1.15f, noise),
-			Mathf.Lerp(profile.BaseG * 0.7f, profile.BaseG * 1.15f, noise),
-			Mathf.Lerp(profile.BaseB * 0.7f, profile.BaseB * 1.15f, noise));
+		Color dark = look.BaseColor * 0.7f;
+		Color light = look.BaseColor * 1.15f;
+
+		return dark.Lerp(light, noise);
 	}
 
 	// Donde el ruido de vetas supera el umbral, se pinta hacia el color de la veta.
-	private static Color AddVein(MineralMaterialProfile profile, Color color, float noise)
+	private static Color AddVein(MineralDefinition look, Color color, float noise)
 	{
-		float threshold = 1.0f - profile.VeinDensity;
+		float threshold = 1.0f - look.VeinDensity;
 
-		if (profile.VeinDensity <= 0.0f || noise <= threshold)
+		if (look.VeinDensity <= 0.0f || noise <= threshold)
 		{
 			return color;
 		}
 
-		float t = (noise - threshold) / profile.VeinDensity;
-		var vein = new Color(profile.VeinR, profile.VeinG, profile.VeinB);
+		float t = (noise - threshold) / look.VeinDensity;
 
-		return color.Lerp(vein, Mathf.Clamp(t, 0.0f, 1.0f));
+		return color.Lerp(look.VeinColor, Mathf.Clamp(t, 0.0f, 1.0f));
 	}
 }

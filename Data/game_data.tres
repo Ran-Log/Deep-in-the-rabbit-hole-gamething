@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="GameDataCatalog" format=3]
+
+[ext_resource type="Script" uid="uid://b3vc3wd260br3" path="res://Data/Definitions/GameDataCatalog.cs" id="1_catalog"]
+[ext_resource type="Script" uid="uid://b6y610f743" path="res://Data/Definitions/MineralDefinition.cs" id="2_mineral"]
+[ext_resource type="Script" uid="uid://cs5et26p5r0pv" path="res://Data/Definitions/UpgradeRecipe.cs" id="3_recipe"]
+[ext_resource type="Resource" uid="uid://b5tgbneo2iow8" path="res://Data/Minerals/stone.tres" id="4_stone"]
+[ext_resource type="Resource" path="res://Data/Minerals/coal.tres" id="5_coal"]
+[ext_resource type="Resource" path="res://Data/Minerals/iron.tres" id="6_iron"]
+[ext_resource type="Resource" path="res://Data/Minerals/gold.tres" id="7_gold"]
+[ext_resource type="Resource" path="res://Data/Minerals/bedrock.tres" id="8_bedrock"]
+[ext_resource type="Resource" path="res://Data/Minerals/floor.tres" id="9_floor"]
+[ext_resource type="Resource" path="res://Data/Upgrades/pico_reforzado.tres" id="10_reforzado"]
+[ext_resource type="Resource" path="res://Data/Upgrades/pico_avanzado.tres" id="11_avanzado"]
+
+[resource]
+script = ExtResource("1_catalog")
+Minerals = Array[ExtResource("2_mineral")]([ExtResource("4_stone"), ExtResource("5_coal"), ExtResource("6_iron"), ExtResource("7_gold"), ExtResource("8_bedrock")])
+Floor = ExtResource("9_floor")
+Upgrades = Array[ExtResource("3_recipe")]([ExtResource("10_reforzado"), ExtResource("11_avanzado")])
+metadata/_custom_type_script = "uid://b3vc3wd260br3"

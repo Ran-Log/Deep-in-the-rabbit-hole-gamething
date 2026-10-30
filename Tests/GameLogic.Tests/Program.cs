@@ -115,29 +115,6 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("guardado: el estado restaurado conserva el inventario", restored.GetMineralCount("Stone") == 4 && restored.GetMineralCount("Coal") == 1);
 }
 
-// --- MineralMaterialProfile ---
-
-Check(
-	"materiales: el oro es más metálico que la piedra",
-	MineralMaterialProfile.For(MineralType.Gold).Metallic > MineralMaterialProfile.For(MineralType.Stone).Metallic
-);
-Check(
-	"materiales: el bedrock es más rugoso (menos pulido) que el oro",
-	MineralMaterialProfile.For(MineralType.Bedrock).Roughness > MineralMaterialProfile.For(MineralType.Gold).Roughness
-);
-Check(
-	"materiales: el piso de las salas no es metálico (es tierra/roca, no un bloque de mineral)",
-	MineralMaterialProfile.Floor().Metallic == 0.0f
-);
-Check(
-	"materiales: todos los parámetros PBR de cada mineral quedan en rango [0,1]",
-	Enum.GetValues<MineralType>().All(mineral => {
-		var p = MineralMaterialProfile.For(mineral);
-		float[] values = { p.BaseR, p.BaseG, p.BaseB, p.VeinR, p.VeinG, p.VeinB, p.Metallic, p.Roughness, p.VeinDensity };
-		return values.All(v => v >= 0.0f && v <= 1.0f);
-	})
-);
-
 // --- WorldSaveState: mochila con capacidad ---
 
 {
@@ -150,39 +127,32 @@ Check(
 	Check("mochila: quitar todo borra la entrada", state.RemoveItem("Stone", 3) && !state.MineralCounts.ContainsKey("Stone"));
 }
 
-// --- WorldSaveState: cobrar costos (mejoras / defensas) ---
+// --- WorldSaveState: cobrar un costo (todo o nada) ---
+// Las recetas reales están en Data/Upgrades y se prueban en Tests/Integration/GameDataTest.
 
 {
 	var state = new WorldSaveState();
 	state.AddMineral("Stone", 8);
 	state.AddMineral("Coal", 3);
 
-	UpgradeTable.TryGetNext(ToolTier.Basic, out ToolTier next, out var cost);
+	var cost = new System.Collections.Generic.Dictionary<string, int> { ["Stone"] = 8, ["Coal"] = 4 };
 
-	Check("mejora: de Básico se pasa a Reforzado", next == ToolTier.Reinforced);
-	Check("mejora: sin carbón suficiente no se cobra nada", !state.TrySpend(cost) && state.GetMineralCount("Stone") == 8);
+	Check("costo: si falta algo no se cobra nada", !state.TrySpend(cost) && state.GetMineralCount("Stone") == 8);
 
 	state.AddMineral("Coal", 1);
 
-	Check("mejora: con todo lo necesario se cobra el costo completo", state.TrySpend(cost) && state.GetMineralCount("Stone") == 0 && state.GetMineralCount("Coal") == 0);
-	Check("mejora: el pico avanzado es el máximo", !UpgradeTable.TryGetNext(ToolTier.Advanced, out _, out _));
+	Check("costo: con todo lo necesario se cobra completo", state.TrySpend(cost) && state.GetMineralCount("Stone") == 0 && state.GetMineralCount("Coal") == 0);
 }
-
-// --- Reglas de minerales ---
-
-Check("reglas: la piedra se rompe con el pico básico", MineralRules.RequiredTool(MineralType.Stone) == ToolTier.Basic);
-Check("reglas: el hierro exige pico reforzado", MineralRules.RequiredTool(MineralType.Iron) == ToolTier.Reinforced);
-Check("reglas: mejor pico = más daño", MineralRules.ToolDamage(ToolTier.Advanced) > MineralRules.ToolDamage(ToolTier.Basic));
 
 // --- Nivel 1 ---
 
 {
 	Check("nivel 1: el campamento (0,0) no tiene gas ni cofre", LevelOneLayout.TryGet(0, 0, out var camp) && !camp.HasGas && camp.Loot == ChestLoot.None);
 	Check(
-		"nivel 1: la sala de salida existe y exige pico reforzado (hierro)",
+		"nivel 1: la sala de salida existe y es de hierro (pide pico reforzado)",
 		LevelOneLayout.TryGet(LevelOneLayout.ExitRoomX, LevelOneLayout.ExitRoomZ, out var exit)
 			&& exit.HasExit
-			&& MineralRules.RequiredTool(exit.Mineral) == ToolTier.Reinforced
+			&& exit.Mineral == MineralType.Iron
 	);
 	Check("nivel 1: hay un pico abandonado en el nivel (la salida es alcanzable sin farmear)", LevelOneLayout.TryGet(1, -1, out var tool) && tool.Loot == ChestLoot.Pickaxe);
 	Check("nivel 1: salas lejanas quedan para la generación procedural", !LevelOneLayout.TryGet(20, 20, out _));

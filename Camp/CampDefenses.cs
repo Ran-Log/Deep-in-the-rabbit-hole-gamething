@@ -10,6 +10,8 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 {
 	public const string Group = "camp_defenses";
 
+	private static readonly string StoneId = ItemCatalog.IdOf(MineralType.Stone);
+
 	[ExportCategory("CampDefenses")]
 	[ExportGroup("Referencias")]
 	[Export] public PackedScene BlockScene;
@@ -77,7 +79,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 			return false;
 		}
 
-		if (WorldState.Instance == null || WorldState.Instance.GetItemCount("Stone") < UpgradeTable.DefenseStoneCost)
+		if (WorldState.Instance == null || WorldState.Instance.GetItemCount(StoneId) < UpgradeTable.DefenseStoneCost)
 		{
 			reason = $"Necesitas {UpgradeTable.DefenseStoneCost} Piedra";
 			return false;
@@ -95,7 +97,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 			return false;
 		}
 
-		WorldState.Instance.RemoveItem("Stone", UpgradeTable.DefenseStoneCost);
+		WorldState.Instance.RemoveItem(StoneId, UpgradeTable.DefenseStoneCost);
 		WorldState.Instance.AddDefense(cell);
 		SpawnDefense(cell);
 
