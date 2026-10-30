@@ -9,3 +9,7 @@ obj/
 
 # Herramientas locales (ej. medición de rendimiento). No son parte del juego.
 /Tools/
+
+# Generado por GdUnit4 al correr "dotnet test"
+/gdunit4_testadapter*/
+/TestResults/

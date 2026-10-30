@@ -7,13 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Tests/ tiene su propio .csproj (Tests/GameLogic.Tests), independiente
-         de este. Sin este Remove, el globbing por defecto de este proyecto
-         (que incluye TODO *.cs bajo esta carpeta) también intenta compilar
-         Program.cs de ahí adentro, y como tiene top-level statements pero
-         este proyecto no es un ejecutable, tira CS8805. -->
-    <Compile Remove="Tests/**/*.cs" />
+    <!-- GameLogic.Tests es un proyecto aparte (tests sin Godot, con su propio Program.cs). -->
+    <Compile Remove="Tests/GameLogic.Tests/**/*.cs" />
     <Compile Remove="ELIMINABLE/**/*.cs" />
     <Compile Remove="_to_delete/**/*.cs" />
+  </ItemGroup>
+
+  <!-- Tests de integración con GdUnit4 (C#), en Tests/Integration. Se corren con
+       "dotnet test" y no van en el build de entrega (ExportRelease). -->
+  <ItemGroup Condition=" '$(Configuration)' != 'ExportRelease' ">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="gdUnit4.api" Version="5.1.0-rc6" />
+    <PackageReference Include="gdUnit4.test.adapter" Version="3.2.0" />
+    <PackageReference Include="gdUnit4.analyzers" Version="1.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'ExportRelease' ">
+    <Compile Remove="Tests/Integration/**/*.cs" />
+    <!-- Lo genera el adaptador de GdUnit4 al correr los tests; usa sus paquetes. -->
+    <Compile Remove="gdunit4_testadapter*/**/*.cs" />
   </ItemGroup>
 </Project>
