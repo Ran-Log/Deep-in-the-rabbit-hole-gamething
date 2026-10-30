@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="UpgradeRecipe" format=3]
+
+[ext_resource type="Script" uid="uid://cs5et26p5r0pv" path="res://Data/Definitions/UpgradeRecipe.cs" id="1_recipe"]
+[ext_resource type="Script" uid="uid://qrau7en4wn8" path="res://Data/Definitions/MineralCost.cs" id="2_cost"]
+
+[sub_resource type="Resource" id="Resource_stone"]
+script = ExtResource("2_cost")
+Mineral = 0
+Amount = 8
+metadata/_custom_type_script = "uid://qrau7en4wn8"
+
+[sub_resource type="Resource" id="Resource_coal"]
+script = ExtResource("2_cost")
+Mineral = 1
+Amount = 4
+metadata/_custom_type_script = "uid://qrau7en4wn8"
+
+[resource]
+script = ExtResource("1_recipe")
+From = 1
+To = 2
+Cost = Array[ExtResource("2_cost")]([SubResource("Resource_stone"), SubResource("Resource_coal")])
+metadata/_custom_type_script = "uid://cs5et26p5r0pv"

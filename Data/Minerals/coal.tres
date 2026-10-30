@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MineralDefinition" format=3]
+
+[ext_resource type="Script" uid="uid://b6y610f743" path="res://Data/Definitions/MineralDefinition.cs" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+Mineral = 1
+RequiredTool = 1
+BaseColor = Color(0.045, 0.045, 0.055, 1)
+VeinColor = Color(0.22, 0.24, 0.28, 1)
+VeinDensity = 0.08
+Metallic = 0.25
+Roughness = 0.55
+metadata/_custom_type_script = "uid://b6y610f743"

@@ -4,15 +4,10 @@
 /// </summary>
 public static class MineralRules
 {
+	// Sale del MineralDefinition de cada mineral (Data/Minerals).
 	public static ToolTier RequiredTool(MineralType mineral)
 	{
-		return mineral switch
-		{
-			MineralType.Iron => ToolTier.Reinforced,
-			MineralType.Gold => ToolTier.Advanced,
-			MineralType.Bedrock => ToolTier.Advanced,
-			_ => ToolTier.Basic,
-		};
+		return GameData.Mineral(mineral)?.RequiredTool ?? ToolTier.Basic;
 	}
 
 	/// <summary>Daño por golpe de cada pico, tanto a bloques como a enemigos.</summary>

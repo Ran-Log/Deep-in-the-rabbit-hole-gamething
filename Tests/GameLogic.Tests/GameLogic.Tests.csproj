@@ -21,11 +21,8 @@
     <Compile Include="../../World/Blocks/MineralType.cs" Link="MineralType.cs" />
     <Compile Include="../../Systems/WorldSaveData.cs" Link="WorldSaveData.cs" />
     <Compile Include="../../Systems/WorldSaveState.cs" Link="WorldSaveState.cs" />
-    <Compile Include="../../World/Blocks/MineralMaterialProfile.cs" Link="MineralMaterialProfile.cs" />
     <Compile Include="../../World/Blocks/ToolTier.cs" Link="ToolTier.cs" />
     <Compile Include="../../Systems/ItemCatalog.cs" Link="ItemCatalog.cs" />
-    <Compile Include="../../World/Blocks/MineralRules.cs" Link="MineralRules.cs" />
-    <Compile Include="../../Camp/UpgradeTable.cs" Link="UpgradeTable.cs" />
     <Compile Include="../../World/Props/ChestLoot.cs" Link="ChestLoot.cs" />
     <Compile Include="../../World/Rooms/LevelOneLayout.cs" Link="LevelOneLayout.cs" />
   </ItemGroup>

@@ -9,6 +9,8 @@ public partial class TorchPlacer : Node3D, IStructurePlacer
 {
 	public const string Group = "torch_placer";
 
+	private static readonly string CoalId = ItemCatalog.IdOf(MineralType.Coal);
+
 	[ExportCategory("TorchPlacer")]
 	[ExportGroup("Referencias")]
 	[Export] public PackedScene TorchScene;
@@ -59,7 +61,7 @@ public partial class TorchPlacer : Node3D, IStructurePlacer
 			return false;
 		}
 
-		if (WorldState.Instance == null || WorldState.Instance.GetItemCount("Coal") < UpgradeTable.TorchCoalCost)
+		if (WorldState.Instance == null || WorldState.Instance.GetItemCount(CoalId) < UpgradeTable.TorchCoalCost)
 		{
 			reason = $"Necesitas {UpgradeTable.TorchCoalCost} Carbón";
 			return false;
@@ -77,7 +79,7 @@ public partial class TorchPlacer : Node3D, IStructurePlacer
 			return false;
 		}
 
-		WorldState.Instance.RemoveItem("Coal", UpgradeTable.TorchCoalCost);
+		WorldState.Instance.RemoveItem(CoalId, UpgradeTable.TorchCoalCost);
 		WorldState.Instance.AddTorch(cell);
 		SpawnTorch(cell);
 
