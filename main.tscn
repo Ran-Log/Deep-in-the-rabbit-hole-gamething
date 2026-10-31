@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" path="res://UI/WorldHud.tscn" id="11_worldhud"]
 [ext_resource type="Script" uid="uid://gxmje6e1g85j" path="res://Camp/TorchPlacer.cs" id="12_torchplacer"]
 [ext_resource type="PackedScene" path="res://World/Props/Torch.tscn" id="13_torch"]
+[ext_resource type="PackedScene" path="res://UI/PauseMenu.tscn" id="14_pause"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 
@@ -67,3 +68,5 @@ CampHealth = NodePath("../Camp/CampCore/Health")
 
 [node name="InventoryScreen" parent="." unique_id=737114943 node_paths=PackedStringArray("Eat") instance=ExtResource("6_inventory")]
 Eat = NodePath("../Player/EatComponent")
+
+[node name="PauseMenu" parent="." instance=ExtResource("14_pause")]
