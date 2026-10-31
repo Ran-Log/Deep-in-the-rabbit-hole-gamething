@@ -1,7 +1,7 @@
 using Godot;
 
 /// <summary>
-/// Atajos para probar y para la demo: F1 volar, F2 día/noche, F3 materiales.
+/// Atajos para probar y para la demo: F1 volar, F2 día/noche, F3 materiales (F4, el overlay de FPS, lo maneja Hud).
 /// Solo funcionan jugando desde el editor (en un build exportado se apagan solos).
 /// </summary>
 public partial class DebugTools : Node

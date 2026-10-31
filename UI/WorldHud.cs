@@ -20,7 +20,8 @@ public partial class WorldHud : CanvasLayer
 		if (CampHealth != null)
 		{
 			CampHealth.HealthChanged += OnCampHealthChanged;
-			OnCampHealthChanged(CampHealth.MaxHealth, CampHealth.MaxHealth);
+			// Current y no MaxHealth: puede venir de una partida guardada.
+			OnCampHealthChanged(CampHealth.Current, CampHealth.MaxHealth);
 		}
 	}
 

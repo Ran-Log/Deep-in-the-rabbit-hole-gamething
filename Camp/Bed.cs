@@ -1,8 +1,8 @@
 using Godot;
 
 /// <summary>
-/// Cama (GDD 2.1.6): recupera toda la vida y de noche salta al amanecer,
-/// pero solo si no hay enemigos cerca ("si está protegido").
+/// Cama (GDD 2.1.6): recupera toda la vida, de noche salta al amanecer y guarda
+/// la partida, pero solo si no hay enemigos cerca ("si está protegido").
 /// </summary>
 public partial class Bed : Interactable
 {
@@ -34,10 +34,10 @@ public partial class Bed : Interactable
 		{
 			dayNight.SkipToMorning();
 		}
-		else
-		{
-			GameEvents.PostMessage("Descansaste. Vida recuperada");
-		}
+
+		// Después de saltar al amanecer, para que se guarde el día nuevo.
+		WorldState.Instance?.Save(player.GlobalPosition);
+		GameEvents.PostMessage("Descansaste. Vida recuperada y partida guardada");
 	}
 
 	private DayNightCycle FindDayNight()

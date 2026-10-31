@@ -77,6 +77,7 @@ shape = SubResource("Shape_core")
 [node name="Health" type="Node" parent="CampCore"]
 script = ExtResource("6_health")
 MaxHealth = 100
+SaveId = "camp"
 
 [node name="Bed" parent="." instance=ExtResource("1_bed")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -1, -8)

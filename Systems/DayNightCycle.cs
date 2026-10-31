@@ -52,6 +52,9 @@ public partial class DayNightCycle : Node
 
 	public override void _Ready()
 	{
+		// Una partida cargada sigue en su día (siempre desde el comienzo de ese día).
+		day = WorldState.Instance?.SavedDay ?? 1;
+
 		ApplyLighting();
 	}
 

@@ -13,6 +13,9 @@ public sealed class WorldSaveData
 	public List<MineralCountDto> Inventory { get; set; } = new();
 	public int Capacity { get; set; }
 	public int ToolLevel { get; set; }
+	public int Day { get; set; }
+	// Vida por id ("player", "camp").
+	public Dictionary<string, int> Health { get; set; } = new();
 	public List<RoomCoordDto> OpenedChests { get; set; } = new();
 
 	// Celdas globales (de BlockGrid) con barricadas y antorchas del jugador.

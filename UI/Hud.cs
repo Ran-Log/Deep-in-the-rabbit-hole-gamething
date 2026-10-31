@@ -38,7 +38,8 @@ public partial class Hud : CanvasLayer
 	[Export] public Color BlockedCrosshairColor = new Color(1.0f, 0.35f, 0.35f, 1.0f);
 
 	[ExportGroup("Debug")]
-	[Export] public bool ShowDebug = true;
+	// FPS y cantidad de bloques. F4 lo alterna (solo en builds de debug).
+	[Export] public bool ShowDebug = false;
 
 	private DestructibleBlock watchedBlock;
 	private float messageTimeLeft;
@@ -172,6 +173,11 @@ public partial class Hud : CanvasLayer
 		if (@event.IsActionPressed("toggle_help") && HelpPanel != null)
 		{
 			HelpPanel.Visible = !HelpPanel.Visible;
+		}
+
+		if (@event.IsActionPressed("debug_overlay") && OS.IsDebugBuild())
+		{
+			ShowDebug = !ShowDebug;
 		}
 
 		if (noteTimeLeft > 0.0f && (@event.IsActionPressed("ui_cancel") || @event.IsActionPressed("toggle_inventory")))

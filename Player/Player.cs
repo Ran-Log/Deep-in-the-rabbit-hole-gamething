@@ -45,6 +45,7 @@ public partial class Player : CharacterBody3D
 		if (@event.IsActionPressed("save"))
 		{
 			WorldState.Instance?.Save(GlobalPosition);
+			GameEvents.PostMessage("Partida guardada");
 		}
 	}
 

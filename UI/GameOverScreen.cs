@@ -86,7 +86,7 @@ public partial class GameOverScreen : CanvasLayer
 
 	private void OnPlayerDied()
 	{
-		ShowEnd("Moriste", "Las minas no perdonan. Puedes volver al último guardado (F5).", canRetry: true);
+		ShowEnd("Moriste", "Las minas no perdonan. Puedes volver al último guardado (F5 o dormir en la cama).", canRetry: true);
 	}
 
 	private void OnCampDestroyed()
@@ -123,6 +123,8 @@ public partial class GameOverScreen : CanvasLayer
 
 	private void OnRestartPressed()
 	{
+		// Descarta lo que no se guardó (inventario, bloques minados...).
+		WorldState.Instance?.RevertToLastSave();
 		GetTree().Paused = false;
 		GetTree().ReloadCurrentScene();
 	}

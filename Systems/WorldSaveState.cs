@@ -16,6 +16,15 @@ public sealed class WorldSaveState
 	// Nivel del pico (valor de ToolTier).
 	public int ToolLevel { get; set; } = 1;
 
+	public int Day { get; set; } = 1;
+
+	// Vida guardada por id (ej. "player", "camp"). Ver HealthComponent.SaveId.
+	private readonly Dictionary<string, int> healthById = new();
+
+	public void SetHealth(string id, int value) => healthById[id] = value;
+
+	public bool TryGetHealth(string id, out int value) => healthById.TryGetValue(id, out value);
+
 	private readonly HashSet<(int RoomX, int RoomZ)> openedChests = new();
 	private readonly HashSet<(int X, int Y, int Z)> placedDefenses = new();
 	private readonly HashSet<(int X, int Y, int Z)> placedTorches = new();
@@ -167,6 +176,8 @@ public sealed class WorldSaveState
 			PlayerZ = playerZ,
 			Capacity = Capacity,
 			ToolLevel = ToolLevel,
+			Day = Day,
+			Health = new Dictionary<string, int>(healthById),
 		};
 
 		foreach (var chest in openedChests)
@@ -214,10 +225,16 @@ public sealed class WorldSaveState
 		var state = new WorldSaveState
 		{
 			Seed = dto.Seed,
-			// Saves anteriores a la mochila/al pico no traen estos campos (llegan en 0).
+			// Saves viejos no traen estos campos (llegan en 0).
 			Capacity = dto.Capacity > 0 ? dto.Capacity : DefaultCapacity,
 			ToolLevel = dto.ToolLevel > 0 ? dto.ToolLevel : 1,
+			Day = dto.Day > 0 ? dto.Day : 1,
 		};
+
+		foreach (var entry in dto.Health ?? new Dictionary<string, int>())
+		{
+			state.SetHealth(entry.Key, entry.Value);
+		}
 
 		foreach (var chest in dto.OpenedChests)
 		{
