@@ -15,6 +15,7 @@ HasNest = true
 
 [sub_resource type="Resource" id="Room_camp"]
 script = ExtResource("2_room")
+HasSkylight = true
 
 [sub_resource type="Resource" id="Room_gold_food"]
 script = ExtResource("2_room")
@@ -63,3 +64,4 @@ FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource
 EnemyScenes = Array[PackedScene]([ExtResource("3_zombie"), ExtResource("4_mole"), ExtResource("5_spider"), ExtResource("6_rabbit")])
 AmbientColor = Color(0.6, 0.45, 0.85, 1)
 SunColor = Color(0.7, 0.55, 0.95, 1)
+SkylightChancePercent = 10

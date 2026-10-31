@@ -48,6 +48,7 @@ PlayerDamage = 6
 CampDamage = 3
 BlockDamage = 0
 AttackCooldown = 0.9
+OnlyInDarkRooms = true
 
 [node name="Body" type="MeshInstance3D" parent="."]
 mesh = SubResource("Mesh_body")

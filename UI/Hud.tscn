@@ -236,11 +236,13 @@ Clic izq. (mantener) — minar / atacar
 E — usar (cama, cofre, estación, antorcha)
 Tab — mochila (usar / soltar)
 Q — comer una ración
+L — lámpara del casco
 B — menú de construcción (1 / 2 elegir)
 F5 — guardar partida
-Esc — soltar el mouse
+Esc — pausa
 
 DEBUG (solo en el editor)
 F1 — volar / atravesar bloques
 F2 — cambiar día / noche
-F3 — dar materiales"
+F3 — dar materiales
+F4 — FPS"

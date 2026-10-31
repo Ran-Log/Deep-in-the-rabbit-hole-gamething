@@ -35,7 +35,7 @@ public static class RoomGenerator
 		if (design != null)
 		{
 			return new RoomSpec(name, position, RoomWidth, RoomDepth, RoomWallHeight, design.Mineral, health, gridCoord,
-				design.HasGas, design.Loot, design.NoteText, design.HasExit, design.HasNest);
+				design.HasGas, design.Loot, design.NoteText, design.HasExit, design.HasNest, design.HasSkylight);
 		}
 
 		MineralType mineral = RoomMineralTable.Pick(rng.RandiRange(0, 99));
@@ -56,6 +56,10 @@ public static class RoomGenerator
 			noteText = isNote ? ExitHint.Towards(gridCoord.X, gridCoord.Y, exit.X, exit.Y) : "";
 		}
 
-		return new RoomSpec(name, position, RoomWidth, RoomDepth, RoomWallHeight, mineral, health, gridCoord, hasGas, loot, noteText);
+		// Al final, para no cambiar los números de antes (mismo mundo con la misma semilla).
+		bool hasSkylight = rng.RandiRange(0, 99) < (level?.SkylightChancePercent ?? 30);
+
+		return new RoomSpec(name, position, RoomWidth, RoomDepth, RoomWallHeight, mineral, health, gridCoord, hasGas, loot, noteText,
+			hasSkylight: hasSkylight);
 	}
 }

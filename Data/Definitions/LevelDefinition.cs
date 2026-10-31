@@ -26,6 +26,8 @@ public partial class LevelDefinition : Resource
 	[ExportGroup("Luz")]
 	[Export] public Color AmbientColor = new Color(1.0f, 1.0f, 1.0f);
 	[Export] public Color SunColor = new Color(1.0f, 1.0f, 1.0f);
+	// Probabilidad (0-100) de que una sala al azar tenga agujero en el techo.
+	[Export(PropertyHint.Range, "0,100,1")] public int SkylightChancePercent = 30;
 
 	public RoomDesign FixedRoomAt(Vector2I coord)
 	{

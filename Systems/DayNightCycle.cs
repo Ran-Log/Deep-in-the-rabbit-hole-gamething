@@ -27,10 +27,12 @@ public partial class DayNightCycle : Node
 	[Export] public float TransitionSeconds = 8.0f;
 
 	[ExportGroup("Luz")]
-	[Export] public float DaySunEnergy = 1.0f;
+	// El sol solo entra por los tragaluces (las salas tienen techo).
+	[Export] public float DaySunEnergy = 1.4f;
 	[Export] public float NightSunEnergy = 0.02f;
-	[Export] public float DayAmbientEnergy = 0.6f;
-	[Export] public float NightAmbientEnergy = 0.08f;
+	// Ambiente bajo a propósito: la mina es oscura (GDD) y hace falta luz para ver.
+	[Export] public float DayAmbientEnergy = 0.15f;
+	[Export] public float NightAmbientEnergy = 0.04f;
 
 	private bool isNight;
 	private float phaseElapsed;

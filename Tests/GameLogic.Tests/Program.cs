@@ -251,6 +251,26 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("nido: en el nivel siguiente los nidos son nuevos", !restored.IsNestDestroyed(2, 1));
 }
 
+// --- Techo de las salas (feature 1.5) ---
+
+{
+	// Sala de 24 x 24 m (de -13 a 11), agujero de 6 x 6 m en el medio (de -4 a 2).
+	var full = (-13f, -13f, 11f, 11f);
+	var hole = (-4f, -4f, 2f, 2f);
+
+	var withoutHole = RoomMath.CeilingPieces(full, hole, hasHole: false);
+	Check("techo: sin tragaluz es una sola pieza que cubre todo", withoutHole.Count == 1 && withoutHole[0] == full);
+
+	var withHole = RoomMath.CeilingPieces(full, hole, hasHole: true);
+	float Area((float MinX, float MinZ, float MaxX, float MaxZ) r) => (r.MaxX - r.MinX) * (r.MaxZ - r.MinZ);
+	float piecesArea = withHole.Sum(Area);
+
+	Check("techo: con tragaluz son 4 piezas", withHole.Count == 4);
+	Check("techo: las piezas suman el total menos el agujero", Math.Abs(piecesArea - (Area(full) - Area(hole))) < 0.001f);
+	Check("techo: ninguna pieza tapa el centro del agujero",
+		withHole.All(r => !(r.MinX < -1f && -1f < r.MaxX && r.MinZ < -1f && -1f < r.MaxZ)));
+}
+
 Console.WriteLine();
 Console.WriteLine($"{total - failures}/{total} tests OK");
 
