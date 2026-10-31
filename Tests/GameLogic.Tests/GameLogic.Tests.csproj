@@ -24,7 +24,7 @@
     <Compile Include="../../World/Blocks/ToolTier.cs" Link="ToolTier.cs" />
     <Compile Include="../../Systems/ItemCatalog.cs" Link="ItemCatalog.cs" />
     <Compile Include="../../World/Props/ChestLoot.cs" Link="ChestLoot.cs" />
-    <Compile Include="../../World/Rooms/LevelOneLayout.cs" Link="LevelOneLayout.cs" />
+    <Compile Include="../../World/Rooms/ExitHint.cs" Link="ExitHint.cs" />
   </ItemGroup>
 
 </Project>

@@ -122,7 +122,7 @@ public partial class WorldStreamer : Node3D
 
 	private void SpawnRoom(Vector2I coord)
 	{
-		RoomSpec spec = RoomGenerator.Generate(WorldState.Instance?.Seed ?? 0, coord, CellSize);
+		RoomSpec spec = RoomGenerator.Generate(WorldState.Instance?.Seed ?? 0, coord, CellSize, GameData.CurrentLevel);
 
 		var room = RoomScene.Instantiate<Room>();
 

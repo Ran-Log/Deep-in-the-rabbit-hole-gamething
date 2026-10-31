@@ -104,6 +104,21 @@ public partial class Hud : CanvasLayer
 		{
 			MessageLabel.Text = "";
 		}
+
+		ShowArrivalMessage();
+	}
+
+	// Al llegar a un nivel nuevo: "Nivel 2: Cavernas medias" (una sola vez).
+	private void ShowArrivalMessage()
+	{
+		if (WorldState.Instance == null || string.IsNullOrEmpty(WorldState.Instance.PendingArrivalMessage))
+		{
+			return;
+		}
+
+		OnMessagePosted(WorldState.Instance.PendingArrivalMessage);
+		messageTimeLeft = MessageSeconds * 2.0f;
+		WorldState.Instance.PendingArrivalMessage = "";
 	}
 
 	public override void _ExitTree()

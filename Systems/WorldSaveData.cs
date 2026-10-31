@@ -9,11 +9,14 @@ public sealed class WorldSaveData
 	public float PlayerX { get; set; }
 	public float PlayerY { get; set; }
 	public float PlayerZ { get; set; }
+	// true = guardado al empezar un nivel: ignorar la posición y aparecer en el campamento.
+	public bool StartAtCamp { get; set; }
 	public List<MinedRoomDto> MinedRooms { get; set; } = new();
 	public List<MineralCountDto> Inventory { get; set; } = new();
 	public int Capacity { get; set; }
 	public int ToolLevel { get; set; }
 	public int Day { get; set; }
+	public int CurrentLevel { get; set; }
 	// Vida por id ("player", "camp").
 	public Dictionary<string, int> Health { get; set; } = new();
 	public List<RoomCoordDto> OpenedChests { get; set; } = new();

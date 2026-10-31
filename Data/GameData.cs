@@ -28,6 +28,23 @@ public static class GameData
 
 	public static MineralDefinition Floor => Catalog.Floor;
 
+	public static LevelDefinition Level(int number)
+	{
+		foreach (LevelDefinition level in Catalog.Levels)
+		{
+			if (level.Number == number)
+			{
+				return level;
+			}
+		}
+
+		GD.PushError($"GameData: falta el nivel {number} en {CatalogPath}.");
+		return null;
+	}
+
+	// El nivel en que está el jugador ahora (se guarda en WorldState).
+	public static LevelDefinition CurrentLevel => Level(WorldState.Instance?.CurrentLevel ?? 1);
+
 	// La mejora que parte desde este nivel de pico, o null si ya está al máximo.
 	public static UpgradeRecipe UpgradeFrom(ToolTier current)
 	{

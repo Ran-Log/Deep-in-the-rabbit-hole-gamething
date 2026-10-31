@@ -147,16 +147,11 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 // --- Nivel 1 ---
 
 {
-	Check("nivel 1: el campamento (0,0) no tiene gas ni cofre", LevelOneLayout.TryGet(0, 0, out var camp) && !camp.HasGas && camp.Loot == ChestLoot.None);
-	Check(
-		"nivel 1: la sala de salida existe y es de hierro (pide pico reforzado)",
-		LevelOneLayout.TryGet(LevelOneLayout.ExitRoomX, LevelOneLayout.ExitRoomZ, out var exit)
-			&& exit.HasExit
-			&& exit.Mineral == MineralType.Iron
-	);
-	Check("nivel 1: hay un pico abandonado en el nivel (la salida es alcanzable sin farmear)", LevelOneLayout.TryGet(1, -1, out var tool) && tool.Loot == ChestLoot.Pickaxe);
-	Check("nivel 1: salas lejanas quedan para la generación procedural", !LevelOneLayout.TryGet(20, 20, out _));
-	Check("nivel 1: la pista desde el campamento apunta al este y al norte", LevelOneLayout.HintTowardsExit(0, 0).Contains("este") && LevelOneLayout.HintTowardsExit(0, 0).Contains("norte"));
+	// Las salas fijas de cada nivel están en Data/Levels y se prueban en Tests/Integration/LevelDataTest.
+	string hint = ExitHint.Towards(0, 0, 3, -1);
+	Check("pista: desde el campamento a la salida (3,-1) apunta al este y al norte", hint.Contains("3 salas al este") && hint.Contains("1 salas al norte"));
+	Check("pista: hacia el oeste y el sur", ExitHint.Towards(5, 5, 2, 7).Contains("oeste") && ExitHint.Towards(5, 5, 2, 7).Contains("sur"));
+	Check("pista: estando en la salida dice 'aquí mismo'", ExitHint.Towards(3, -1, 3, -1).Contains("aquí mismo"));
 }
 
 // --- WorldSaveState: round-trip de los datos nuevos ---
@@ -209,6 +204,35 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	WorldSaveState fromOldSave = WorldSaveState.FromDto(new WorldSaveData());
 	Check("guardado: un save viejo (sin día ni vida) arranca en el día 1 y sin vidas guardadas",
 		fromOldSave.Day == 1 && !fromOldSave.TryGetHealth("player", out _));
+}
+
+// --- Niveles (feature 1.1) ---
+
+{
+	var state = new WorldSaveState { Capacity = 45, ToolLevel = 2, Day = 4 };
+	state.AddMineral("Iron", 5);
+	state.MarkCellMined(1, 0, 2, 0, 2);
+	state.MarkChestOpened(1, 0);
+	state.AddDefense(1, 0, 1);
+	state.AddTorch(2, 0, 2);
+	state.MarkRoomVisited(1, 0);
+	state.SetHealth("camp", 30);
+
+	Check("nivel: una partida nueva empieza en el nivel 1", new WorldSaveState().CurrentLevel == 1);
+
+	state.StartNextLevel();
+
+	Check("nivel: pasar de nivel suma 1", state.CurrentLevel == 2);
+	Check("nivel: se conservan inventario, pico, mochila y día",
+		state.GetMineralCount("Iron") == 5 && state.ToolLevel == 2 && state.Capacity == 45 && state.Day == 4);
+	Check("nivel: el mundo es nuevo (sin bloques minados, cofres, defensas, antorchas ni salas visitadas)",
+		!state.IsCellMined(1, 0, 2, 0, 2) && !state.IsChestOpened(1, 0)
+		&& !state.PlacedDefenses.Any() && !state.PlacedTorches.Any() && !state.IsRoomVisited(1, 0));
+	Check("nivel: el campamento nuevo empieza con la vida llena", !state.TryGetHealth("camp", out _));
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+	Check("nivel: el nivel actual se guarda", restored.CurrentLevel == 2);
+	Check("nivel: un save viejo carga en el nivel 1", WorldSaveState.FromDto(new WorldSaveData()).CurrentLevel == 1);
 }
 
 Console.WriteLine();

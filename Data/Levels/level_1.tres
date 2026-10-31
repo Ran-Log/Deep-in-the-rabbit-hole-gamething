@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="LevelDefinition" format=3]
+
+[ext_resource type="Script" uid="uid://cw3bhvuy6nf0i" path="res://Data/Definitions/LevelDefinition.cs" id="1_level"]
+[ext_resource type="Script" uid="uid://d1is7rkda4fjj" path="res://Data/Definitions/RoomDesign.cs" id="2_room"]
+[ext_resource type="PackedScene" path="res://Enemies/Zombie.tscn" id="3_zombie"]
+
+[sub_resource type="Resource" id="Room_camp"]
+script = ExtResource("2_room")
+
+[sub_resource type="Resource" id="Room_backpack"]
+script = ExtResource("2_room")
+Coord = Vector2i(1, 0)
+Mineral = 1
+Loot = 3
+
+[sub_resource type="Resource" id="Room_food"]
+script = ExtResource("2_room")
+Coord = Vector2i(-1, 0)
+Loot = 1
+
+[sub_resource type="Resource" id="Room_pickaxe"]
+script = ExtResource("2_room")
+Coord = Vector2i(1, -1)
+Loot = 2
+
+[sub_resource type="Resource" id="Room_gas"]
+script = ExtResource("2_room")
+Coord = Vector2i(2, 0)
+Mineral = 1
+HasGas = true
+Loot = 1
+
+[sub_resource type="Resource" id="Room_note"]
+script = ExtResource("2_room")
+Coord = Vector2i(2, -1)
+Loot = 4
+NoteText = "\"Día 14. Las paredes al ESTE de esta sala son de hierro; detrás se siente una corriente de aire que sube. Con un pico reforzado debería poder pasar. Si alguien lee esto: no te quedes lejos del campamento cuando oscurezca.\""
+
+[sub_resource type="Resource" id="Room_exit"]
+script = ExtResource("2_room")
+Coord = Vector2i(3, -1)
+Mineral = 2
+HasExit = true
+
+[resource]
+script = ExtResource("1_level")
+Number = 1
+DisplayName = "Túneles superficiales"
+ExitPrompt = "Bajar por la grieta (Nivel 2: Cavernas medias)"
+FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource("Room_backpack"), SubResource("Room_food"), SubResource("Room_pickaxe"), SubResource("Room_gas"), SubResource("Room_note"), SubResource("Room_exit")])
+EnemyScenes = Array[PackedScene]([ExtResource("3_zombie")])
+AmbientColor = Color(1, 0.9, 0.78, 1)
+SunColor = Color(1, 0.92, 0.8, 1)

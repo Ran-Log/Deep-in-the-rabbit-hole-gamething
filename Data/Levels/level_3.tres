@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="LevelDefinition" format=3]
+
+[ext_resource type="Script" uid="uid://cw3bhvuy6nf0i" path="res://Data/Definitions/LevelDefinition.cs" id="1_level"]
+[ext_resource type="Script" uid="uid://d1is7rkda4fjj" path="res://Data/Definitions/RoomDesign.cs" id="2_room"]
+[ext_resource type="PackedScene" path="res://Enemies/Zombie.tscn" id="3_zombie"]
+
+[sub_resource type="Resource" id="Room_camp"]
+script = ExtResource("2_room")
+
+[sub_resource type="Resource" id="Room_gold_food"]
+script = ExtResource("2_room")
+Coord = Vector2i(1, 0)
+Mineral = 3
+Loot = 1
+
+[sub_resource type="Resource" id="Room_gas"]
+script = ExtResource("2_room")
+Coord = Vector2i(0, 1)
+Mineral = 1
+HasGas = true
+Loot = 1
+
+[sub_resource type="Resource" id="Room_note_creatures"]
+script = ExtResource("2_room")
+Coord = Vector2i(-2, 0)
+Mineral = 2
+Loot = 4
+NoteText = "\"Mientras más profundo, más oro... y más criaturas. No es casualidad: lo que sea que vive aquí abajo se alimenta del mineral, y nos cambia a nosotros también.\""
+
+[sub_resource type="Resource" id="Room_note_revelation"]
+script = ExtResource("2_room")
+Coord = Vector2i(-1, -1)
+Loot = 4
+NoteText = "\"Lo encontré. En el fondo hay una grieta que respira, y una luz que no es de este mundo. Fue ella la que abrió los agujeros en los campos para traernos: nos necesita para cavar. Si alguien lee esto, la salida está al noroeste, detrás de la roca madre. No dejes que te convierta.\""
+
+[sub_resource type="Resource" id="Room_gold"]
+script = ExtResource("2_room")
+Coord = Vector2i(2, -2)
+Mineral = 3
+
+[sub_resource type="Resource" id="Room_exit"]
+script = ExtResource("2_room")
+Coord = Vector2i(-3, -2)
+Mineral = 4
+HasExit = true
+
+[resource]
+script = ExtResource("1_level")
+Number = 3
+DisplayName = "Las profundidades"
+IsFinal = true
+ExitPrompt = "Trepar hacia la luz (salir de la mina)"
+FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource("Room_gold_food"), SubResource("Room_gas"), SubResource("Room_note_creatures"), SubResource("Room_note_revelation"), SubResource("Room_gold"), SubResource("Room_exit")])
+EnemyScenes = Array[PackedScene]([ExtResource("3_zombie")])
+AmbientColor = Color(0.6, 0.45, 0.85, 1)
+SunColor = Color(0.7, 0.55, 0.95, 1)

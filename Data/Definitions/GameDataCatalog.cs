@@ -15,4 +15,8 @@ public partial class GameDataCatalog : Resource
 
 	[ExportGroup("Mejoras del pico")]
 	[Export] public Godot.Collections.Array<UpgradeRecipe> Upgrades = new();
+
+	[ExportGroup("Niveles")]
+	// En orden: el primero es el nivel 1.
+	[Export] public Godot.Collections.Array<LevelDefinition> Levels = new();
 }
