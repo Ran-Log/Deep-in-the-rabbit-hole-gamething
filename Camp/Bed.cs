@@ -8,7 +8,7 @@ public partial class Bed : Interactable
 {
 	[ExportCategory("Bed")]
 	[ExportGroup("Descanso")]
-	// Un zombie a menos de esta distancia (metros) impide dormir.
+	// Un enemigo a menos de esta distancia (metros) impide dormir.
 	[Export] public float SafeRadius = 14.0f;
 
 	public override string GetPrompt(Player player)
@@ -20,7 +20,7 @@ public partial class Bed : Interactable
 
 	public override void Interact(Player player)
 	{
-		if (Zombie.CountNear(GetTree(), GlobalPosition, SafeRadius) > 0)
+		if (Enemy.CountNear(GetTree(), GlobalPosition, SafeRadius) > 0)
 		{
 			GameEvents.PostMessage("No puedes descansar con enemigos cerca");
 			return;

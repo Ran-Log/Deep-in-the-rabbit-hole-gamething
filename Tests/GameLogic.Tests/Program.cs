@@ -235,6 +235,22 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("nivel: un save viejo carga en el nivel 1", WorldSaveState.FromDto(new WorldSaveData()).CurrentLevel == 1);
 }
 
+// --- Nidos de hormigas (feature 1.2) ---
+
+{
+	var state = new WorldSaveState();
+
+	Check("nido: uno nuevo no está destruido", !state.IsNestDestroyed(2, 1));
+
+	state.MarkNestDestroyed(2, 1);
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+	Check("nido: destruido se guarda", restored.IsNestDestroyed(2, 1) && !restored.IsNestDestroyed(0, 0));
+
+	restored.StartNextLevel();
+	Check("nido: en el nivel siguiente los nidos son nuevos", !restored.IsNestDestroyed(2, 1));
+}
+
 Console.WriteLine();
 Console.WriteLine($"{total - failures}/{total} tests OK");
 

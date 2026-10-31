@@ -1,18 +1,25 @@
 using Godot;
 
 /// <summary>
-/// Zombie minero: persigue al jugador si está cerca y si no, va al campamento.
-/// Si choca con un bloque lo golpea hasta romperlo (por eso las barricadas lo frenan).
+/// Un enemigo, como contenedor de componentes (clase 10): vida (HealthComponent) e IA
+/// (un EnemyBehavior que decide a quién atacar y hacia dónde ir). Esta clase hace lo común
+/// a todos: moverse con la física, atacar, romper bloques y destellar al recibir daño.
 /// </summary>
-public partial class Zombie : CharacterBody3D
+public partial class Enemy : CharacterBody3D, IDamageable
 {
 	public const string Group = "enemies";
 	public const string CampCoreGroup = "camp_core";
+	public const string PlayerGroup = "player";
 
-	[ExportCategory("Zombie")]
+	[ExportCategory("Enemy")]
 	[ExportGroup("Referencias")]
 	[Export] public HealthComponent Health;
 	[Export] public MeshInstance3D Body;
+	[Export] public EnemyBehavior Behavior;
+
+	[ExportGroup("Datos")]
+	// Para el mensaje al derrotarlo ("Derrotaste a un zombie").
+	[Export] public string DisplayName = "un enemigo";
 
 	[ExportGroup("Movimiento")]
 	[Export] public float Speed = 2.6f;
@@ -20,14 +27,17 @@ public partial class Zombie : CharacterBody3D
 	[Export] public float KnockbackStrength = 7.0f;
 
 	[ExportGroup("Combate")]
-	[Export] public float AggroRange = 9.0f;
 	[Export] public float AttackRange = 2.0f;
 	[Export] public float CampAttackRange = 2.8f;
 	[Export] public int PlayerDamage = 10;
 	[Export] public int CampDamage = 8;
-	// Alto a propósito: según el GDD los zombies son buenos rompiendo estructuras.
+	// Daño a los bloques que lo tapan; 0 = no rompe bloques.
 	[Export] public int BlockDamage = 3;
 	[Export] public float AttackCooldown = 1.2f;
+
+	[ExportGroup("Aparición")]
+	// Cuántos aparecen juntos (ej. los conejos van en grupo).
+	[Export] public int SpawnGroupSize = 1;
 
 	private const float FallLimitY = -40.0f;
 
@@ -35,6 +45,13 @@ public partial class Zombie : CharacterBody3D
 	private Vector3 knockback;
 	private StandardMaterial3D bodyMaterial;
 	private Color baseColor;
+	private Node3D player;
+	private Node3D campCore;
+
+	// Se buscan una vez en _Ready (antes se buscaban en cada frame).
+	public Node3D Player => IsInstanceValid(player) ? player : null;
+
+	public Node3D CampCore => IsInstanceValid(campCore) ? campCore : null;
 
 	public override void _EnterTree()
 	{
@@ -48,11 +65,19 @@ public partial class Zombie : CharacterBody3D
 			Health.Died += OnDied;
 		}
 
+		if (Behavior == null)
+		{
+			GD.PushError($"{Name}: falta asignar Behavior; el enemigo no se va a mover.");
+		}
+
+		player = GetTree().GetFirstNodeInGroup(PlayerGroup) as Node3D;
+		campCore = GetTree().GetFirstNodeInGroup(CampCoreGroup) as Node3D;
+
 		bodyMaterial = Body?.MaterialOverride as StandardMaterial3D;
 
 		if (bodyMaterial != null)
 		{
-			// Copia propia: si no, el flash rojo pintaría a TODOS los zombies.
+			// Copia propia: si no, el destello rojo pintaría a TODOS los enemigos de este tipo.
 			bodyMaterial = (StandardMaterial3D)bodyMaterial.Duplicate();
 			Body.MaterialOverride = bodyMaterial;
 			baseColor = bodyMaterial.AlbedoColor;
@@ -71,8 +96,7 @@ public partial class Zombie : CharacterBody3D
 	{
 		float dt = (float)delta;
 
-		// Si la sala donde estaba se descargó (streaming), se queda sin piso
-		// y cae para siempre: se elimina en vez de seguir procesándolo.
+		// Si la sala donde estaba se descargó, se queda sin piso y cae para siempre.
 		if (GlobalPosition.Y < FallLimitY)
 		{
 			QueueFree();
@@ -81,23 +105,24 @@ public partial class Zombie : CharacterBody3D
 
 		cooldownLeft = Mathf.Max(0.0f, cooldownLeft - dt);
 
-		Node3D player = GetTree().GetFirstNodeInGroup("player") as Node3D;
-		Node3D campCore = GetTree().GetFirstNodeInGroup(CampCoreGroup) as Node3D;
+		// La IA decide (Behavior); la física mueve (acá).
+		Node3D target = Behavior?.ChooseTarget(this);
+		Vector3 direction = Behavior?.ChooseDirection(this, target, dt) ?? Vector3.Zero;
 
-		bool chasingPlayer = player != null && HorizontalDistanceTo(player) < AggroRange;
-		Node3D target = chasingPlayer ? player : campCore;
-
-		Move(target, dt);
+		Move(direction, dt);
 
 		if (target != null)
 		{
-			TryAttack(target, chasingPlayer);
+			TryAttack(target);
 		}
 
-		TryBreakBlockingBlock();
+		if (BlockDamage > 0)
+		{
+			TryBreakBlockingBlock();
+		}
 	}
 
-	/// <summary>Lo llama CombatComponent. <paramref name="fromPosition"/> es desde dónde vino el golpe (para el empujón).</summary>
+	// Lo llama CombatComponent. fromPosition es desde dónde vino el golpe (para el retroceso).
 	public void TakeHit(int damage, Vector3 fromPosition)
 	{
 		Vector3 away = GlobalPosition - fromPosition;
@@ -109,10 +134,18 @@ public partial class Zombie : CharacterBody3D
 		}
 
 		FlashHit();
+		Behavior?.OnHit(this, fromPosition);
 		Health?.TakeDamage(damage);
 	}
 
-	/// <summary>Cuántos zombies hay a menos de <paramref name="radius"/> metros (la cama lo usa para "estás protegido").</summary>
+	public float HorizontalDistanceTo(Node3D other)
+	{
+		Vector3 diff = other.GlobalPosition - GlobalPosition;
+		diff.Y = 0.0f;
+		return diff.Length();
+	}
+
+	// Cuántos enemigos hay a menos de radius metros (la cama lo usa para "estás protegido").
 	public static int CountNear(SceneTree tree, Vector3 position, float radius)
 	{
 		int count = 0;
@@ -128,28 +161,21 @@ public partial class Zombie : CharacterBody3D
 		return count;
 	}
 
-	private void Move(Node3D target, float dt)
+	// Vf = v * Df (clase 11), más el retroceso de un golpe y la gravedad.
+	private void Move(Vector3 direction, float dt)
 	{
-		Vector3 velocity = Velocity;
-		Vector3 horizontal = Vector3.Zero;
+		Vector3 horizontal = direction * Speed;
 
-		if (target != null)
+		if (direction.LengthSquared() > 0.0001f)
 		{
-			Vector3 toTarget = target.GlobalPosition - GlobalPosition;
-			toTarget.Y = 0.0f;
-
-			if (toTarget.Length() > AttackRange * 0.8f)
-			{
-				horizontal = toTarget.Normalized() * Speed;
-				LookAt(GlobalPosition + toTarget, Vector3.Up);
-			}
+			LookAt(GlobalPosition + direction, Vector3.Up);
 		}
 
-		// El empujón de un golpe se suma una vez y se va apagando, en vez
-		// de re-sumarse cada frame (eso lo haría acumularse sin control).
+		// El retroceso se suma una vez y se va apagando (si se sumara cada frame, se acumularía).
 		horizontal += knockback;
 		knockback = knockback.MoveToward(Vector3.Zero, KnockbackStrength * 4.0f * dt);
 
+		Vector3 velocity = Velocity;
 		velocity.X = horizontal.X;
 		velocity.Z = horizontal.Z;
 		velocity.Y = IsOnFloor() ? 0.0f : velocity.Y - Gravity * dt;
@@ -158,13 +184,14 @@ public partial class Zombie : CharacterBody3D
 		MoveAndSlide();
 	}
 
-	private void TryAttack(Node3D target, bool targetIsPlayer)
+	private void TryAttack(Node3D target)
 	{
 		if (cooldownLeft > 0.0f)
 		{
 			return;
 		}
 
+		bool targetIsPlayer = target.IsInGroup(PlayerGroup);
 		float range = targetIsPlayer ? AttackRange : CampAttackRange;
 
 		if (HorizontalDistanceTo(target) > range)
@@ -194,20 +221,12 @@ public partial class Zombie : CharacterBody3D
 		{
 			if (GetSlideCollision(i).GetCollider() is DestructibleBlock block)
 			{
-				// Advanced: un zombie no "necesita" la herramienta adecuada,
-				// solo es lento rompiendo cosas duras.
+				// Advanced: un enemigo no "necesita" el pico adecuado, solo es lento con lo duro.
 				block.TakeDamage(BlockDamage, ToolTier.Advanced);
 				cooldownLeft = AttackCooldown;
 				return;
 			}
 		}
-	}
-
-	private float HorizontalDistanceTo(Node3D other)
-	{
-		Vector3 diff = other.GlobalPosition - GlobalPosition;
-		diff.Y = 0.0f;
-		return diff.Length();
 	}
 
 	private void FlashHit()
@@ -225,7 +244,7 @@ public partial class Zombie : CharacterBody3D
 
 	private void OnDied()
 	{
-		GameEvents.PostMessage("Derrotaste a un zombie");
+		GameEvents.PostMessage($"Derrotaste a {DisplayName}");
 		QueueFree();
 	}
 }

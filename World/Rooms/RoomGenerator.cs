@@ -35,7 +35,7 @@ public static class RoomGenerator
 		if (design != null)
 		{
 			return new RoomSpec(name, position, RoomWidth, RoomDepth, RoomWallHeight, design.Mineral, health, gridCoord,
-				design.HasGas, design.Loot, design.NoteText, design.HasExit);
+				design.HasGas, design.Loot, design.NoteText, design.HasExit, design.HasNest);
 		}
 
 		MineralType mineral = RoomMineralTable.Pick(rng.RandiRange(0, 99));

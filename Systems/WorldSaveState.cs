@@ -43,6 +43,7 @@ public sealed class WorldSaveState
 		placedDefenses.Clear();
 		placedTorches.Clear();
 		visitedRooms.Clear();
+		destroyedNests.Clear();
 		healthById.Remove(CampHealthId);
 	}
 
@@ -50,6 +51,12 @@ public sealed class WorldSaveState
 	private readonly HashSet<(int X, int Y, int Z)> placedDefenses = new();
 	private readonly HashSet<(int X, int Y, int Z)> placedTorches = new();
 	private readonly HashSet<(int RoomX, int RoomZ)> visitedRooms = new();
+	private readonly HashSet<(int RoomX, int RoomZ)> destroyedNests = new();
+
+	// GDD: al destruir un nido de hormigas, dejan de aparecer para siempre.
+	public bool IsNestDestroyed(int roomX, int roomZ) => destroyedNests.Contains((roomX, roomZ));
+
+	public void MarkNestDestroyed(int roomX, int roomZ) => destroyedNests.Add((roomX, roomZ));
 
 	private readonly Dictionary<(int RoomX, int RoomZ), HashSet<(int X, int Y, int Z)>> minedCells = new();
 	private readonly Dictionary<string, int> mineralCounts = new();
@@ -222,6 +229,11 @@ public sealed class WorldSaveState
 			dto.VisitedRooms.Add(new RoomCoordDto { RoomX = room.RoomX, RoomZ = room.RoomZ });
 		}
 
+		foreach (var nest in destroyedNests)
+		{
+			dto.DestroyedNests.Add(new RoomCoordDto { RoomX = nest.RoomX, RoomZ = nest.RoomZ });
+		}
+
 		foreach (var entry in minedCells)
 		{
 			var roomDto = new MinedRoomDto { RoomX = entry.Key.RoomX, RoomZ = entry.Key.RoomZ };
@@ -277,6 +289,11 @@ public sealed class WorldSaveState
 		foreach (var room in dto.VisitedRooms)
 		{
 			state.MarkRoomVisited(room.RoomX, room.RoomZ);
+		}
+
+		foreach (var nest in dto.DestroyedNests ?? new List<RoomCoordDto>())
+		{
+			state.MarkNestDestroyed(nest.RoomX, nest.RoomZ);
 		}
 
 		foreach (var roomDto in dto.MinedRooms)

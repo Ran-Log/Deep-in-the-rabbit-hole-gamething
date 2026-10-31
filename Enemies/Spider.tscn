@@ -1,0 +1,116 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://bi5mleqifl51e" path="res://Enemies/Enemy.cs" id="1_enemy"]
+[ext_resource type="Script" uid="uid://chxrdb0ssx83v" path="res://Shared/HealthComponent.cs" id="2_health"]
+[ext_resource type="Script" path="res://Enemies/Behaviors/SpiderBehavior.cs" id="3_behavior"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_body"]
+albedo_color = Color(0.09, 0.07, 0.09, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_leg"]
+albedo_color = Color(0.05, 0.04, 0.05, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_eyes"]
+albedo_color = Color(1, 0.1, 0.1, 1)
+emission_enabled = true
+emission = Color(1, 0.05, 0.05, 1)
+emission_energy_multiplier = 4.0
+shading_mode = 0
+
+[sub_resource type="BoxMesh" id="Mesh_body"]
+size = Vector3(0.8, 0.35, 0.9)
+
+[sub_resource type="BoxMesh" id="Mesh_head"]
+material = SubResource("Mat_leg")
+size = Vector3(0.45, 0.3, 0.35)
+
+[sub_resource type="BoxMesh" id="Mesh_leg"]
+material = SubResource("Mat_leg")
+size = Vector3(0.9, 0.06, 0.06)
+
+[sub_resource type="BoxMesh" id="Mesh_eye"]
+material = SubResource("Mat_eyes")
+size = Vector3(0.06, 0.06, 0.04)
+
+[sub_resource type="BoxShape3D" id="Shape_body"]
+size = Vector3(1.4, 0.45, 1.2)
+
+[node name="Spider" type="CharacterBody3D" node_paths=PackedStringArray("Health", "Body", "Behavior")]
+script = ExtResource("1_enemy")
+Health = NodePath("Health")
+Body = NodePath("Body")
+Behavior = NodePath("Behavior")
+DisplayName = "una araña"
+Speed = 4.2
+AttackRange = 1.8
+PlayerDamage = 6
+CampDamage = 3
+BlockDamage = 0
+AttackCooldown = 0.9
+
+[node name="Body" type="MeshInstance3D" parent="."]
+mesh = SubResource("Mesh_body")
+material_override = SubResource("Mat_body")
+
+[node name="Head" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.6)
+mesh = SubResource("Mesh_head")
+
+[node name="LegL1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, -0.65, -0.1, -0.3)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegL2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, -0.65, -0.1, -0.1)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegL3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, -0.65, -0.1, 0.1)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegL4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, 0.34, 0, -0.34, 0.94, 0, 0, 0, 1, -0.65, -0.1, 0.3)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegR1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, 0.65, -0.1, -0.3)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegR2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, 0.65, -0.1, -0.1)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegR3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, 0.65, -0.1, 0.1)
+mesh = SubResource("Mesh_leg")
+
+[node name="LegR4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, 0.65, -0.1, 0.3)
+mesh = SubResource("Mesh_leg")
+
+[node name="Eye1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.08, -0.78)
+mesh = SubResource("Mesh_eye")
+
+[node name="Eye2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.08, -0.78)
+mesh = SubResource("Mesh_eye")
+
+[node name="Eye3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.12, -0.78)
+mesh = SubResource("Mesh_eye")
+
+[node name="Eye4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.12, -0.78)
+mesh = SubResource("Mesh_eye")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("Shape_body")
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("2_health")
+MaxHealth = 4
+
+[node name="Behavior" type="Node" parent="."]
+script = ExtResource("3_behavior")

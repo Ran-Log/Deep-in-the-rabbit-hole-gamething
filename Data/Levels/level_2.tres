@@ -3,6 +3,14 @@
 [ext_resource type="Script" uid="uid://cw3bhvuy6nf0i" path="res://Data/Definitions/LevelDefinition.cs" id="1_level"]
 [ext_resource type="Script" uid="uid://d1is7rkda4fjj" path="res://Data/Definitions/RoomDesign.cs" id="2_room"]
 [ext_resource type="PackedScene" path="res://Enemies/Zombie.tscn" id="3_zombie"]
+[ext_resource type="PackedScene" path="res://Enemies/Mole.tscn" id="4_mole"]
+[ext_resource type="PackedScene" path="res://Enemies/Spider.tscn" id="5_spider"]
+[ext_resource type="PackedScene" path="res://Enemies/Rabbit.tscn" id="6_rabbit"]
+
+[sub_resource type="Resource" id="Room_nest"]
+script = ExtResource("2_room")
+Coord = Vector2i(-2, 1)
+HasNest = true
 
 [sub_resource type="Resource" id="Room_camp"]
 script = ExtResource("2_room")
@@ -50,7 +58,7 @@ script = ExtResource("1_level")
 Number = 2
 DisplayName = "Cavernas medias"
 ExitPrompt = "Bajar por la grieta (Nivel 3: Las profundidades)"
-FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource("Room_iron_food"), SubResource("Room_gas"), SubResource("Room_backpack"), SubResource("Room_note"), SubResource("Room_iron"), SubResource("Room_exit")])
-EnemyScenes = Array[PackedScene]([ExtResource("3_zombie")])
+FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource("Room_iron_food"), SubResource("Room_gas"), SubResource("Room_backpack"), SubResource("Room_note"), SubResource("Room_iron"), SubResource("Room_exit"), SubResource("Room_nest")])
+EnemyScenes = Array[PackedScene]([ExtResource("3_zombie"), ExtResource("4_mole"), ExtResource("5_spider"), ExtResource("6_rabbit")])
 AmbientColor = Color(0.7, 0.82, 1, 1)
 SunColor = Color(0.75, 0.85, 1, 1)

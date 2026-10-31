@@ -27,6 +27,9 @@ public readonly struct RoomSpec
 	// Tiene la grieta de salida del nivel.
 	public readonly bool HasExit;
 
+	// Tiene un nido de hormigas.
+	public readonly bool HasNest;
+
 	public RoomSpec(
 		string name,
 		Vector3 position,
@@ -39,8 +42,10 @@ public readonly struct RoomSpec
 		bool hasGas = false,
 		ChestLoot loot = ChestLoot.None,
 		string noteText = "",
-		bool hasExit = false)
+		bool hasExit = false,
+		bool hasNest = false)
 	{
+		HasNest = hasNest;
 		Name = name;
 		Position = position;
 		Width = width;

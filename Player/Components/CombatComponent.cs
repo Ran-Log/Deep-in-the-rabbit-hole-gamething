@@ -1,13 +1,13 @@
 using Godot;
 
 /// <summary>
-/// Ataque con el pico (GDD 2.1.7). Usa el mismo botón que minar: si la mira
-/// apunta a un enemigo le pega; si apunta a un bloque, se encarga MiningComponent.
+/// Ataque con el pico (GDD 2.1.7). Usa el mismo botón que minar: si la mira apunta a algo
+/// que se puede golpear (IDamageable: enemigos, nidos) le pega; si es un bloque, mina MiningComponent.
 /// </summary>
 public partial class CombatComponent : Node3D
 {
 	[Signal]
-	public delegate void EnemyHitEventHandler(Zombie enemy);
+	public delegate void EnemyHitEventHandler(Node3D target);
 
 	[ExportCategory("CombatComponent")]
 	[ExportGroup("Referencias")]
@@ -35,7 +35,7 @@ public partial class CombatComponent : Node3D
 		}
 
 		if (!CrosshairRay.Cast(Camera, Range, TargetLayers, ExcludedBody, out CrosshairRay.Hit hit)
-			|| hit.Collider is not Zombie zombie)
+			|| hit.Collider is not IDamageable target)
 		{
 			return;
 		}
@@ -45,7 +45,7 @@ public partial class CombatComponent : Node3D
 		int damage = Equipment?.CombatDamage ?? 1;
 		Vector3 from = ExcludedBody != null ? ExcludedBody.GlobalPosition : Camera.GlobalPosition;
 
-		zombie.TakeHit(damage, from);
-		EmitSignal(SignalName.EnemyHit, zombie);
+		target.TakeHit(damage, from);
+		EmitSignal(SignalName.EnemyHit, (Node3D)hit.Collider);
 	}
 }

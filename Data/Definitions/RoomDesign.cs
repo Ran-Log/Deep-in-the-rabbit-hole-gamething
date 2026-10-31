@@ -19,4 +19,6 @@ public partial class RoomDesign : Resource
 	[Export(PropertyHint.MultilineText)] public string NoteText = "";
 	// La grieta que baja al siguiente nivel (o la salida final).
 	[Export] public bool HasExit = false;
+	// Un nido de hormigas gigantes (GDD: "solo en habitaciones especiales").
+	[Export] public bool HasNest = false;
 }
