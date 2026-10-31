@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 BlockGrid="*res://World/Blocks/BlockGrid.cs"
 WorldState="*res://Systems/WorldState.cs"
 GameEvents="*res://Shared/GameEvents.cs"
+AudioManager="*res://Systems/AudioManager.tscn"
 
 [display]
 

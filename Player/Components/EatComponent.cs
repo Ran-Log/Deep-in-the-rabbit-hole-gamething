@@ -6,6 +6,9 @@ using Godot;
 /// </summary>
 public partial class EatComponent : Node
 {
+	[Signal]
+	public delegate void AteEventHandler();
+
 	[ExportCategory("EatComponent")]
 	[ExportGroup("Referencias")]
 	[Export] public HealthComponent Health;
@@ -40,6 +43,7 @@ public partial class EatComponent : Node
 		WorldState.Instance.RemoveItem(ItemCatalog.Food);
 		Health.Heal(ItemCatalog.FoodHeal);
 		GameEvents.PostMessage($"Comiste una ración (+{ItemCatalog.FoodHeal} vida)");
+		EmitSignal(SignalName.Ate);
 
 		return true;
 	}

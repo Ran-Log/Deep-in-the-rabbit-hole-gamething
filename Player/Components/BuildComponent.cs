@@ -36,6 +36,9 @@ public partial class BuildComponent : Node3D
 	[Signal]
 	public delegate void SelectionChangedEventHandler(int index);
 
+	[Signal]
+	public delegate void StructureBuiltEventHandler();
+
 	[ExportCategory("BuildComponent")]
 	[ExportGroup("Referencias")]
 	[Export] public Camera3D Camera;
@@ -106,9 +109,9 @@ public partial class BuildComponent : Node3D
 		ghost.Visible = true;
 		ghostMaterial.AlbedoColor = valid ? ValidColor : InvalidColor;
 
-		if (CrosshairRay.PlayerHasControl() && Input.IsActionJustPressed("mine"))
+		if (CrosshairRay.PlayerHasControl() && Input.IsActionJustPressed("mine") && placer.TryPlace(cell, onTop))
 		{
-			placer.TryPlace(cell, onTop);
+			EmitSignal(SignalName.StructureBuilt);
 		}
 	}
 
