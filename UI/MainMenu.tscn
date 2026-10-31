@@ -1,0 +1,74 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://UI/MainMenu.cs" id="1_menu"]
+
+[node name="MainMenu" type="Control" node_paths=PackedStringArray("ContinueButton", "NewGameButton", "QuitButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+ContinueButton = NodePath("Center/Box/ContinueButton")
+NewGameButton = NodePath("Center/Box/NewGameButton")
+QuitButton = NodePath("Center/Box/QuitButton")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.05, 0.045, 1)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Box" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Center/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.82, 0.55, 1)
+theme_override_font_sizes/font_size = 52
+text = "Deep in the Rabbit Hole"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.6, 0.52, 1)
+text = "Un granjero, un agujero en el campo y una mina que no debería existir."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/Box"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="ContinueButton" type="Button" parent="Center/Box"]
+custom_minimum_size = Vector2(280, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "Continuar"
+
+[node name="NewGameButton" type="Button" parent="Center/Box"]
+custom_minimum_size = Vector2(280, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "Nueva partida"
+
+[node name="QuitButton" type="Button" parent="Center/Box"]
+custom_minimum_size = Vector2(280, 46)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 20
+text = "Salir"

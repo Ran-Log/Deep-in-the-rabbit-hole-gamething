@@ -31,6 +31,9 @@ public partial class WorldState : Node
 		private set => state.Seed = value;
 	}
 
+	// Para el botón "Continuar" del menú principal.
+	public bool HasSaveFile => FileAccess.FileExists(SavePath);
+
 	// null si es partida nueva.
 	public Vector3? LoadedPlayerPosition { get; private set; }
 
