@@ -55,6 +55,7 @@ public partial class DayNightCycle : Node
 		// Una partida cargada sigue en su día (siempre desde el comienzo de ese día).
 		day = WorldState.Instance?.SavedDay ?? 1;
 
+		ApplyLevelColors(GameData.CurrentLevel);
 		ApplyLighting();
 	}
 
@@ -122,6 +123,29 @@ public partial class DayNightCycle : Node
 
 		GameEvents.PostMessage($"Amanece. Día {day}");
 		EmitSignal(SignalName.DayStarted, day);
+	}
+
+	// Cada nivel tiene su color de luz (VISUALS.md: cálido arriba, frío y oscuro al bajar).
+	private void ApplyLevelColors(LevelDefinition level)
+	{
+		if (level == null)
+		{
+			return;
+		}
+
+		if (Sun != null)
+		{
+			Sun.LightColor = level.SunColor;
+		}
+
+		Godot.Environment env = WorldEnvironment?.Environment;
+
+		if (env != null)
+		{
+			env.AmbientLightColor = level.AmbientColor;
+			// Mezcla: 25% la luz del cielo y 75% el color del nivel.
+			env.AmbientLightSkyContribution = 0.25f;
+		}
 	}
 
 	private void ApplyLighting()

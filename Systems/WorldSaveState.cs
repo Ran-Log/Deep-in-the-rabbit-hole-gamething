@@ -8,6 +8,10 @@ public sealed class WorldSaveState
 {
 	public const int DefaultCapacity = 30;
 
+	// Ids de vida guardada (HealthComponent.SaveId en player.tscn y Camp.tscn).
+	public const string PlayerHealthId = "player";
+	public const string CampHealthId = "camp";
+
 	public ulong Seed { get; set; }
 
 	// Ítems que caben en la mochila. Crece al encontrar mochilas.
@@ -18,12 +22,29 @@ public sealed class WorldSaveState
 
 	public int Day { get; set; } = 1;
 
+	// Nivel de la mina (1 = túneles superficiales, 2 = cavernas medias, 3 = profundidades).
+	public int CurrentLevel { get; set; } = 1;
+
 	// Vida guardada por id (ej. "player", "camp"). Ver HealthComponent.SaveId.
 	private readonly Dictionary<string, int> healthById = new();
 
 	public void SetHealth(string id, int value) => healthById[id] = value;
 
 	public bool TryGetHealth(string id, out int value) => healthById.TryGetValue(id, out value);
+
+	// Bajar al siguiente nivel: el mundo es nuevo (y su campamento también), pero el
+	// jugador conserva lo que lleva (inventario, pico, mochila) y el día sigue corriendo.
+	public void StartNextLevel()
+	{
+		CurrentLevel++;
+
+		minedCells.Clear();
+		openedChests.Clear();
+		placedDefenses.Clear();
+		placedTorches.Clear();
+		visitedRooms.Clear();
+		healthById.Remove(CampHealthId);
+	}
 
 	private readonly HashSet<(int RoomX, int RoomZ)> openedChests = new();
 	private readonly HashSet<(int X, int Y, int Z)> placedDefenses = new();
@@ -177,6 +198,7 @@ public sealed class WorldSaveState
 			Capacity = Capacity,
 			ToolLevel = ToolLevel,
 			Day = Day,
+			CurrentLevel = CurrentLevel,
 			Health = new Dictionary<string, int>(healthById),
 		};
 
@@ -229,6 +251,7 @@ public sealed class WorldSaveState
 			Capacity = dto.Capacity > 0 ? dto.Capacity : DefaultCapacity,
 			ToolLevel = dto.ToolLevel > 0 ? dto.ToolLevel : 1,
 			Day = dto.Day > 0 ? dto.Day : 1,
+			CurrentLevel = dto.CurrentLevel > 0 ? dto.CurrentLevel : 1,
 		};
 
 		foreach (var entry in dto.Health ?? new Dictionary<string, int>())

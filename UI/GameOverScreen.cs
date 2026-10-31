@@ -96,7 +96,7 @@ public partial class GameOverScreen : CanvasLayer
 
 	private void OnLevelCompleted()
 	{
-		ShowEnd("¡Encontraste la salida del Nivel 1!", "La grieta baja hacia las cavernas medias... (fin de la versión alfa)", canRetry: false);
+		ShowEnd("¡Escapaste de las minas!", "Después de tanto tiempo bajo tierra, vuelves a ver el cielo. (Fin de la versión beta)", canRetry: false);
 	}
 
 	private void ShowEnd(string title, string subtitle, bool canRetry)

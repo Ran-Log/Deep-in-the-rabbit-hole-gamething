@@ -11,6 +11,7 @@ public partial class EnemySpawner : Node3D
 {
 	[ExportCategory("EnemySpawner")]
 	[ExportGroup("Referencias")]
+	// Respaldo: si el nivel no define enemigos (LevelDefinition.EnemyScenes), aparece este.
 	[Export] public PackedScene ZombieScene;
 	[Export] public DayNightCycle DayNight;
 	[Export] public WorldStreamer Streamer;
@@ -150,10 +151,24 @@ public partial class EnemySpawner : Node3D
 			return;
 		}
 
-		var zombie = ZombieScene.Instantiate<Zombie>();
+		// Todo enemigo nuevo debe estar en el grupo Zombie.Group ("enemies") para contar en MaxAlive.
+		var enemy = PickEnemyScene().Instantiate<Node3D>();
 
-		zombie.Position = ToLocal(globalPosition);
-		AddChild(zombie);
+		enemy.Position = ToLocal(globalPosition);
+		AddChild(enemy);
+	}
+
+	// Uno al azar de los enemigos del nivel actual.
+	private PackedScene PickEnemyScene()
+	{
+		var scenes = GameData.CurrentLevel?.EnemyScenes;
+
+		if (scenes == null || scenes.Count == 0)
+		{
+			return ZombieScene;
+		}
+
+		return scenes[rng.RandiRange(0, scenes.Count - 1)];
 	}
 
 	/// <summary>Un punto al azar en el borde del rectángulo del campamento, lejos del centro donde está el fuego.</summary>

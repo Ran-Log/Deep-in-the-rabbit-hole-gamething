@@ -86,6 +86,27 @@ public partial class WorldState : Node
 		}
 	}
 
+	// --- Niveles ---
+
+	public int CurrentLevel => state.CurrentLevel;
+
+	// Mensaje para mostrar al llegar a un nivel nuevo (el HUD lo muestra una vez y lo borra).
+	public string PendingArrivalMessage { get; set; } = "";
+
+	// Baja al siguiente nivel: mundo y campamento nuevos, el jugador conserva lo que lleva.
+	// Se guarda enseguida, para que no se pierda el avance si el juego se cierra.
+	public void AdvanceLevel()
+	{
+		state.StartNextLevel();
+		LoadedPlayerPosition = null;
+
+		LevelDefinition level = GameData.Level(state.CurrentLevel);
+		PendingArrivalMessage = $"Nivel {state.CurrentLevel}: {level?.DisplayName}";
+
+		// La posición se ignora: al cargar, LoadedPlayerPosition queda null y se empieza en el campamento.
+		SaveWithoutPosition();
+	}
+
 	// --- Vida y día guardados ---
 
 	public int SavedDay => state.Day;
@@ -233,9 +254,27 @@ public partial class WorldState : Node
 
 	public void Save(Vector3 playerPosition)
 	{
-		CollectHealthAndDay();
+		CollectHealthAndDay(includeCamp: true);
 
-		WorldSaveData dto = state.ToDto(playerPosition.X, playerPosition.Y, playerPosition.Z);
+		if (WriteToDisk(state.ToDto(playerPosition.X, playerPosition.Y, playerPosition.Z)))
+		{
+			// Para que "Reintentar" reaparezca aquí y no donde empezó la sesión.
+			LoadedPlayerPosition = playerPosition;
+		}
+	}
+
+	// Al empezar un nivel: sin posición (se aparece en el campamento) y sin la vida del campamento anterior.
+	private void SaveWithoutPosition()
+	{
+		CollectHealthAndDay(includeCamp: false);
+
+		WorldSaveData dto = state.ToDto(0.0f, 0.0f, 0.0f);
+		dto.StartAtCamp = true;
+		WriteToDisk(dto);
+	}
+
+	private bool WriteToDisk(WorldSaveData dto)
+	{
 		string json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
 
 		using var file = FileAccess.Open(SavePath, FileAccess.ModeFlags.Write);
@@ -243,23 +282,25 @@ public partial class WorldState : Node
 		if (file == null)
 		{
 			GD.PushError($"WorldState: no se pudo abrir {SavePath} para guardar (error {FileAccess.GetOpenError()}).");
-			return;
+			return false;
 		}
 
 		file.StoreString(json);
-
-		// Para que "Reintentar" reaparezca aquí y no donde empezó la sesión.
-		LoadedPlayerPosition = playerPosition;
-
 		GD.Print($"WorldState: partida guardada en {SavePath}.");
+		return true;
 	}
 
 	// Junta la vida de cada HealthComponent con SaveId y el día actual.
-	private void CollectHealthAndDay()
+	private void CollectHealthAndDay(bool includeCamp)
 	{
 		foreach (Node node in GetTree().GetNodesInGroup(HealthComponent.SavedGroup))
 		{
-			if (node is HealthComponent health && !string.IsNullOrEmpty(health.SaveId))
+			if (node is not HealthComponent health || string.IsNullOrEmpty(health.SaveId))
+			{
+				continue;
+			}
+
+			if (includeCamp || health.SaveId != WorldSaveState.CampHealthId)
 			{
 				state.SetHealth(health.SaveId, health.Current);
 			}
@@ -305,7 +346,9 @@ public partial class WorldState : Node
 		}
 
 		state = WorldSaveState.FromDto(dto);
-		LoadedPlayerPosition = new Vector3(dto.PlayerX, dto.PlayerY, dto.PlayerZ);
+
+		// Guardado al empezar un nivel: se aparece en el campamento, no en una posición guardada.
+		LoadedPlayerPosition = dto.StartAtCamp ? null : new Vector3(dto.PlayerX, dto.PlayerY, dto.PlayerZ);
 
 		GD.Print($"WorldState: partida cargada desde {SavePath} (semilla {Seed}).");
 		return true;
