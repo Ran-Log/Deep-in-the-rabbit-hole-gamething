@@ -19,6 +19,10 @@ public partial class MiningComponent : Node3D
 	[Signal]
 	public delegate void BlockDestroyedEventHandler(int mineral);
 
+	// Un golpe que sí entró (lo escucha el audio).
+	[Signal]
+	public delegate void BlockHitEventHandler(int mineral);
+
 	[ExportCategory("MiningComponent")]
 	[ExportGroup("Referencias")]
 	[Export] public Camera3D Camera;
@@ -125,6 +129,8 @@ public partial class MiningComponent : Node3D
 			EmitSignal(SignalName.HitRejected, block);
 			return;
 		}
+
+		EmitSignal(SignalName.BlockHit, (int)block.Mineral);
 
 		if (block.Health <= 0)
 		{

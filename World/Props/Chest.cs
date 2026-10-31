@@ -6,6 +6,9 @@ using Godot;
 /// </summary>
 public partial class Chest : Interactable
 {
+	[Signal]
+	public delegate void OpenedEventHandler();
+
 	[ExportCategory("Chest")]
 	[ExportGroup("Referencias")]
 	[Export] public Node3D LidPivot;
@@ -63,6 +66,7 @@ public partial class Chest : Interactable
 
 		WorldState.Instance?.MarkChestOpened(RoomCoord);
 		ShowOpened();
+		EmitSignal(SignalName.Opened);
 	}
 
 	private bool GiveLoot(Player player)

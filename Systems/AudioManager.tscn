@@ -1,0 +1,213 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Systems/AudioManager.cs" id="1_audio"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMining_000.ogg" id="2_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMining_001.ogg" id="3_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMining_002.ogg" id="4_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMining_003.ogg" id="5_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMining_004.ogg" id="6_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_heavy_000.ogg" id="7_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_heavy_001.ogg" id="8_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_heavy_002.ogg" id="9_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_heavy_003.ogg" id="10_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_heavy_004.ogg" id="11_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMetal_light_000.ogg" id="12_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMetal_light_001.ogg" id="13_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMetal_light_002.ogg" id="14_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMetal_light_003.ogg" id="15_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactMetal_light_004.ogg" id="16_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_medium_000.ogg" id="17_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_medium_001.ogg" id="18_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_medium_002.ogg" id="19_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_medium_003.ogg" id="20_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_medium_004.ogg" id="21_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_heavy_000.ogg" id="22_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_heavy_001.ogg" id="23_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_heavy_002.ogg" id="24_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_heavy_003.ogg" id="25_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactPunch_heavy_004.ogg" id="26_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_medium_000.ogg" id="27_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_medium_001.ogg" id="28_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_medium_002.ogg" id="29_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_medium_003.ogg" id="30_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactSoft_medium_004.ogg" id="31_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactWood_medium_000.ogg" id="32_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactWood_medium_001.ogg" id="33_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactWood_medium_002.ogg" id="34_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactWood_medium_003.ogg" id="35_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactWood_medium_004.ogg" id="36_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactBell_heavy_000.ogg" id="37_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactBell_heavy_001.ogg" id="38_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactBell_heavy_002.ogg" id="39_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactBell_heavy_003.ogg" id="40_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/impactBell_heavy_004.ogg" id="41_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/click_001.ogg" id="42_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/click_002.ogg" id="43_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/click_003.ogg" id="44_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/click_004.ogg" id="45_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/click_005.ogg" id="46_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/handleSmallLeather.ogg" id="47_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/handleSmallLeather2.ogg" id="48_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/pluck_001.ogg" id="49_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/bong_001.ogg" id="50_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/creak1.ogg" id="51_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/bookOpen.ogg" id="52_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/confirmation_001.ogg" id="53_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/confirmation_004.ogg" id="54_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/ambience/dungeon_ambient_1.ogg" id="55_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/ambience/dark_cavern_ambient_002.ogg" id="56_snd"]
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_MineHit"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("2_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("3_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("4_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("5_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("6_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_BlockBreak"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("7_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("8_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("9_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("10_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("11_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_HitRejected"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("12_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("13_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("14_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("15_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("16_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_EnemyHit"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("17_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("18_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("19_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("20_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("21_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_EnemyDeath"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("22_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("23_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("24_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("25_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("26_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_PlayerHurt"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("27_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("28_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("29_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("30_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("31_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_Build"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("32_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("33_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("34_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("35_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("36_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_NightFalls"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("37_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("38_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("39_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("40_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("41_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_UiClick"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("42_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("43_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("44_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("45_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("46_snd")
+stream_4/weight = 1.0
+
+[sub_resource type="AudioStreamRandomizer" id="Rand_Eat"]
+random_pitch = 1.08
+streams_count = 2
+stream_0/stream = ExtResource("47_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("48_snd")
+stream_1/weight = 1.0
+
+[node name="AudioManager" type="Node"]
+script = ExtResource("1_audio")
+MineHit = SubResource("Rand_MineHit")
+BlockBreak = SubResource("Rand_BlockBreak")
+HitRejected = SubResource("Rand_HitRejected")
+EnemyHit = SubResource("Rand_EnemyHit")
+EnemyDeath = SubResource("Rand_EnemyDeath")
+PlayerHurt = SubResource("Rand_PlayerHurt")
+Build = SubResource("Rand_Build")
+NightFalls = SubResource("Rand_NightFalls")
+UiClick = SubResource("Rand_UiClick")
+Eat = SubResource("Rand_Eat")
+Pickup = ExtResource("49_snd")
+PlayerDeath = ExtResource("50_snd")
+ChestOpen = ExtResource("51_snd")
+NoteOpen = ExtResource("52_snd")
+Upgrade = ExtResource("53_snd")
+Victory = ExtResource("54_snd")
+DayAmbience = ExtResource("55_snd")
+NightAmbience = ExtResource("56_snd")
