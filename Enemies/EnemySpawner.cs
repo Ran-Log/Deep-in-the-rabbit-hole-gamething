@@ -103,14 +103,14 @@ public partial class EnemySpawner : Node3D
 		for (int i = 0; i < campWave && neighbors.Length > 0; i++)
 		{
 			Room room = neighbors[rng.RandiRange(0, neighbors.Length - 1)];
-			TrySpawn(RoomSpawnPoint(room));
+			TrySpawn(room);
 		}
 
 		foreach (Room room in ExploredRooms())
 		{
 			if (rng.RandiRange(0, 99) < RoomSpawnChancePercent)
 			{
-				TrySpawn(RoomSpawnPoint(room));
+				TrySpawn(room);
 			}
 		}
 	}
@@ -122,7 +122,7 @@ public partial class EnemySpawner : Node3D
 		if (rooms.Length > 0)
 		{
 			Room room = rooms[rng.RandiRange(0, rooms.Length - 1)];
-			TrySpawn(RoomSpawnPoint(room));
+			TrySpawn(room);
 		}
 	}
 
@@ -168,9 +168,10 @@ public partial class EnemySpawner : Node3D
 		return room.InteriorCenterGlobal + new Vector3(-3.0f, SpawnHeight + 1.0f, 3.0f);
 	}
 
-	private void TrySpawn(Vector3 globalPosition)
+	private void TrySpawn(Room room)
 	{
-		PackedScene scene = PickEnemyScene();
+		Vector3 globalPosition = RoomSpawnPoint(room);
+		PackedScene scene = PickEnemySceneFor(room);
 		var first = scene.Instantiate<Enemy>();
 
 		// Algunos aparecen en grupo (ej. los conejos): SpawnGroupSize en su escena.
@@ -193,6 +194,25 @@ public partial class EnemySpawner : Node3D
 		{
 			first.Free();
 		}
+	}
+
+	// Uno al azar de los del nivel que pueda estar en esta sala (las arañas, solo en salas oscuras).
+	private PackedScene PickEnemySceneFor(Room room)
+	{
+		for (int attempt = 0; attempt < 4; attempt++)
+		{
+			PackedScene scene = PickEnemyScene();
+			var probe = scene.Instantiate<Enemy>();
+			bool allowed = !(probe.OnlyInDarkRooms && room.HasSkylight);
+			probe.Free();
+
+			if (allowed)
+			{
+				return scene;
+			}
+		}
+
+		return ZombieScene;
 	}
 
 	// Uno al azar de los enemigos del nivel actual.

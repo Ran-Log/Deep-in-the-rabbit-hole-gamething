@@ -25,6 +25,10 @@ public partial class Room : Node3D
 	[Export(PropertyHint.Range, "3,64,1")] public int Depth = 10;
 	[Export(PropertyHint.Range, "1,16,1")] public int WallHeight = 3;
 
+	[ExportGroup("Techo")]
+	// Lado del agujero del tragaluz, en celdas.
+	[Export(PropertyHint.Range, "1,8,1")] public int SkylightCells = 3;
+
 	[ExportGroup("Paredes")]
 	[Export] public MineralType WallMineral = MineralType.Stone;
 	[Export] public int WallBlockHealth = 5;
@@ -43,6 +47,10 @@ public partial class Room : Node3D
 	public string NoteText { get; set; } = "";
 	public bool HasExit { get; set; }
 	public bool HasNest { get; set; }
+	// Agujero en el techo (GDD: de día entra luz). Sin él, la sala es oscura.
+	public bool HasSkylight { get; set; }
+
+	public int CeilingPieceCount { get; private set; }
 
 	// Con tamaño par, el centro de la grilla queda corrido media celda (ver RoomMath.CenterOffset).
 	private Vector3 InteriorCenter => new Vector3(-1.0f, FloorTopY, -1.0f);
@@ -68,10 +76,58 @@ public partial class Room : Node3D
 		SnapOriginToGrid();
 		ResizeFloor();
 		GenerateWalls();
+		GenerateCeiling();
 		SpawnGasZoneIfNeeded();
 		SpawnChestIfNeeded();
 		SpawnExitIfNeeded();
 		SpawnNestIfNeeded();
+	}
+
+	// Una losa sobre las paredes (no son bloques de la grilla: así no suma cuerpos físicos).
+	// Con tragaluz, son 4 franjas alrededor de un agujero en el medio.
+	private void GenerateCeiling()
+	{
+		float cell = BlockGrid.Instance.CellSize;
+		float centerX = (RoomMath.CenterOffset(0, Width) + RoomMath.CenterOffset(Width - 1, Width)) * cell * 0.5f;
+		float centerZ = (RoomMath.CenterOffset(0, Depth) + RoomMath.CenterOffset(Depth - 1, Depth)) * cell * 0.5f;
+		float halfWidth = Width * cell * 0.5f;
+		float halfDepth = Depth * cell * 0.5f;
+		float halfHole = SkylightCells * cell * 0.5f;
+
+		var full = (centerX - halfWidth, centerZ - halfDepth, centerX + halfWidth, centerZ + halfDepth);
+		var hole = (centerX - halfHole, centerZ - halfHole, centerX + halfHole, centerZ + halfHole);
+
+		// Las paredes ocupan las celdas 0..WallHeight-1; la losa va justo encima.
+		float y = WallHeight * cell;
+
+		var ceiling = new StaticBody3D { Name = "Ceiling" };
+		AddChild(ceiling);
+
+		foreach (var piece in RoomMath.CeilingPieces(full, hole, HasSkylight))
+		{
+			AddCeilingPiece(ceiling, piece, y, cell);
+		}
+	}
+
+	private void AddCeilingPiece(StaticBody3D ceiling, (float MinX, float MinZ, float MaxX, float MaxZ) piece, float y, float thickness)
+	{
+		var size = new Vector3(piece.MaxX - piece.MinX, thickness, piece.MaxZ - piece.MinZ);
+		var center = new Vector3((piece.MinX + piece.MaxX) * 0.5f, y, (piece.MinZ + piece.MaxZ) * 0.5f);
+
+		ceiling.AddChild(new MeshInstance3D
+		{
+			Mesh = new BoxMesh { Size = size },
+			Position = center,
+			MaterialOverride = MineralTextureFactory.GetFloorMaterial(),
+		});
+
+		ceiling.AddChild(new CollisionShape3D
+		{
+			Shape = new BoxShape3D { Size = size },
+			Position = center,
+		});
+
+		CeilingPieceCount++;
 	}
 
 	private void SpawnNestIfNeeded()

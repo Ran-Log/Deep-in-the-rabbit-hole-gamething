@@ -21,4 +21,6 @@ public partial class RoomDesign : Resource
 	[Export] public bool HasExit = false;
 	// Un nido de hormigas gigantes (GDD: "solo en habitaciones especiales").
 	[Export] public bool HasNest = false;
+	// Agujero en el techo: de día entra luz. Sin él, la sala es oscura.
+	[Export] public bool HasSkylight = false;
 }

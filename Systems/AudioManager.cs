@@ -144,6 +144,10 @@ public partial class AudioManager : Node
 				build.StructureBuilt += () => Play(Build);
 				break;
 
+			case LampComponent lamp:
+				lamp.Toggled += _ => Play(UiClick, -6.0f);
+				break;
+
 			case DayNightCycle dayNight:
 				dayNight.NightStarted += _ => { Play(NightFalls); SetNight(true); };
 				dayNight.DayStarted += _ => SetNight(false);

@@ -38,6 +38,8 @@ public partial class Enemy : CharacterBody3D, IDamageable
 	[ExportGroup("Aparición")]
 	// Cuántos aparecen juntos (ej. los conejos van en grupo).
 	[Export] public int SpawnGroupSize = 1;
+	// GDD: las arañas solo aparecen en salas oscuras (sin tragaluz).
+	[Export] public bool OnlyInDarkRooms = false;
 
 	private const float FallLimitY = -40.0f;
 

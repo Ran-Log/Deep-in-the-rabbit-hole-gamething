@@ -30,6 +30,9 @@ public readonly struct RoomSpec
 	// Tiene un nido de hormigas.
 	public readonly bool HasNest;
 
+	// Agujero en el techo. Sin él, la sala es oscura.
+	public readonly bool HasSkylight;
+
 	public RoomSpec(
 		string name,
 		Vector3 position,
@@ -43,9 +46,11 @@ public readonly struct RoomSpec
 		ChestLoot loot = ChestLoot.None,
 		string noteText = "",
 		bool hasExit = false,
-		bool hasNest = false)
+		bool hasNest = false,
+		bool hasSkylight = false)
 	{
 		HasNest = hasNest;
+		HasSkylight = hasSkylight;
 		Name = name;
 		Position = position;
 		Width = width;

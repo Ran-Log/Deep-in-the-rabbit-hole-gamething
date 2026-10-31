@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://btg6pagijnaoj" path="res://Player/Components/BuildComponent.cs" id="9_build"]
 [ext_resource type="Script" uid="uid://dmc30126vreik" path="res://Player/Components/EatComponent.cs" id="10_eat"]
 [ext_resource type="Script" uid="uid://brft18qis8qff" path="res://Systems/DebugTools.cs" id="11_debug"]
+[ext_resource type="Script" path="res://Player/Components/LampComponent.cs" id="12_lamp"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_kedfu"]
 top_radius = 0.53515625
@@ -32,6 +33,17 @@ mesh = SubResource("CylinderMesh_kedfu")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1496582, 0)
 shape = SubResource("CapsuleShape3D_8gbba")
+
+[node name="Lantern" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+light_color = Color(1, 0.78, 0.5, 1)
+light_energy = 0.9
+omni_range = 5.0
+omni_attenuation = 1.6
+
+[node name="LampComponent" type="Node" parent="." node_paths=PackedStringArray("Lamp")]
+script = ExtResource("12_lamp")
+Lamp = NodePath("../Lantern")
 
 [node name="CameraRig" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2523193, 0)
