@@ -2,8 +2,9 @@ using Godot;
 using System.Linq;
 
 /// <summary>
-/// Hace aparecer zombies de noche, de dos formas:
-/// 1. Una oleada en el borde del campamento, más grande cada noche.
+/// Hace aparecer enemigos de noche, de dos formas, y nunca dentro del campamento:
+/// 1. Una oleada en las salas vecinas al campamento, más grande cada noche: tienen que
+///    entrar rompiendo paredes o barricadas.
 /// 2. En las salas que el jugador ya visitó: excavar mucho trae más amenazas (regla del GDD).
 /// Al amanecer se van todos. (Cuando haya techos: de día solo en salas con techo, regla del GDD.)
 /// </summary>
@@ -25,11 +26,14 @@ public partial class EnemySpawner : Node3D
 	// Cada cuántos segundos de noche aparece uno más en una sala explorada.
 	[Export] public float TrickleInterval = 30.0f;
 
-	[ExportGroup("Zona del campamento")]
-	// Rectángulo (x, z en metros) donde aparece la oleada; por defecto el interior de la sala (0,0).
-	[Export] public Vector2 AreaMin = new Vector2(-10.0f, -10.0f);
-	[Export] public Vector2 AreaMax = new Vector2(8.0f, 8.0f);
+	[ExportGroup("Posición")]
 	[Export] public float SpawnHeight = 0.5f;
+
+	// Las 4 salas pegadas al campamento (0,0): de ahí sale la oleada.
+	private static readonly Vector2I[] CampNeighbors =
+	{
+		new Vector2I(1, 0), new Vector2I(-1, 0), new Vector2I(0, 1), new Vector2I(0, -1),
+	};
 
 	private readonly RandomNumberGenerator rng = new();
 	private float trickleTimer;
@@ -75,7 +79,7 @@ public partial class EnemySpawner : Node3D
 	// Al amanecer los enemigos se van (el GDD: de día se explora con libertad).
 	private void OnDayStarted(int day)
 	{
-		var enemies = GetTree().GetNodesInGroup(Zombie.Group);
+		var enemies = GetTree().GetNodesInGroup(Enemy.Group);
 
 		foreach (Node enemy in enemies)
 		{
@@ -93,10 +97,13 @@ public partial class EnemySpawner : Node3D
 		trickleTimer = 0.0f;
 
 		int campWave = BaseZombiesPerNight + (day - 1) * ExtraZombiesPerDay;
+		Room[] neighbors = LoadedCampNeighbors().ToArray();
 
-		for (int i = 0; i < campWave; i++)
+		// Si el jugador está lejos, esas salas no están cargadas: esa noche no hay oleada al campamento.
+		for (int i = 0; i < campWave && neighbors.Length > 0; i++)
 		{
-			TrySpawn(PickCampEdgePosition());
+			Room room = neighbors[rng.RandiRange(0, neighbors.Length - 1)];
+			TrySpawn(RoomSpawnPoint(room));
 		}
 
 		foreach (Room room in ExploredRooms())
@@ -119,7 +126,24 @@ public partial class EnemySpawner : Node3D
 		}
 	}
 
-	/// <summary>Salas cargadas que el jugador ya visitó, sin contar el campamento (ese tiene su propia oleada).</summary>
+	// Las salas pegadas al campamento que están cargadas ahora.
+	private System.Collections.Generic.IEnumerable<Room> LoadedCampNeighbors()
+	{
+		if (Streamer == null)
+		{
+			yield break;
+		}
+
+		foreach (Room room in Streamer.LoadedRooms)
+		{
+			if (GodotObject.IsInstanceValid(room) && CampNeighbors.Contains(room.RoomGridCoord))
+			{
+				yield return room;
+			}
+		}
+	}
+
+	// Salas cargadas que el jugador ya visitó, sin contar el campamento (ahí nunca aparecen enemigos).
 	private System.Collections.Generic.IEnumerable<Room> ExploredRooms()
 	{
 		if (Streamer == null || WorldState.Instance == null)
@@ -146,16 +170,29 @@ public partial class EnemySpawner : Node3D
 
 	private void TrySpawn(Vector3 globalPosition)
 	{
-		if (GetTree().GetNodesInGroup(Zombie.Group).Count >= MaxAlive)
+		PackedScene scene = PickEnemyScene();
+		var first = scene.Instantiate<Enemy>();
+
+		// Algunos aparecen en grupo (ej. los conejos): SpawnGroupSize en su escena.
+		int groupSize = Mathf.Max(1, first.SpawnGroupSize);
+
+		for (int i = 0; i < groupSize; i++)
 		{
-			return;
+			if (GetTree().GetNodesInGroup(Enemy.Group).Count >= MaxAlive)
+			{
+				break;
+			}
+
+			Enemy enemy = i == 0 ? first : scene.Instantiate<Enemy>();
+			enemy.Position = ToLocal(globalPosition + new Vector3(i * 1.2f, 0.0f, (i % 2) * 1.2f));
+			AddChild(enemy);
 		}
 
-		// Todo enemigo nuevo debe estar en el grupo Zombie.Group ("enemies") para contar en MaxAlive.
-		var enemy = PickEnemyScene().Instantiate<Node3D>();
-
-		enemy.Position = ToLocal(globalPosition);
-		AddChild(enemy);
+		// Si no cupo ninguno (MaxAlive), el primero nunca entró al árbol: se libera a mano.
+		if (!first.IsInsideTree())
+		{
+			first.Free();
+		}
 	}
 
 	// Uno al azar de los enemigos del nivel actual.
@@ -169,22 +206,5 @@ public partial class EnemySpawner : Node3D
 		}
 
 		return scenes[rng.RandiRange(0, scenes.Count - 1)];
-	}
-
-	/// <summary>Un punto al azar en el borde del rectángulo del campamento, lejos del centro donde está el fuego.</summary>
-	private Vector3 PickCampEdgePosition()
-	{
-		float x = rng.RandfRange(AreaMin.X, AreaMax.X);
-		float z = rng.RandfRange(AreaMin.Y, AreaMax.Y);
-
-		switch (rng.RandiRange(0, 3))
-		{
-			case 0: x = AreaMin.X; break;
-			case 1: x = AreaMax.X; break;
-			case 2: z = AreaMin.Y; break;
-			default: z = AreaMax.Y; break;
-		}
-
-		return new Vector3(x, SpawnHeight, z);
 	}
 }

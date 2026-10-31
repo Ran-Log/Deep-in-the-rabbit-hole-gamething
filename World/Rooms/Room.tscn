@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://World/Props/GasZone.tscn" id="4_gas"]
 [ext_resource type="PackedScene" path="res://World/Props/Chest.tscn" id="5_chest"]
 [ext_resource type="PackedScene" path="res://World/Props/ExitCrack.tscn" id="6_exit"]
+[ext_resource type="PackedScene" path="res://Enemies/AntNest.tscn" id="7_nest"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 resource_local_to_scene = true
@@ -20,6 +21,7 @@ BlockScene = ExtResource("2_room")
 GasZoneScene = ExtResource("4_gas")
 ChestScene = ExtResource("5_chest")
 ExitScene = ExtResource("6_exit")
+NestScene = ExtResource("7_nest")
 FloorBody = NodePath("Floor")
 FloorMesh = NodePath("Floor/MeshInstance3D")
 FloorCollision = NodePath("Floor/CollisionShape3D")

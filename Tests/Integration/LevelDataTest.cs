@@ -81,6 +81,22 @@ public class LevelDataTest
 	}
 
 	[TestCase]
+	public void LosNiveles2y3TienenUnNidoDeHormigas()
+	{
+		for (int n = 2; n <= 3; n++)
+		{
+			bool hasNest = false;
+
+			foreach (RoomDesign room in GameData.Level(n).FixedRooms)
+			{
+				hasNest |= room.HasNest;
+			}
+
+			AssertThat(hasNest).IsTrue();
+		}
+	}
+
+	[TestCase]
 	public void CadaNivelTieneAlMenosUnEnemigo()
 	{
 		for (int n = 1; n <= 3; n++)

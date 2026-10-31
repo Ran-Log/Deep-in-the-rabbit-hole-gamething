@@ -3,6 +3,15 @@
 [ext_resource type="Script" uid="uid://cw3bhvuy6nf0i" path="res://Data/Definitions/LevelDefinition.cs" id="1_level"]
 [ext_resource type="Script" uid="uid://d1is7rkda4fjj" path="res://Data/Definitions/RoomDesign.cs" id="2_room"]
 [ext_resource type="PackedScene" path="res://Enemies/Zombie.tscn" id="3_zombie"]
+[ext_resource type="PackedScene" path="res://Enemies/Mole.tscn" id="4_mole"]
+[ext_resource type="PackedScene" path="res://Enemies/Spider.tscn" id="5_spider"]
+[ext_resource type="PackedScene" path="res://Enemies/Rabbit.tscn" id="6_rabbit"]
+
+[sub_resource type="Resource" id="Room_nest"]
+script = ExtResource("2_room")
+Coord = Vector2i(2, 1)
+Mineral = 1
+HasNest = true
 
 [sub_resource type="Resource" id="Room_camp"]
 script = ExtResource("2_room")
@@ -50,7 +59,7 @@ Number = 3
 DisplayName = "Las profundidades"
 IsFinal = true
 ExitPrompt = "Trepar hacia la luz (salir de la mina)"
-FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource("Room_gold_food"), SubResource("Room_gas"), SubResource("Room_note_creatures"), SubResource("Room_note_revelation"), SubResource("Room_gold"), SubResource("Room_exit")])
-EnemyScenes = Array[PackedScene]([ExtResource("3_zombie")])
+FixedRooms = Array[ExtResource("2_room")]([SubResource("Room_camp"), SubResource("Room_gold_food"), SubResource("Room_gas"), SubResource("Room_note_creatures"), SubResource("Room_note_revelation"), SubResource("Room_gold"), SubResource("Room_exit"), SubResource("Room_nest")])
+EnemyScenes = Array[PackedScene]([ExtResource("3_zombie"), ExtResource("4_mole"), ExtResource("5_spider"), ExtResource("6_rabbit")])
 AmbientColor = Color(0.6, 0.45, 0.85, 1)
 SunColor = Color(0.7, 0.55, 0.95, 1)

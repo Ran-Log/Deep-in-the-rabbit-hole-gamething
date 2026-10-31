@@ -13,6 +13,7 @@ public partial class Room : Node3D
 	[Export] public PackedScene GasZoneScene;
 	[Export] public PackedScene ChestScene;
 	[Export] public PackedScene ExitScene;
+	[Export] public PackedScene NestScene;
 	[Export] public StaticBody3D FloorBody;
 	[Export] public MeshInstance3D FloorMesh;
 	[Export] public CollisionShape3D FloorCollision;
@@ -41,6 +42,7 @@ public partial class Room : Node3D
 	public ChestLoot Loot { get; set; } = ChestLoot.None;
 	public string NoteText { get; set; } = "";
 	public bool HasExit { get; set; }
+	public bool HasNest { get; set; }
 
 	// Con tamaño par, el centro de la grilla queda corrido media celda (ver RoomMath.CenterOffset).
 	private Vector3 InteriorCenter => new Vector3(-1.0f, FloorTopY, -1.0f);
@@ -69,6 +71,26 @@ public partial class Room : Node3D
 		SpawnGasZoneIfNeeded();
 		SpawnChestIfNeeded();
 		SpawnExitIfNeeded();
+		SpawnNestIfNeeded();
+	}
+
+	private void SpawnNestIfNeeded()
+	{
+		if (!HasNest || NestScene == null)
+		{
+			return;
+		}
+
+		// Un nido destruido no vuelve (GDD).
+		if (WorldState.Instance != null && WorldState.Instance.IsNestDestroyed(RoomGridCoord))
+		{
+			return;
+		}
+
+		var nest = NestScene.Instantiate<AntNest>();
+		nest.RoomCoord = RoomGridCoord;
+		nest.Position = InteriorCenter + new Vector3(-4.0f, 0.0f, -4.0f);
+		AddChild(nest);
 	}
 
 	private void SnapOriginToGrid()

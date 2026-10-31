@@ -246,6 +246,12 @@ public partial class WorldState : Node
 
 	public void AddTorch(Vector3I cell) => state.AddTorch(cell.X, cell.Y, cell.Z);
 
+	// --- Nidos de hormigas ---
+
+	public bool IsNestDestroyed(Vector2I room) => state.IsNestDestroyed(room.X, room.Y);
+
+	public void MarkNestDestroyed(Vector2I room) => state.MarkNestDestroyed(room.X, room.Y);
+
 	// --- Salas visitadas ---
 
 	public bool IsRoomVisited(Vector2I room) => state.IsRoomVisited(room.X, room.Y);

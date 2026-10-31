@@ -137,6 +137,7 @@ public partial class WorldStreamer : Node3D
 		room.Loot = spec.Loot;
 		room.NoteText = spec.NoteText;
 		room.HasExit = spec.HasExit;
+		room.HasNest = spec.HasNest;
 
 		// Antes de AddChild: en su _Ready la sala ya necesita estar en su lugar.
 		room.Position = spec.Position;
