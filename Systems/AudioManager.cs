@@ -119,6 +119,7 @@ public partial class AudioManager : Node
 
 			case CombatComponent combat:
 				combat.EnemyHit += _ => Play(EnemyHit);
+				combat.HitResisted += _ => Play(HitRejected);
 				break;
 
 			case Enemy enemy when enemy.Health != null:
@@ -151,6 +152,8 @@ public partial class AudioManager : Node
 
 			case PlayerEquipment equipment:
 				equipment.ToolChanged += _ => Play(Upgrade);
+				equipment.WeaponChanged += _ => Play(Upgrade);
+				equipment.LightChanged += _ => Play(Upgrade);
 				break;
 
 			case BuildComponent build:

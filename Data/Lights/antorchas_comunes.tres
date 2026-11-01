@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="LightDefinition" format=3]
+
+[ext_resource type="Script" path="res://Data/Definitions/LightDefinition.cs" id="1_light"]
+
+[resource]
+script = ExtResource("1_light")
+Level = 1
+DisplayName = "Antorchas comunes"
+TorchRange = 11.0
+LampRange = 5.0

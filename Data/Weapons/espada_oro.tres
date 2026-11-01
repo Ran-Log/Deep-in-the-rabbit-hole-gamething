@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" format=3]
+
+[ext_resource type="Script" path="res://Data/Definitions/WeaponDefinition.cs" id="1_weapon"]
+[ext_resource type="Script" uid="uid://qrau7en4wn8" path="res://Data/Definitions/MineralCost.cs" id="2_cost"]
+
+[sub_resource type="Resource" id="Resource_gold"]
+script = ExtResource("2_cost")
+Mineral = 3
+Amount = 4
+
+[sub_resource type="Resource" id="Resource_iron"]
+script = ExtResource("2_cost")
+Mineral = 2
+Amount = 3
+
+[resource]
+script = ExtResource("1_weapon")
+Tier = 2
+DisplayName = "Espada de oro"
+Damage = 6
+Cost = Array[ExtResource("2_cost")]([SubResource("Resource_gold"), SubResource("Resource_iron")])

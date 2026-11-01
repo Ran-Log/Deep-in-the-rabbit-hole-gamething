@@ -16,6 +16,13 @@ public partial class GameDataCatalog : Resource
 	[ExportGroup("Mejoras del pico")]
 	[Export] public Godot.Collections.Array<UpgradeRecipe> Upgrades = new();
 
+	[ExportGroup("Armas")]
+	[Export] public Godot.Collections.Array<WeaponDefinition> Weapons = new();
+
+	[ExportGroup("Antorchas")]
+	// Niveles de iluminación, empezando por el 1 (el inicial).
+	[Export] public Godot.Collections.Array<LightDefinition> Lights = new();
+
 	[ExportGroup("Niveles")]
 	// En orden: el primero es el nivel 1.
 	[Export] public Godot.Collections.Array<LevelDefinition> Levels = new();

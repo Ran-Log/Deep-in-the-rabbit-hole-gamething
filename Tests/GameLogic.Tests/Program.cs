@@ -271,6 +271,22 @@ Check("caida: justo en el límite no hace daño", FallDamage.For(5.0f, 5.0f, 10.
 Check("caida: 8 m son 3 m de más, 30 de daño", FallDamage.For(8.0f, 5.0f, 10.0f) == 30);
 Check("caida: redondea (6.26 m da 13)", FallDamage.For(6.26f, 5.0f, 10.0f) == 13);
 
+// --- Mejoras de equipo y armadura (feature 1.10) ---
+
+Check("armadura: sin armadura entra todo el daño", CombatRules.DamageAfterArmor(4, 0) == 4);
+Check("armadura: resta su valor", CombatRules.DamageAfterArmor(4, 2) == 2);
+Check("armadura: siempre entra al menos 1", CombatRules.DamageAfterArmor(2, 5) == 1);
+Check("armadura: el golpe se resiste si no la supera", CombatRules.IsResisted(2, 2) && !CombatRules.IsResisted(3, 2));
+
+{
+	var state = new WorldSaveState { WeaponLevel = 2, LightLevel = 2 };
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+	Check("guardado: conserva el arma y el nivel de antorchas", restored.WeaponLevel == 2 && restored.LightLevel == 2);
+
+	WorldSaveState fromOldSave = WorldSaveState.FromDto(new WorldSaveData());
+	Check("guardado: un save viejo arranca sin arma y con antorchas comunes", fromOldSave.WeaponLevel == 0 && fromOldSave.LightLevel == 1);
+}
+
 // --- Techo de las salas (feature 1.5) ---
 
 {

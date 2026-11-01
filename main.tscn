@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://gxmje6e1g85j" path="res://Camp/TorchPlacer.cs" id="12_torchplacer"]
 [ext_resource type="PackedScene" path="res://World/Props/Torch.tscn" id="13_torch"]
 [ext_resource type="PackedScene" path="res://UI/PauseMenu.tscn" id="14_pause"]
+[ext_resource type="PackedScene" path="res://UI/UpgradeMenu.tscn" id="15_upgrade"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 
@@ -70,3 +71,5 @@ CampHealth = NodePath("../Camp/CampCore/Health")
 Eat = NodePath("../Player/EatComponent")
 
 [node name="PauseMenu" parent="." instance=ExtResource("14_pause")]
+
+[node name="UpgradeMenu" parent="." instance=ExtResource("15_upgrade")]

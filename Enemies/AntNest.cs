@@ -12,6 +12,10 @@ public partial class AntNest : StaticBody3D, IDamageable
 	[Export] public HealthComponent Health;
 	[Export] public PackedScene AntScene;
 
+	[ExportGroup("Combate")]
+	// Resta daño a cada golpe (ver CombatRules).
+	[Export(PropertyHint.Range, "0,10,1")] public int Armor { get; set; } = 2;
+
 	[ExportGroup("Hormigas")]
 	[Export] public float SpawnInterval = 8.0f;
 	[Export] public int MaxAnts = 4;
@@ -65,7 +69,7 @@ public partial class AntNest : StaticBody3D, IDamageable
 
 	public void TakeHit(int damage, Vector3 fromPosition)
 	{
-		Health?.TakeDamage(damage);
+		Health?.TakeDamage(CombatRules.DamageAfterArmor(damage, Armor));
 	}
 
 	private bool PlayerIsNear()

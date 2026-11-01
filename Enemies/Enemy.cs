@@ -34,6 +34,8 @@ public partial class Enemy : CharacterBody3D, IDamageable
 	// Daño a los bloques que lo tapan; 0 = no rompe bloques.
 	[Export] public int BlockDamage = 3;
 	[Export] public float AttackCooldown = 1.2f;
+	// Resta daño a cada golpe que recibe (GDD 2.1.7: hace falta un arma mejor).
+	[Export(PropertyHint.Range, "0,10,1")] public int Armor { get; set; } = 0;
 
 	[ExportGroup("Aparición")]
 	// Cuántos aparecen juntos (ej. los conejos van en grupo).
@@ -137,7 +139,7 @@ public partial class Enemy : CharacterBody3D, IDamageable
 
 		FlashHit();
 		Behavior?.OnHit(this, fromPosition);
-		Health?.TakeDamage(damage);
+		Health?.TakeDamage(CombatRules.DamageAfterArmor(damage, Armor));
 	}
 
 	public float HorizontalDistanceTo(Node3D other)

@@ -26,6 +26,31 @@ public partial class LampComponent : Node
 		}
 
 		Lamp.Visible = StartOn;
+		ApplyLightLevel(WorldState.Instance?.LightLevel ?? 1);
+
+		if (WorldState.Instance != null)
+		{
+			WorldState.Instance.LightChanged += ApplyLightLevel;
+		}
+	}
+
+	public override void _ExitTree()
+	{
+		if (WorldState.Instance != null)
+		{
+			WorldState.Instance.LightChanged -= ApplyLightLevel;
+		}
+	}
+
+	// Las antorchas mejoradas también alargan la luz de la lámpara.
+	private void ApplyLightLevel(int level)
+	{
+		LightDefinition light = GameData.Light(level);
+
+		if (Lamp is OmniLight3D omni && light != null)
+		{
+			omni.OmniRange = light.LampRange;
+		}
 	}
 
 	// Solo lee la tecla (clase 8: ProcessInput separado de UpdateState).

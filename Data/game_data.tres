@@ -15,11 +15,19 @@
 [ext_resource type="Resource" path="res://Data/Levels/level_1.tres" id="13_level1"]
 [ext_resource type="Resource" path="res://Data/Levels/level_2.tres" id="14_level2"]
 [ext_resource type="Resource" path="res://Data/Levels/level_3.tres" id="15_level3"]
+[ext_resource type="Script" path="res://Data/Definitions/WeaponDefinition.cs" id="16_weapondef"]
+[ext_resource type="Resource" path="res://Data/Weapons/espada_hierro.tres" id="17_iron_sword"]
+[ext_resource type="Resource" path="res://Data/Weapons/espada_oro.tres" id="18_gold_sword"]
+[ext_resource type="Script" path="res://Data/Definitions/LightDefinition.cs" id="19_lightdef"]
+[ext_resource type="Resource" path="res://Data/Lights/antorchas_comunes.tres" id="20_light1"]
+[ext_resource type="Resource" path="res://Data/Lights/antorchas_mejoradas.tres" id="21_light2"]
 
 [resource]
 script = ExtResource("1_catalog")
 Minerals = Array[ExtResource("2_mineral")]([ExtResource("4_stone"), ExtResource("5_coal"), ExtResource("6_iron"), ExtResource("7_gold"), ExtResource("8_bedrock")])
 Floor = ExtResource("9_floor")
 Upgrades = Array[ExtResource("3_recipe")]([ExtResource("10_reforzado"), ExtResource("11_avanzado")])
+Weapons = Array[ExtResource("16_weapondef")]([ExtResource("17_iron_sword"), ExtResource("18_gold_sword")])
+Lights = Array[ExtResource("19_lightdef")]([ExtResource("20_light1"), ExtResource("21_light2")])
 Levels = Array[ExtResource("12_leveldef")]([ExtResource("13_level1"), ExtResource("14_level2"), ExtResource("15_level3")])
 metadata/_custom_type_script = "uid://b3vc3wd260br3"

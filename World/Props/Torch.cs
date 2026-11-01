@@ -25,6 +25,31 @@ public partial class Torch : Interactable
 	{
 		AddToGroup(Group);
 		SetLit(StartLit);
+		ApplyLightLevel(WorldState.Instance?.LightLevel ?? 1);
+
+		if (WorldState.Instance != null)
+		{
+			WorldState.Instance.LightChanged += ApplyLightLevel;
+		}
+	}
+
+	public override void _ExitTree()
+	{
+		if (WorldState.Instance != null)
+		{
+			WorldState.Instance.LightChanged -= ApplyLightLevel;
+		}
+	}
+
+	// Mejorar las antorchas en la estación las hace alumbrar más lejos (todas, también las del campamento).
+	private void ApplyLightLevel(int level)
+	{
+		LightDefinition light = GameData.Light(level);
+
+		if (Light != null && light != null)
+		{
+			Light.OmniRange = light.TorchRange;
+		}
 	}
 
 	public override string GetPrompt(Player player)
