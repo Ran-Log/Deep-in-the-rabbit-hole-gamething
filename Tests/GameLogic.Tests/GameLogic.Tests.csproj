@@ -17,6 +17,7 @@
     <!-- Se compilan directo los archivos del juego que NO dependen de
          GodotSharp, sin referenciar el .csproj de Godot completo. -->
     <Compile Include="../../World/Rooms/RoomMath.cs" Link="RoomMath.cs" />
+    <Compile Include="../../Player/FallDamage.cs" Link="FallDamage.cs" />
     <Compile Include="../../World/Rooms/RoomMineralTable.cs" Link="RoomMineralTable.cs" />
     <Compile Include="../../World/Blocks/MineralType.cs" Link="MineralType.cs" />
     <Compile Include="../../Systems/WorldSaveData.cs" Link="WorldSaveData.cs" />

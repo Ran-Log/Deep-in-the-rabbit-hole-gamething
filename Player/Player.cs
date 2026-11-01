@@ -19,14 +19,24 @@ public partial class Player : CharacterBody3D
 	[ExportGroup("Movimiento")]
 	[Export] public float Speed = 5.0f;
 	[Export] public float RunMultiplier = 1.5f;
-	[Export] public float JumpVelocity = 6.0f;
+	// Alcanza para subir un bloque de 2 m (GDD 2.1.2): v² / (2g) ≈ 2.3 m.
+	[Export] public float JumpVelocity = 9.6f;
 	[Export] public float Gravity = 20.0f;
+
+	[ExportGroup("Caída")]
+	// Desde el punto más alto del salto. Saltar desde un bloque son ~4.3 m: no duele.
+	[Export] public float SafeFallHeight = 5.0f;
+	[Export] public float FallDamagePerMeter = 10.0f;
 
 	[ExportGroup("Debug")]
 	[Export] public float FlySpeed = 14.0f;
 
 	// Modo debug (F1): vuela y atraviesa bloques. Solo se activa en builds de debug.
 	public bool NoClip { get; set; }
+
+	// Punto más alto desde que dejó el suelo, para medir la caída al aterrizar.
+	private float highestAirY;
+	private bool wasOnFloor = true;
 
 	// Con hambre o sed en 0 no se puede correr.
 	public bool CanRun => !(Hunger?.IsEmpty ?? false) && !(Thirst?.IsEmpty ?? false);
@@ -60,6 +70,8 @@ public partial class Player : CharacterBody3D
 		if (NoClip)
 		{
 			Fly((float)delta);
+			// Volando no se cuenta caída; al apagar F1 en el aire, se mide desde ahí.
+			wasOnFloor = true;
 			return;
 		}
 
@@ -69,6 +81,37 @@ public partial class Player : CharacterBody3D
 		Velocity = new Vector3(horizontal.X, vertical, horizontal.Z);
 
 		MoveAndSlide();
+		TrackFall();
+	}
+
+	private void TrackFall()
+	{
+		bool onFloor = IsOnFloor();
+
+		if (!onFloor)
+		{
+			highestAirY = wasOnFloor ? GlobalPosition.Y : Mathf.Max(highestAirY, GlobalPosition.Y);
+		}
+		else if (!wasOnFloor)
+		{
+			Land(highestAirY - GlobalPosition.Y);
+		}
+
+		wasOnFloor = onFloor;
+	}
+
+	// Público para probarlo sin tener que dejar caer al jugador de verdad.
+	public void Land(float fallHeight)
+	{
+		int damage = FallDamage.For(fallHeight, SafeFallHeight, FallDamagePerMeter);
+
+		if (damage <= 0 || Health == null)
+		{
+			return;
+		}
+
+		Health.TakeDamage(damage);
+		GameEvents.PostMessage($"Te caíste desde {fallHeight:0} m (-{damage} vida)");
 	}
 
 	private Vector3 ReadHorizontalVelocity()
