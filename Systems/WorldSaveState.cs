@@ -44,6 +44,7 @@ public sealed class WorldSaveState
 		placedTorches.Clear();
 		visitedRooms.Clear();
 		destroyedNests.Clear();
+		explodedGas.Clear();
 		healthById.Remove(CampHealthId);
 	}
 
@@ -57,6 +58,13 @@ public sealed class WorldSaveState
 	public bool IsNestDestroyed(int roomX, int roomZ) => destroyedNests.Contains((roomX, roomZ));
 
 	public void MarkNestDestroyed(int roomX, int roomZ) => destroyedNests.Add((roomX, roomZ));
+
+	private readonly HashSet<(int RoomX, int RoomZ)> explodedGas = new();
+
+	// El gas que ya explotó no vuelve: la sala queda segura.
+	public bool IsGasExploded(int roomX, int roomZ) => explodedGas.Contains((roomX, roomZ));
+
+	public void MarkGasExploded(int roomX, int roomZ) => explodedGas.Add((roomX, roomZ));
 
 	private readonly Dictionary<(int RoomX, int RoomZ), HashSet<(int X, int Y, int Z)>> minedCells = new();
 	private readonly Dictionary<string, int> mineralCounts = new();
@@ -234,6 +242,11 @@ public sealed class WorldSaveState
 			dto.DestroyedNests.Add(new RoomCoordDto { RoomX = nest.RoomX, RoomZ = nest.RoomZ });
 		}
 
+		foreach (var gas in explodedGas)
+		{
+			dto.ExplodedGas.Add(new RoomCoordDto { RoomX = gas.RoomX, RoomZ = gas.RoomZ });
+		}
+
 		foreach (var entry in minedCells)
 		{
 			var roomDto = new MinedRoomDto { RoomX = entry.Key.RoomX, RoomZ = entry.Key.RoomZ };
@@ -294,6 +307,11 @@ public sealed class WorldSaveState
 		foreach (var nest in dto.DestroyedNests ?? new List<RoomCoordDto>())
 		{
 			state.MarkNestDestroyed(nest.RoomX, nest.RoomZ);
+		}
+
+		foreach (var gas in dto.ExplodedGas ?? new List<RoomCoordDto>())
+		{
+			state.MarkGasExploded(gas.RoomX, gas.RoomZ);
 		}
 
 		foreach (var roomDto in dto.MinedRooms)

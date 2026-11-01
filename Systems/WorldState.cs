@@ -252,6 +252,12 @@ public partial class WorldState : Node
 
 	public void MarkNestDestroyed(Vector2I room) => state.MarkNestDestroyed(room.X, room.Y);
 
+	// --- Gas que ya explotó ---
+
+	public bool IsGasExploded(Vector2I room) => state.IsGasExploded(room.X, room.Y);
+
+	public void MarkGasExploded(Vector2I room) => state.MarkGasExploded(room.X, room.Y);
+
 	// --- Salas visitadas ---
 
 	public bool IsRoomVisited(Vector2I room) => state.IsRoomVisited(room.X, room.Y);

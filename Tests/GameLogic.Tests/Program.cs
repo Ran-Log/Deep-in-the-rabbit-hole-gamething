@@ -251,6 +251,19 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("nido: en el nivel siguiente los nidos son nuevos", !restored.IsNestDestroyed(2, 1));
 }
 
+// --- Gas explosivo (feature 1.7) ---
+
+{
+	var state = new WorldSaveState();
+	state.MarkGasExploded(3, -2);
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+	Check("gas: el que explotó se guarda", restored.IsGasExploded(3, -2) && !restored.IsGasExploded(0, 0));
+
+	restored.StartNextLevel();
+	Check("gas: en el nivel siguiente vuelve a haber gas", !restored.IsGasExploded(3, -2));
+}
+
 // --- Techo de las salas (feature 1.5) ---
 
 {

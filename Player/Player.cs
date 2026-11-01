@@ -14,6 +14,7 @@ public partial class Player : CharacterBody3D
 	[Export] public PlayerEquipment Equipment;
 	[Export] public NeedComponent Hunger;
 	[Export] public NeedComponent Thirst;
+	[Export] public LampComponent Lamp;
 
 	[ExportGroup("Movimiento")]
 	[Export] public float Speed = 5.0f;
