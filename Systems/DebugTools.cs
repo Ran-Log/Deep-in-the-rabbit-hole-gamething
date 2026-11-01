@@ -68,7 +68,8 @@ public partial class DebugTools : Node
 		world.TryAddItem(ItemCatalog.IdOf(MineralType.Coal), 10);
 		world.TryAddItem(ItemCatalog.IdOf(MineralType.Iron), 10);
 		world.TryAddItem(ItemCatalog.Food, 3);
+		world.TryAddItem(ItemCatalog.Water, 3);
 
-		GameEvents.PostMessage("[DEBUG] +10 Piedra, +10 Carbón, +10 Hierro, +3 Comida");
+		GameEvents.PostMessage("[DEBUG] +10 Piedra, +10 Carbón, +10 Hierro, +3 Comida, +3 Agua");
 	}
 }

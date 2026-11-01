@@ -5,9 +5,14 @@
 public static class ItemCatalog
 {
 	public const string Food = "Food";
+	public const string Water = "Water";
 
-	// Vida que recupera una ración.
-	public const int FoodHeal = 30;
+	// Lo que hace una ración: baja el hambre y cura un poco (GDD: "en algunos casos recuperan vida").
+	public const int FoodHunger = 40;
+	public const int FoodHeal = 10;
+
+	// Lo que quita una cantimplora de sed.
+	public const int WaterThirst = 50;
 
 	public static string IdOf(MineralType mineral)
 	{
@@ -16,7 +21,7 @@ public static class ItemCatalog
 
 	public static bool IsConsumable(string itemId)
 	{
-		return itemId == Food;
+		return itemId == Food || itemId == Water;
 	}
 
 	public static string DisplayName(string itemId)
@@ -29,6 +34,7 @@ public static class ItemCatalog
 			"Gold" => "Oro",
 			"Bedrock" => "Roca madre",
 			Food => "Ración de comida",
+			Water => "Cantimplora de agua",
 			_ => itemId,
 		};
 	}

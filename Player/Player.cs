@@ -12,6 +12,8 @@ public partial class Player : CharacterBody3D
 	// Expuestos acá para que la cama, los cofres, etc. reciban solo el Player.
 	[Export] public HealthComponent Health;
 	[Export] public PlayerEquipment Equipment;
+	[Export] public NeedComponent Hunger;
+	[Export] public NeedComponent Thirst;
 
 	[ExportGroup("Movimiento")]
 	[Export] public float Speed = 5.0f;
@@ -24,6 +26,9 @@ public partial class Player : CharacterBody3D
 
 	// Modo debug (F1): vuela y atraviesa bloques. Solo se activa en builds de debug.
 	public bool NoClip { get; set; }
+
+	// Con hambre o sed en 0 no se puede correr.
+	public bool CanRun => !(Hunger?.IsEmpty ?? false) && !(Thirst?.IsEmpty ?? false);
 
 	public override void _Ready()
 	{
@@ -85,7 +90,7 @@ public partial class Player : CharacterBody3D
 			CameraRig.GetForwardDirection() * -inputDir.Y
 		).Normalized();
 
-		float currentSpeed = Input.IsActionPressed("run")
+		float currentSpeed = Input.IsActionPressed("run") && CanRun
 			? Speed * RunMultiplier
 			: Speed;
 

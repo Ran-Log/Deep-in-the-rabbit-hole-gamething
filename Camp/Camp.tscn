@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://ck0e8x28gwhl8" path="res://Camp/CampDefenses.cs" id="4_defenses"]
 [ext_resource type="PackedScene" path="res://World/Blocks/DestructibleBlock.tscn" id="5_block"]
 [ext_resource type="Script" uid="uid://chxrdb0ssx83v" path="res://Shared/HealthComponent.cs" id="6_health"]
+[ext_resource type="PackedScene" path="res://Camp/WaterBarrel.tscn" id="7_barrel"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_logs"]
 albedo_color = Color(0.33, 0.2, 0.1, 1)
@@ -84,6 +85,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, -1, -8)
 
 [node name="UpgradeStation" parent="." instance=ExtResource("2_station")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -1, -8)
+
+[node name="WaterBarrel" parent="." instance=ExtResource("7_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, -1, -10)
 
 [node name="TorchWest" parent="." instance=ExtResource("3_torch")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, -1, 3)

@@ -13,6 +13,8 @@ public partial class Hud : CanvasLayer
 	[Export] public InteractionComponent Interaction;
 	[Export] public BuildComponent Build;
 	[Export] public PlayerEquipment Equipment;
+	[Export] public NeedComponent Hunger;
+	[Export] public NeedComponent Thirst;
 
 	[ExportGroup("Nodos de UI")]
 	[Export] public Control Crosshair;
@@ -21,6 +23,7 @@ public partial class Hud : CanvasLayer
 	[Export] public Label MessageLabel;
 	[Export] public Label StatusLabel;
 	[Export] public Label HealthLabel;
+	[Export] public Label NeedsLabel;
 	[Export] public Label BuildHintLabel;
 	[Export] public Control HelpPanel;
 	[Export] public Control NotePanel;
@@ -36,6 +39,9 @@ public partial class Hud : CanvasLayer
 	[Export] public Color TargetCrosshairColor = new Color(1.0f, 0.85f, 0.35f, 1.0f);
 	// Cuando el bloque apuntado pide un pico mejor.
 	[Export] public Color BlockedCrosshairColor = new Color(1.0f, 0.35f, 0.35f, 1.0f);
+
+	[ExportGroup("Colores de hambre y sed")]
+	[Export] public Color EmptyNeedColor = new Color(1.0f, 0.4f, 0.35f, 1.0f);
 
 	[ExportGroup("Debug")]
 	// FPS y cantidad de bloques. F4 lo alterna (solo en builds de debug).
@@ -60,6 +66,13 @@ public partial class Hud : CanvasLayer
 		{
 			Health.HealthChanged += OnHealthChanged;
 			OnHealthChanged(Health.Current, Health.MaxHealth);
+		}
+
+		if (Hunger != null && Thirst != null)
+		{
+			Hunger.ValueChanged += RefreshNeeds;
+			Thirst.ValueChanged += RefreshNeeds;
+			RefreshNeeds();
 		}
 
 		if (Interaction != null)
@@ -132,6 +145,12 @@ public partial class Hud : CanvasLayer
 		if (Health != null)
 		{
 			Health.HealthChanged -= OnHealthChanged;
+		}
+
+		if (Hunger != null && Thirst != null)
+		{
+			Hunger.ValueChanged -= RefreshNeeds;
+			Thirst.ValueChanged -= RefreshNeeds;
 		}
 
 		if (Interaction != null)
@@ -215,6 +234,7 @@ public partial class Hud : CanvasLayer
 		StatusLabel.Text =
 			$"Mochila {world.TotalItems}/{world.Capacity}   " +
 			$"Comida {world.GetItemCount(ItemCatalog.Food)} [Q]   " +
+			$"Agua {world.GetItemCount(ItemCatalog.Water)} [F]   " +
 			$"{tool}";
 	}
 
@@ -339,6 +359,18 @@ public partial class Hud : CanvasLayer
 		{
 			HealthLabel.Text = $"Vida: {current}/{max}";
 		}
+	}
+
+	// En rojo si alguna está en 0 (pierde vida y no corre).
+	private void RefreshNeeds(int current = 0, int max = 0)
+	{
+		if (NeedsLabel == null || Hunger == null || Thirst == null)
+		{
+			return;
+		}
+
+		NeedsLabel.Text = $"Hambre: {Hunger.Current}   Sed: {Thirst.Current}";
+		NeedsLabel.Modulate = Hunger.IsEmpty || Thirst.IsEmpty ? EmptyNeedColor : Colors.White;
 	}
 
 	private void OnTargetAcquired(DestructibleBlock block)

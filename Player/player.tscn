@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://dmc30126vreik" path="res://Player/Components/EatComponent.cs" id="10_eat"]
 [ext_resource type="Script" uid="uid://brft18qis8qff" path="res://Systems/DebugTools.cs" id="11_debug"]
 [ext_resource type="Script" path="res://Player/Components/LampComponent.cs" id="12_lamp"]
+[ext_resource type="Script" path="res://Player/Components/NeedComponent.cs" id="13_need"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_kedfu"]
 top_radius = 0.53515625
@@ -21,11 +22,13 @@ bottom_radius = 0.53515625
 radius = 0.6665039
 height = 2.9710693
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CameraRig", "Health", "Equipment")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CameraRig", "Health", "Equipment", "Hunger", "Thirst")]
 script = ExtResource("1_cvnsp")
 CameraRig = NodePath("CameraRig")
 Health = NodePath("Health")
 Equipment = NodePath("Equipment")
+Hunger = NodePath("Hunger")
+Thirst = NodePath("Thirst")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CylinderMesh_kedfu")
@@ -56,6 +59,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8395996, -0.25653076, 1.998
 script = ExtResource("5_health")
 SaveId = "player"
 
+[node name="Hunger" type="Node" parent="." node_paths=PackedStringArray("Health")]
+script = ExtResource("13_need")
+Health = NodePath("../Health")
+DisplayName = "Hambre"
+DrainPerMinute = 10.0
+EmptyMessage = "Tienes mucha hambre: pierdes vida y no puedes correr"
+SaveId = "hunger"
+
+[node name="Thirst" type="Node" parent="." node_paths=PackedStringArray("Health")]
+script = ExtResource("13_need")
+Health = NodePath("../Health")
+DisplayName = "Sed"
+DrainPerMinute = 14.0
+EmptyMessage = "Tienes mucha sed: pierdes vida y no puedes correr"
+SaveId = "thirst"
+
 [node name="Equipment" type="Node" parent="."]
 script = ExtResource("6_equipment")
 
@@ -83,16 +102,20 @@ Camera = NodePath("../CameraRig/Camera3D")
 ExcludedBody = NodePath("..")
 Mining = NodePath("../MiningComponent")
 
-[node name="EatComponent" type="Node" parent="." node_paths=PackedStringArray("Health")]
+[node name="EatComponent" type="Node" parent="." node_paths=PackedStringArray("Health", "Hunger", "Thirst")]
 script = ExtResource("10_eat")
 Health = NodePath("../Health")
+Hunger = NodePath("../Hunger")
+Thirst = NodePath("../Thirst")
 
-[node name="Hud" parent="." node_paths=PackedStringArray("Mining", "Health", "Interaction", "Build", "Equipment") instance=ExtResource("4_hud")]
+[node name="Hud" parent="." node_paths=PackedStringArray("Mining", "Health", "Interaction", "Build", "Equipment", "Hunger", "Thirst") instance=ExtResource("4_hud")]
 Mining = NodePath("../MiningComponent")
 Health = NodePath("../Health")
 Interaction = NodePath("../InteractionComponent")
 Build = NodePath("../BuildComponent")
 Equipment = NodePath("../Equipment")
+Hunger = NodePath("../Hunger")
+Thirst = NodePath("../Thirst")
 
 [node name="DebugTools" type="Node" parent="." node_paths=PackedStringArray("Player")]
 script = ExtResource("11_debug")
