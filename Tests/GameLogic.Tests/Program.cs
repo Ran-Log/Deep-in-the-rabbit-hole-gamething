@@ -264,6 +264,13 @@ Check("minerales: roll 99 es Bedrock (el más raro)", RoomMineralTable.Pick(99) 
 	Check("gas: en el nivel siguiente vuelve a haber gas", !restored.IsGasExploded(3, -2));
 }
 
+// --- Daño por caída (feature 1.8) ---
+
+Check("caida: saltar desde un bloque (4.3 m) no hace daño", FallDamage.For(4.3f, 5.0f, 10.0f) == 0);
+Check("caida: justo en el límite no hace daño", FallDamage.For(5.0f, 5.0f, 10.0f) == 0);
+Check("caida: 8 m son 3 m de más, 30 de daño", FallDamage.For(8.0f, 5.0f, 10.0f) == 30);
+Check("caida: redondea (6.26 m da 13)", FallDamage.For(6.26f, 5.0f, 10.0f) == 13);
+
 // --- Techo de las salas (feature 1.5) ---
 
 {
