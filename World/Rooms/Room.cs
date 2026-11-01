@@ -213,7 +213,8 @@ public partial class Room : Node3D
 
 	private void SpawnGasZoneIfNeeded()
 	{
-		if (!HasGas)
+		// El gas que ya explotó no vuelve.
+		if (!HasGas || (WorldState.Instance != null && WorldState.Instance.IsGasExploded(RoomGridCoord)))
 		{
 			return;
 		}
@@ -225,9 +226,10 @@ public partial class Room : Node3D
 		}
 
 		var gasZone = GasZoneScene.Instantiate<GasZone>();
+		gasZone.RoomCoord = RoomGridCoord;
 
 		// Un poco sobre el piso, para cubrir la altura del jugador.
-		gasZone.Position = new Vector3(0.0f, 0.5f, 0.0f);
+		gasZone.Position = new Vector3(InteriorCenter.X, 0.5f, InteriorCenter.Z);
 
 		AddChild(gasZone);
 	}

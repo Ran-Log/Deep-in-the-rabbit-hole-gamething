@@ -21,7 +21,7 @@ public class AudioManagerTest
 			audio.MineHit, audio.BlockBreak, audio.Pickup, audio.HitRejected,
 			audio.EnemyHit, audio.EnemyDeath, audio.PlayerHurt, audio.PlayerDeath,
 			audio.ChestOpen, audio.NoteOpen, audio.Eat, audio.Upgrade, audio.Build,
-			audio.NightFalls, audio.Victory, audio.UiClick, audio.DayAmbience, audio.NightAmbience,
+			audio.NightFalls, audio.Explosion, audio.Victory, audio.UiClick, audio.DayAmbience, audio.NightAmbience,
 		};
 
 		foreach (AudioStream sound in sounds)

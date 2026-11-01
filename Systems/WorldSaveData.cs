@@ -28,6 +28,7 @@ public sealed class WorldSaveData
 
 	public List<RoomCoordDto> VisitedRooms { get; set; } = new();
 	public List<RoomCoordDto> DestroyedNests { get; set; } = new();
+	public List<RoomCoordDto> ExplodedGas { get; set; } = new();
 }
 
 public sealed class RoomCoordDto

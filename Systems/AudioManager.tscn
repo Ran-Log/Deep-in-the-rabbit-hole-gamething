@@ -56,6 +56,11 @@
 [ext_resource type="AudioStream" path="res://Assets/Audio/sfx/confirmation_004.ogg" id="54_snd"]
 [ext_resource type="AudioStream" path="res://Assets/Audio/ambience/dungeon_ambient_1.ogg" id="55_snd"]
 [ext_resource type="AudioStream" path="res://Assets/Audio/ambience/dark_cavern_ambient_002.ogg" id="56_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/explosionCrunch_000.ogg" id="57_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/explosionCrunch_001.ogg" id="58_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/explosionCrunch_002.ogg" id="59_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/explosionCrunch_003.ogg" id="60_snd"]
+[ext_resource type="AudioStream" path="res://Assets/Audio/sfx/explosionCrunch_004.ogg" id="61_snd"]
 
 [sub_resource type="AudioStreamRandomizer" id="Rand_MineHit"]
 random_pitch = 1.08
@@ -191,6 +196,20 @@ stream_0/weight = 1.0
 stream_1/stream = ExtResource("48_snd")
 stream_1/weight = 1.0
 
+[sub_resource type="AudioStreamRandomizer" id="Rand_Explosion"]
+random_pitch = 1.08
+streams_count = 5
+stream_0/stream = ExtResource("57_snd")
+stream_0/weight = 1.0
+stream_1/stream = ExtResource("58_snd")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("59_snd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("60_snd")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("61_snd")
+stream_4/weight = 1.0
+
 [node name="AudioManager" type="Node"]
 script = ExtResource("1_audio")
 MineHit = SubResource("Rand_MineHit")
@@ -201,6 +220,7 @@ EnemyDeath = SubResource("Rand_EnemyDeath")
 PlayerHurt = SubResource("Rand_PlayerHurt")
 Build = SubResource("Rand_Build")
 NightFalls = SubResource("Rand_NightFalls")
+Explosion = SubResource("Rand_Explosion")
 UiClick = SubResource("Rand_UiClick")
 Eat = SubResource("Rand_Eat")
 Pickup = ExtResource("49_snd")

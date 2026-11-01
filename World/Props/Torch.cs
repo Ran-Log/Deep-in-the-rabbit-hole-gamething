@@ -14,10 +14,16 @@ public partial class Torch : Interactable
 	[ExportGroup("Estado inicial")]
 	[Export] public bool StartLit = false;
 
+	// El gas busca antorchas encendidas en este grupo.
+	public const string Group = "torches";
+
 	private bool lit;
+
+	public bool IsLit => lit;
 
 	public override void _Ready()
 	{
+		AddToGroup(Group);
 		SetLit(StartLit);
 	}
 

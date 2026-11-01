@@ -1,9 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" uid="uid://dxddyluy8eiow" path="res://World/Props/GasZone.cs" id="1_gas"]
+[ext_resource type="PackedScene" path="res://World/Props/GasExplosion.tscn" id="2_explosion"]
 
 [node name="GasZone" type="Area3D" node_paths=PackedStringArray("Fog")]
 script = ExtResource("1_gas")
 Fog = NodePath("Fog")
+ExplosionScene = ExtResource("2_explosion")
+Size = Vector3(14, 3, 14)
 
 [node name="Fog" type="MeshInstance3D" parent="."]

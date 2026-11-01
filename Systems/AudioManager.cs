@@ -34,6 +34,9 @@ public partial class AudioManager : Node
 	[Export] public AudioStream Upgrade;
 	[Export] public AudioStream Build;
 	[Export] public AudioStream NightFalls;
+	[Export] public AudioStream Explosion;
+	// Un poco más grave que el original, para que suene a mina y no a ciencia ficción.
+	[Export] public float ExplosionPitch = 0.8f;
 	[Export] public AudioStream Victory;
 
 	[ExportGroup("Interfaz")]
@@ -85,7 +88,7 @@ public partial class AudioManager : Node
 		SetNight(false);
 	}
 
-	public void Play(AudioStream stream, float volumeDb = 0.0f)
+	public void Play(AudioStream stream, float volumeDb = 0.0f, float pitch = 1.0f)
 	{
 		if (stream == null)
 		{
@@ -99,6 +102,7 @@ public partial class AudioManager : Node
 
 		voice.Stream = stream;
 		voice.VolumeDb = volumeDb;
+		voice.PitchScale = pitch;
 		voice.Play();
 	}
 
@@ -135,6 +139,10 @@ public partial class AudioManager : Node
 			case EatComponent eat:
 				eat.Ate += () => Play(Eat);
 				eat.Drank += () => Play(Eat);
+				break;
+
+			case GasZone gas:
+				gas.Exploded += () => Play(Explosion, 4.0f, ExplosionPitch);
 				break;
 
 			case WaterBarrel barrel:

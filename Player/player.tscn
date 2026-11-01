@@ -22,8 +22,9 @@ bottom_radius = 0.53515625
 radius = 0.6665039
 height = 2.9710693
 
-[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CameraRig", "Health", "Equipment", "Hunger", "Thirst")]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("CameraRig", "Health", "Equipment", "Hunger", "Thirst", "Lamp")]
 script = ExtResource("1_cvnsp")
+Lamp = NodePath("LampComponent")
 CameraRig = NodePath("CameraRig")
 Health = NodePath("Health")
 Equipment = NodePath("Equipment")
