@@ -24,6 +24,9 @@ public partial class WorldState : Node
 	[Signal]
 	public delegate void LightChangedEventHandler(int level);
 
+	[Signal]
+	public delegate void CampLevelChangedEventHandler(int level);
+
 	private static readonly string SavePath = "user://savegame.json";
 
 	// Raciones con las que empieza una partida nueva.
@@ -86,6 +89,7 @@ public partial class WorldState : Node
 		EmitSignal(SignalName.ToolChanged, (int)Tool);
 		EmitSignal(SignalName.WeaponChanged, (int)Weapon);
 		EmitSignal(SignalName.LightChanged, LightLevel);
+		EmitSignal(SignalName.CampLevelChanged, CampLevel);
 	}
 
 	// "Reintentar" al morir: descarta lo no guardado. Si nunca se guardó, empieza de cero con la misma semilla.
@@ -252,6 +256,21 @@ public partial class WorldState : Node
 		}
 	}
 
+	public int CampLevel
+	{
+		get => state.CampLevel;
+		set
+		{
+			if (value == state.CampLevel)
+			{
+				return;
+			}
+
+			state.CampLevel = value;
+			EmitSignal(SignalName.CampLevelChanged, value);
+		}
+	}
+
 	// --- Cofres ---
 
 	public bool IsChestOpened(Vector2I room) => state.IsChestOpened(room.X, room.Y);
@@ -271,6 +290,22 @@ public partial class WorldState : Node
 	public void AddDefense(Vector3I cell) => state.AddDefense(cell.X, cell.Y, cell.Z);
 
 	public void RemoveDefense(Vector3I cell) => state.RemoveDefense(cell.X, cell.Y, cell.Z);
+
+	// --- Trampas del campamento (celda → usos que le quedan) ---
+
+	public System.Collections.Generic.IEnumerable<(Vector3I Cell, int UsesLeft)> GetPlacedTraps()
+	{
+		foreach (var trap in state.PlacedTraps)
+		{
+			yield return (new Vector3I(trap.Key.X, trap.Key.Y, trap.Key.Z), trap.Value);
+		}
+	}
+
+	public bool HasTrap(Vector3I cell) => state.HasTrap(cell.X, cell.Y, cell.Z);
+
+	public void SetTrap(Vector3I cell, int usesLeft) => state.SetTrap(cell.X, cell.Y, cell.Z, usesLeft);
+
+	public void RemoveTrap(Vector3I cell) => state.RemoveTrap(cell.X, cell.Y, cell.Z);
 
 	// --- Antorchas puestas por el jugador (celdas globales) ---
 

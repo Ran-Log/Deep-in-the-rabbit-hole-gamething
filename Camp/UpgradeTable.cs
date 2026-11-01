@@ -11,6 +11,13 @@ public static class UpgradeTable
 
 	public const int TorchCoalCost = 1;
 
+	// Trampa de pinchos: el hierro hace que no sea gratis llenar el campamento de trampas.
+	public static readonly IReadOnlyDictionary<string, int> TrapCost = new Dictionary<string, int>
+	{
+		[ItemCatalog.IdOf(MineralType.Iron)] = 2,
+		[ItemCatalog.IdOf(MineralType.Stone)] = 2,
+	};
+
 	private static readonly Dictionary<string, int> NoCost = new();
 
 	// Siguiente nivel del pico y su costo (ítem → cantidad). false si ya está al máximo.
@@ -31,7 +38,7 @@ public static class UpgradeTable
 		return true;
 	}
 
-	// Las filas del menú, en orden: pico, arma, antorchas.
+	// Las filas del menú, en orden: pico, arma, antorchas y campamento.
 	public static List<UpgradeOption> Options(PlayerEquipment equipment)
 	{
 		return new List<UpgradeOption>
@@ -39,6 +46,7 @@ public static class UpgradeTable
 			PickaxeOption(equipment.Tool),
 			WeaponOption(equipment.Weapon),
 			LightOption(equipment.LightLevel),
+			CampOption(WorldState.Instance?.CampLevel ?? 1),
 		};
 	}
 
@@ -113,5 +121,31 @@ public static class UpgradeTable
 		}
 
 		return new UpgradeOption("Antorchas", currentName, next.DisplayName, next.CostByItemId(), equipment => equipment.UpgradeLightTo(next.Level));
+	}
+
+	// El campamento no es equipo del jugador: el nivel se guarda directo en WorldState.
+	private static UpgradeOption CampOption(int currentLevel)
+	{
+		CampDefinition current = GameData.Camp(currentLevel);
+		CampDefinition next = GameData.Camp(currentLevel + 1);
+		string currentName = current != null ? $"{current.DisplayName} ({current.MaxHealth} vida)" : "Campamento";
+
+		if (next == null)
+		{
+			return new UpgradeOption("Campamento", currentName, "", NoCost, _ => false);
+		}
+
+		string nextName = $"{next.DisplayName} ({next.MaxHealth} vida)";
+
+		return new UpgradeOption("Campamento", currentName, nextName, next.CostByItemId(), _ =>
+		{
+			if (WorldState.Instance == null)
+			{
+				return false;
+			}
+
+			WorldState.Instance.CampLevel = next.Level;
+			return true;
+		});
 	}
 }

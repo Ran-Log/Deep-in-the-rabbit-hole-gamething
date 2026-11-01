@@ -81,6 +81,21 @@ public partial class HealthComponent : Node
 		EmitSignal(SignalName.HealthChanged, current, MaxHealth);
 	}
 
+	// Mejorar el campamento: sube el máximo y suma lo ganado a la vida actual (GDD: "se aumenta mejorando").
+	public void SetMaxHealth(int max)
+	{
+		if (dead || max <= 0 || max == MaxHealth)
+		{
+			return;
+		}
+
+		int gained = Mathf.Max(0, max - MaxHealth);
+		MaxHealth = max;
+		current = Mathf.Min(MaxHealth, current + gained);
+
+		EmitSignal(SignalName.HealthChanged, current, MaxHealth);
+	}
+
 	public void FullHeal()
 	{
 		current = MaxHealth;

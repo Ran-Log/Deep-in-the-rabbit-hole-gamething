@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CampDefinition" format=3]
+
+[ext_resource type="Script" path="res://Data/Definitions/CampDefinition.cs" id="1_camp"]
+
+[resource]
+script = ExtResource("1_camp")
+Level = 1
+DisplayName = "Fogata"
+MaxHealth = 100
+BarricadeHealth = 12

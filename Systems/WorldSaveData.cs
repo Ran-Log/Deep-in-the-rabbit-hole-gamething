@@ -17,6 +17,7 @@ public sealed class WorldSaveData
 	public int ToolLevel { get; set; }
 	public int WeaponLevel { get; set; }
 	public int LightLevel { get; set; }
+	public int CampLevel { get; set; }
 	public int Day { get; set; }
 	public int CurrentLevel { get; set; }
 	// Vida por id ("player", "camp").
@@ -25,6 +26,8 @@ public sealed class WorldSaveData
 
 	// Celdas globales (de BlockGrid) con barricadas y antorchas del jugador.
 	public List<MinedCellDto> PlacedDefenses { get; set; } = new();
+
+	public List<TrapDto> PlacedTraps { get; set; } = new();
 
 	public List<MinedCellDto> PlacedTorches { get; set; } = new();
 
@@ -51,6 +54,14 @@ public sealed class MinedCellDto
 	public int X { get; set; }
 	public int Y { get; set; }
 	public int Z { get; set; }
+}
+
+public sealed class TrapDto
+{
+	public int X { get; set; }
+	public int Y { get; set; }
+	public int Z { get; set; }
+	public int UsesLeft { get; set; }
 }
 
 public sealed class MineralCountDto

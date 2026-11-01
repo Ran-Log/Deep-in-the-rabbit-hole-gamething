@@ -26,6 +26,9 @@ public sealed class WorldSaveState
 	// Nivel de las antorchas (LightDefinition.Level; 1 = las iniciales).
 	public int LightLevel { get; set; } = 1;
 
+	// Nivel del campamento (CampDefinition.Level). Se conserva al bajar de nivel.
+	public int CampLevel { get; set; } = 1;
+
 	public int Day { get; set; } = 1;
 
 	// Nivel de la mina (1 = túneles superficiales, 2 = cavernas medias, 3 = profundidades).
@@ -47,6 +50,7 @@ public sealed class WorldSaveState
 		minedCells.Clear();
 		openedChests.Clear();
 		placedDefenses.Clear();
+		placedTraps.Clear();
 		placedTorches.Clear();
 		visitedRooms.Clear();
 		destroyedNests.Clear();
@@ -71,6 +75,17 @@ public sealed class WorldSaveState
 	public bool IsGasExploded(int roomX, int roomZ) => explodedGas.Contains((roomX, roomZ));
 
 	public void MarkGasExploded(int roomX, int roomZ) => explodedGas.Add((roomX, roomZ));
+
+	// Trampas del campamento: celda → usos que le quedan (se gastan al pinchar).
+	private readonly Dictionary<(int X, int Y, int Z), int> placedTraps = new();
+
+	public IReadOnlyDictionary<(int X, int Y, int Z), int> PlacedTraps => placedTraps;
+
+	public bool HasTrap(int x, int y, int z) => placedTraps.ContainsKey((x, y, z));
+
+	public void SetTrap(int x, int y, int z, int usesLeft) => placedTraps[(x, y, z)] = usesLeft;
+
+	public void RemoveTrap(int x, int y, int z) => placedTraps.Remove((x, y, z));
 
 	private readonly Dictionary<(int RoomX, int RoomZ), HashSet<(int X, int Y, int Z)>> minedCells = new();
 	private readonly Dictionary<string, int> mineralCounts = new();
@@ -220,6 +235,7 @@ public sealed class WorldSaveState
 			ToolLevel = ToolLevel,
 			WeaponLevel = WeaponLevel,
 			LightLevel = LightLevel,
+			CampLevel = CampLevel,
 			Day = Day,
 			CurrentLevel = CurrentLevel,
 			Health = new Dictionary<string, int>(healthById),
@@ -233,6 +249,11 @@ public sealed class WorldSaveState
 		foreach (var cell in placedDefenses)
 		{
 			dto.PlacedDefenses.Add(new MinedCellDto { X = cell.X, Y = cell.Y, Z = cell.Z });
+		}
+
+		foreach (var trap in placedTraps)
+		{
+			dto.PlacedTraps.Add(new TrapDto { X = trap.Key.X, Y = trap.Key.Y, Z = trap.Key.Z, UsesLeft = trap.Value });
 		}
 
 		foreach (var cell in placedTorches)
@@ -285,6 +306,7 @@ public sealed class WorldSaveState
 			ToolLevel = dto.ToolLevel > 0 ? dto.ToolLevel : 1,
 			WeaponLevel = dto.WeaponLevel,
 			LightLevel = dto.LightLevel > 0 ? dto.LightLevel : 1,
+			CampLevel = dto.CampLevel > 0 ? dto.CampLevel : 1,
 			Day = dto.Day > 0 ? dto.Day : 1,
 			CurrentLevel = dto.CurrentLevel > 0 ? dto.CurrentLevel : 1,
 		};
@@ -302,6 +324,11 @@ public sealed class WorldSaveState
 		foreach (var cell in dto.PlacedDefenses)
 		{
 			state.AddDefense(cell.X, cell.Y, cell.Z);
+		}
+
+		foreach (var trap in dto.PlacedTraps ?? new List<TrapDto>())
+		{
+			state.SetTrap(trap.X, trap.Y, trap.Z, trap.UsesLeft);
 		}
 
 		foreach (var cell in dto.PlacedTorches)

@@ -21,6 +21,10 @@
 [ext_resource type="Script" path="res://Data/Definitions/LightDefinition.cs" id="19_lightdef"]
 [ext_resource type="Resource" path="res://Data/Lights/antorchas_comunes.tres" id="20_light1"]
 [ext_resource type="Resource" path="res://Data/Lights/antorchas_mejoradas.tres" id="21_light2"]
+[ext_resource type="Script" path="res://Data/Definitions/CampDefinition.cs" id="22_campdef"]
+[ext_resource type="Resource" path="res://Data/Camp/fogata.tres" id="23_camp1"]
+[ext_resource type="Resource" path="res://Data/Camp/campamento_reforzado.tres" id="24_camp2"]
+[ext_resource type="Resource" path="res://Data/Camp/campamento_fortificado.tres" id="25_camp3"]
 
 [resource]
 script = ExtResource("1_catalog")
@@ -29,5 +33,6 @@ Floor = ExtResource("9_floor")
 Upgrades = Array[ExtResource("3_recipe")]([ExtResource("10_reforzado"), ExtResource("11_avanzado")])
 Weapons = Array[ExtResource("16_weapondef")]([ExtResource("17_iron_sword"), ExtResource("18_gold_sword")])
 Lights = Array[ExtResource("19_lightdef")]([ExtResource("20_light1"), ExtResource("21_light2")])
+CampLevels = Array[ExtResource("22_campdef")]([ExtResource("23_camp1"), ExtResource("24_camp2"), ExtResource("25_camp3")])
 Levels = Array[ExtResource("12_leveldef")]([ExtResource("13_level1"), ExtResource("14_level2"), ExtResource("15_level3")])
 metadata/_custom_type_script = "uid://b3vc3wd260br3"
