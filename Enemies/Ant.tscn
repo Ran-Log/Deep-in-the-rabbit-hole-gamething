@@ -53,6 +53,7 @@ DisplayName = "una hormiga gigante"
 Speed = 3.0
 AttackRange = 1.6
 PlayerDamage = 5
+Armor = 2
 CampDamage = 3
 BlockDamage = 0
 AttackCooldown = 1.0

@@ -89,6 +89,7 @@ public partial class Hud : CanvasLayer
 		if (Equipment != null)
 		{
 			Equipment.ToolChanged += OnToolChanged;
+			Equipment.WeaponChanged += OnToolChanged;
 		}
 
 		if (WorldState.Instance != null)
@@ -167,6 +168,7 @@ public partial class Hud : CanvasLayer
 		if (Equipment != null)
 		{
 			Equipment.ToolChanged -= OnToolChanged;
+			Equipment.WeaponChanged -= OnToolChanged;
 		}
 
 		if (WorldState.Instance != null)
@@ -220,7 +222,7 @@ public partial class Hud : CanvasLayer
 		}
 	}
 
-	// Mochila, comida y pico. Se actualiza por señales, no cada frame.
+	// Mochila, comida, pico y arma. Se actualiza por señales, no cada frame.
 	private void RefreshStatus()
 	{
 		if (StatusLabel == null || WorldState.Instance == null)
@@ -230,6 +232,12 @@ public partial class Hud : CanvasLayer
 
 		WorldState world = WorldState.Instance;
 		string tool = ItemCatalog.ToolName(Equipment?.Tool ?? ToolTier.Basic);
+		WeaponDefinition weapon = GameData.Weapon(Equipment?.Weapon ?? WeaponTier.None);
+
+		if (weapon != null)
+		{
+			tool += $" · {weapon.DisplayName}";
+		}
 
 		StatusLabel.Text =
 			$"Mochila {world.TotalItems}/{world.Capacity}   " +

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="LightDefinition" format=3]
+
+[ext_resource type="Script" path="res://Data/Definitions/LightDefinition.cs" id="1_light"]
+[ext_resource type="Script" uid="uid://qrau7en4wn8" path="res://Data/Definitions/MineralCost.cs" id="2_cost"]
+
+[sub_resource type="Resource" id="Resource_coal"]
+script = ExtResource("2_cost")
+Mineral = 1
+Amount = 6
+
+[sub_resource type="Resource" id="Resource_iron"]
+script = ExtResource("2_cost")
+Mineral = 2
+Amount = 2
+
+[resource]
+script = ExtResource("1_light")
+Level = 2
+DisplayName = "Antorchas mejoradas"
+TorchRange = 16.0
+LampRange = 7.5
+Cost = Array[ExtResource("2_cost")]([SubResource("Resource_coal"), SubResource("Resource_iron")])

@@ -48,6 +48,7 @@ DisplayName = "un topo"
 Speed = 2.2
 AttackRange = 1.6
 PlayerDamage = 8
+Armor = 1
 CampDamage = 4
 BlockDamage = 8
 AttackCooldown = 0.7

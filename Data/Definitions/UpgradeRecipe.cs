@@ -16,17 +16,5 @@ public partial class UpgradeRecipe : Resource
 	[ExportGroup("Costo")]
 	[Export] public Godot.Collections.Array<MineralCost> Cost = new();
 
-	// El costo en el formato del inventario (id de ítem → cantidad).
-	public Dictionary<string, int> CostByItemId()
-	{
-		var result = new Dictionary<string, int>();
-
-		foreach (MineralCost line in Cost)
-		{
-			string itemId = ItemCatalog.IdOf(line.Mineral);
-			result[itemId] = result.GetValueOrDefault(itemId) + line.Amount;
-		}
-
-		return result;
-	}
+	public Dictionary<string, int> CostByItemId() => MineralCost.ToItemCost(Cost);
 }

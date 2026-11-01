@@ -58,4 +58,34 @@ public static class GameData
 
 		return null;
 	}
+
+	// El arma de ese nivel, o null (sin arma o no existe).
+	public static WeaponDefinition Weapon(WeaponTier tier)
+	{
+		foreach (WeaponDefinition weapon in Catalog.Weapons)
+		{
+			if (weapon.Tier == tier)
+			{
+				return weapon;
+			}
+		}
+
+		return null;
+	}
+
+	// La siguiente arma a forjar, o null si ya tiene la mejor.
+	public static WeaponDefinition NextWeapon(WeaponTier current) => Weapon(current + 1);
+
+	public static LightDefinition Light(int level)
+	{
+		foreach (LightDefinition light in Catalog.Lights)
+		{
+			if (light.Level == level)
+			{
+				return light;
+			}
+		}
+
+		return null;
+	}
 }

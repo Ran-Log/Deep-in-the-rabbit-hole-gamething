@@ -15,6 +15,8 @@ public sealed class WorldSaveData
 	public List<MineralCountDto> Inventory { get; set; } = new();
 	public int Capacity { get; set; }
 	public int ToolLevel { get; set; }
+	public int WeaponLevel { get; set; }
+	public int LightLevel { get; set; }
 	public int Day { get; set; }
 	public int CurrentLevel { get; set; }
 	// Vida por id ("player", "camp").

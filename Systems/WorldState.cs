@@ -18,6 +18,12 @@ public partial class WorldState : Node
 	[Signal]
 	public delegate void ToolChangedEventHandler(int tier);
 
+	[Signal]
+	public delegate void WeaponChangedEventHandler(int tier);
+
+	[Signal]
+	public delegate void LightChangedEventHandler(int level);
+
 	private static readonly string SavePath = "user://savegame.json";
 
 	// Raciones con las que empieza una partida nueva.
@@ -78,6 +84,8 @@ public partial class WorldState : Node
 
 		EmitSignal(SignalName.InventoryChanged);
 		EmitSignal(SignalName.ToolChanged, (int)Tool);
+		EmitSignal(SignalName.WeaponChanged, (int)Weapon);
+		EmitSignal(SignalName.LightChanged, LightLevel);
 	}
 
 	// "Reintentar" al morir: descarta lo no guardado. Si nunca se guardó, empieza de cero con la misma semilla.
@@ -211,6 +219,36 @@ public partial class WorldState : Node
 
 			state.ToolLevel = (int)value;
 			EmitSignal(SignalName.ToolChanged, (int)value);
+		}
+	}
+
+	public WeaponTier Weapon
+	{
+		get => (WeaponTier)state.WeaponLevel;
+		set
+		{
+			if ((int)value == state.WeaponLevel)
+			{
+				return;
+			}
+
+			state.WeaponLevel = (int)value;
+			EmitSignal(SignalName.WeaponChanged, (int)value);
+		}
+	}
+
+	public int LightLevel
+	{
+		get => state.LightLevel;
+		set
+		{
+			if (value == state.LightLevel)
+			{
+				return;
+			}
+
+			state.LightLevel = value;
+			EmitSignal(SignalName.LightChanged, value);
 		}
 	}
 

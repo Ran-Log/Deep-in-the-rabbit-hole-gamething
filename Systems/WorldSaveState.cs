@@ -20,6 +20,12 @@ public sealed class WorldSaveState
 	// Nivel del pico (valor de ToolTier).
 	public int ToolLevel { get; set; } = 1;
 
+	// Arma forjada (valor de WeaponTier; 0 = sin arma).
+	public int WeaponLevel { get; set; }
+
+	// Nivel de las antorchas (LightDefinition.Level; 1 = las iniciales).
+	public int LightLevel { get; set; } = 1;
+
 	public int Day { get; set; } = 1;
 
 	// Nivel de la mina (1 = túneles superficiales, 2 = cavernas medias, 3 = profundidades).
@@ -212,6 +218,8 @@ public sealed class WorldSaveState
 			PlayerZ = playerZ,
 			Capacity = Capacity,
 			ToolLevel = ToolLevel,
+			WeaponLevel = WeaponLevel,
+			LightLevel = LightLevel,
 			Day = Day,
 			CurrentLevel = CurrentLevel,
 			Health = new Dictionary<string, int>(healthById),
@@ -275,6 +283,8 @@ public sealed class WorldSaveState
 			// Saves viejos no traen estos campos (llegan en 0).
 			Capacity = dto.Capacity > 0 ? dto.Capacity : DefaultCapacity,
 			ToolLevel = dto.ToolLevel > 0 ? dto.ToolLevel : 1,
+			WeaponLevel = dto.WeaponLevel,
+			LightLevel = dto.LightLevel > 0 ? dto.LightLevel : 1,
 			Day = dto.Day > 0 ? dto.Day : 1,
 			CurrentLevel = dto.CurrentLevel > 0 ? dto.CurrentLevel : 1,
 		};
