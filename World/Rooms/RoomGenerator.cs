@@ -16,6 +16,7 @@ public static class RoomGenerator
 	public const int ChestChancePercent = 20;
 	public const int GasChancePercent = 30;
 	public const int NoteChancePercent = 40;
+	public const int WaterChancePercent = 50;
 
 	public static RoomSpec Generate(ulong seed, Vector2I gridCoord, float cellSize, LevelDefinition level)
 	{
@@ -43,7 +44,7 @@ public static class RoomGenerator
 		// Gas solo en algunas salas de carbón.
 		bool hasGas = mineral == MineralType.Coal && rng.RandiRange(0, 99) < GasChancePercent;
 
-		// Cofres al azar: comida o una nota que orienta hacia la salida (GDD).
+		// Cofres al azar: comida, agua o una nota que orienta hacia la salida (GDD).
 		ChestLoot loot = ChestLoot.None;
 		string noteText = "";
 
@@ -58,6 +59,12 @@ public static class RoomGenerator
 
 		// Al final, para no cambiar los números de antes (mismo mundo con la misma semilla).
 		bool hasSkylight = rng.RandiRange(0, 99) < (level?.SkylightChancePercent ?? 30);
+
+		// La mitad de los cofres de comida traen agua (también al final, por lo mismo).
+		if (rng.RandiRange(0, 99) < WaterChancePercent && loot == ChestLoot.Food)
+		{
+			loot = ChestLoot.Water;
+		}
 
 		return new RoomSpec(name, position, RoomWidth, RoomDepth, RoomWallHeight, mineral, health, gridCoord, hasGas, loot, noteText,
 			hasSkylight: hasSkylight);

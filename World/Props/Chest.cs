@@ -16,6 +16,8 @@ public partial class Chest : Interactable
 	[ExportGroup("Botín")]
 	// Raciones de un cofre de comida.
 	[Export] public int FoodAmount = 2;
+	// Cantimploras de un cofre de agua.
+	[Export] public int WaterAmount = 2;
 	// Espacio extra que da la mochila encontrada.
 	[Export] public int BackpackSlots = 15;
 
@@ -81,6 +83,16 @@ public partial class Chest : Interactable
 				}
 
 				GameEvents.PostMessage($"Encontraste {FoodAmount} raciones de comida");
+				return true;
+
+			case ChestLoot.Water:
+				if (WorldState.Instance == null || !WorldState.Instance.TryAddItem(ItemCatalog.Water, WaterAmount))
+				{
+					GameEvents.PostMessage("Mochila llena: no te caben las cantimploras");
+					return false;
+				}
+
+				GameEvents.PostMessage($"Encontraste {WaterAmount} cantimploras de agua");
 				return true;
 
 			case ChestLoot.Pickaxe:

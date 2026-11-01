@@ -134,6 +134,11 @@ public partial class AudioManager : Node
 
 			case EatComponent eat:
 				eat.Ate += () => Play(Eat);
+				eat.Drank += () => Play(Eat);
+				break;
+
+			case WaterBarrel barrel:
+				barrel.Drank += () => Play(Eat);
 				break;
 
 			case PlayerEquipment equipment:

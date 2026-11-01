@@ -19,6 +19,7 @@ public partial class InventoryScreen : CanvasLayer
 
 	private bool open;
 	private static Texture2D foodIcon;
+	private static Texture2D waterIcon;
 
 	public override void _Ready()
 	{
@@ -127,7 +128,7 @@ public partial class InventoryScreen : CanvasLayer
 		if (ItemCatalog.IsConsumable(itemId))
 		{
 			var useButton = new Button { Text = "Usar" };
-			useButton.Pressed += () => Eat?.TryEat();
+			useButton.Pressed += () => Eat?.Use(itemId);
 			row.AddChild(useButton);
 		}
 
@@ -150,13 +151,20 @@ public partial class InventoryScreen : CanvasLayer
 			return MineralTextureFactory.GetBlockIcon(mineral);
 		}
 
-		if (foodIcon == null)
+		if (itemId == ItemCatalog.Water)
 		{
-			Image image = Image.CreateEmpty(16, 16, false, Image.Format.Rgba8);
-			image.Fill(new Color(0.85f, 0.55f, 0.25f));
-			foodIcon = ImageTexture.CreateFromImage(image);
+			waterIcon ??= FlatIcon(new Color(0.25f, 0.5f, 0.85f));
+			return waterIcon;
 		}
 
+		foodIcon ??= FlatIcon(new Color(0.85f, 0.55f, 0.25f));
 		return foodIcon;
+	}
+
+	private static Texture2D FlatIcon(Color color)
+	{
+		Image image = Image.CreateEmpty(16, 16, false, Image.Format.Rgba8);
+		image.Fill(color);
+		return ImageTexture.CreateFromImage(image);
 	}
 }

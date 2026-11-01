@@ -299,11 +299,17 @@ public partial class WorldState : Node
 		return true;
 	}
 
-	// Junta la vida de cada HealthComponent con SaveId y el día actual.
+	// Junta la vida de cada HealthComponent con SaveId, el hambre y la sed, y el día actual.
 	private void CollectHealthAndDay(bool includeCamp)
 	{
 		foreach (Node node in GetTree().GetNodesInGroup(HealthComponent.SavedGroup))
 		{
+			if (node is NeedComponent need && !string.IsNullOrEmpty(need.SaveId))
+			{
+				state.SetHealth(need.SaveId, need.Current);
+				continue;
+			}
+
 			if (node is not HealthComponent health || string.IsNullOrEmpty(health.SaveId))
 			{
 				continue;
