@@ -303,6 +303,31 @@ Check("armadura: el golpe se resiste si no la supera", CombatRules.IsResisted(2,
 	Check("campamento: un save viejo arranca en el nivel 1", WorldSaveState.FromDto(new WorldSaveData()).CampLevel == 1);
 }
 
+// --- Mapa con fog of war (feature 1.11) ---
+
+{
+	var map = new MapMemory();
+
+	Check("mapa: una celda nueva cambia el mapa", map.Reveal(3, -2, MapCell.Wall));
+	Check("mapa: verla igual otra vez no cambia nada", !map.Reveal(3, -2, MapCell.Wall));
+	Check("mapa: una pared minada pasa a ser piso", map.Reveal(3, -2, MapCell.Floor) && map.Get(3, -2) == MapCell.Floor);
+	Check("mapa: lo no visto es desconocido", map.Get(0, 0) == MapCell.Unknown);
+
+	var radius = MapMemory.CellsInRadius(10, 10, 2).ToList();
+	Check("mapa: el círculo de radio 2 tiene 13 celdas e incluye el centro", radius.Count == 13 && radius.Contains((10, 10)));
+	Check("mapa: el círculo no incluye las esquinas", !radius.Contains((12, 12)));
+
+	var state = new WorldSaveState();
+	state.Map.Reveal(1, 1, MapCell.Floor);
+	state.Map.Reveal(-4, 7, MapCell.Wall);
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+	Check("mapa: se guarda con la partida", restored.Map.Count == 2 && restored.Map.Get(-4, 7) == MapCell.Wall);
+
+	restored.StartNextLevel();
+	Check("mapa: en el nivel siguiente empieza en blanco", restored.Map.Count == 0);
+}
+
 // --- Techo de las salas (feature 1.5) ---
 
 {

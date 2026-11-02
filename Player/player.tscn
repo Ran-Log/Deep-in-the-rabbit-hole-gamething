@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://brft18qis8qff" path="res://Systems/DebugTools.cs" id="11_debug"]
 [ext_resource type="Script" path="res://Player/Components/LampComponent.cs" id="12_lamp"]
 [ext_resource type="Script" path="res://Player/Components/NeedComponent.cs" id="13_need"]
+[ext_resource type="Script" path="res://Player/Components/MapRevealer.cs" id="14_map"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_kedfu"]
 top_radius = 0.53515625
@@ -117,6 +118,10 @@ Build = NodePath("../BuildComponent")
 Equipment = NodePath("../Equipment")
 Hunger = NodePath("../Hunger")
 Thirst = NodePath("../Thirst")
+
+[node name="MapRevealer" type="Node" parent="." node_paths=PackedStringArray("Body")]
+script = ExtResource("14_map")
+Body = NodePath("..")
 
 [node name="DebugTools" type="Node" parent="." node_paths=PackedStringArray("Player")]
 script = ExtResource("11_debug")

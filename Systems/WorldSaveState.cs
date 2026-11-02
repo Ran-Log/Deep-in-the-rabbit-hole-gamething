@@ -55,6 +55,7 @@ public sealed class WorldSaveState
 		visitedRooms.Clear();
 		destroyedNests.Clear();
 		explodedGas.Clear();
+		Map.Clear();
 		healthById.Remove(CampHealthId);
 	}
 
@@ -75,6 +76,9 @@ public sealed class WorldSaveState
 	public bool IsGasExploded(int roomX, int roomZ) => explodedGas.Contains((roomX, roomZ));
 
 	public void MarkGasExploded(int roomX, int roomZ) => explodedGas.Add((roomX, roomZ));
+
+	// Lo que el jugador ya vio (fog of war). Es del nivel: al bajar se empieza en blanco.
+	public MapMemory Map { get; } = new();
 
 	// Trampas del campamento: celda → usos que le quedan (se gastan al pinchar).
 	private readonly Dictionary<(int X, int Y, int Z), int> placedTraps = new();
@@ -239,6 +243,7 @@ public sealed class WorldSaveState
 			Day = Day,
 			CurrentLevel = CurrentLevel,
 			Health = new Dictionary<string, int>(healthById),
+			MapCells = Map.ToFlatList(),
 		};
 
 		foreach (var chest in openedChests)
@@ -315,6 +320,8 @@ public sealed class WorldSaveState
 		{
 			state.SetHealth(entry.Key, entry.Value);
 		}
+
+		state.Map.LoadFlatList(dto.MapCells);
 
 		foreach (var chest in dto.OpenedChests)
 		{
