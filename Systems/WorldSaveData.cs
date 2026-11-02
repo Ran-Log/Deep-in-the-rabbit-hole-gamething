@@ -34,6 +34,9 @@ public sealed class WorldSaveData
 	public List<RoomCoordDto> VisitedRooms { get; set; } = new();
 	public List<RoomCoordDto> DestroyedNests { get; set; } = new();
 	public List<RoomCoordDto> ExplodedGas { get; set; } = new();
+
+	// Mapa revelado, en tríos: x, z, tipo de celda (ver MapMemory).
+	public List<int> MapCells { get; set; } = new();
 }
 
 public sealed class RoomCoordDto

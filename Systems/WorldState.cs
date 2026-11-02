@@ -338,6 +338,21 @@ public partial class WorldState : Node
 	// true solo la primera vez que se entra a la sala.
 	public bool MarkRoomVisited(Vector2I room) => state.MarkRoomVisited(room.X, room.Y);
 
+	// --- Mapa (fog of war), por columna (x, z) de la grilla ---
+
+	public MapCell GetMapCell(Vector2I cell) => state.Map.Get(cell.X, cell.Y);
+
+	// true si cambió (celda nueva, o pared que ahora es túnel).
+	public bool RevealMapCell(Vector2I cell, MapCell kind) => state.Map.Reveal(cell.X, cell.Y, kind);
+
+	public System.Collections.Generic.IEnumerable<(Vector2I Cell, MapCell Kind)> GetMapCells()
+	{
+		foreach (var entry in state.Map.Cells)
+		{
+			yield return (new Vector2I(entry.Key.X, entry.Key.Z), entry.Value);
+		}
+	}
+
 	// --- Disco ---
 
 	public void Save(Vector3 playerPosition)

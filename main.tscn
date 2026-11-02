@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://World/Props/Torch.tscn" id="13_torch"]
 [ext_resource type="PackedScene" path="res://UI/PauseMenu.tscn" id="14_pause"]
 [ext_resource type="PackedScene" path="res://UI/UpgradeMenu.tscn" id="15_upgrade"]
+[ext_resource type="PackedScene" path="res://UI/WorldMap.tscn" id="16_map"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 
@@ -66,6 +67,10 @@ CampHealth = NodePath("../Camp/CampCore/Health")
 [node name="GameOverScreen" parent="." unique_id=123004501 node_paths=PackedStringArray("PlayerHealth", "CampHealth") instance=ExtResource("5_gameover")]
 PlayerHealth = NodePath("../Player/Health")
 CampHealth = NodePath("../Camp/CampCore/Health")
+
+[node name="WorldMap" parent="." node_paths=PackedStringArray("Player", "Revealer") instance=ExtResource("16_map")]
+Player = NodePath("../Player")
+Revealer = NodePath("../Player/MapRevealer")
 
 [node name="InventoryScreen" parent="." unique_id=737114943 node_paths=PackedStringArray("Eat") instance=ExtResource("6_inventory")]
 Eat = NodePath("../Player/EatComponent")

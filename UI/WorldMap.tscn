@@ -1,0 +1,83 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://UI/WorldMap.cs" id="1_map"]
+[ext_resource type="Script" path="res://UI/MapPanel.cs" id="2_panel"]
+
+[node name="WorldMap" type="CanvasLayer" node_paths=PackedStringArray("Minimap", "FullMapPanel", "FullMap")]
+script = ExtResource("1_map")
+Minimap = NodePath("Minimap")
+FullMapPanel = NodePath("FullMap/MapPanel")
+FullMap = NodePath("FullMap")
+
+[node name="Minimap" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -192.0
+offset_top = -236.0
+offset_right = -12.0
+offset_bottom = -56.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("2_panel")
+PixelsPerCell = 3.0
+
+[node name="FullMap" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dim" type="ColorRect" parent="FullMap"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Title" type="Label" parent="FullMap"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 14.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 20
+text = "MAPA   [M] cerrar"
+horizontal_alignment = 1
+
+[node name="Legend" type="Label" parent="FullMap"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -36.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "▲ tú     ■ campamento     ◆ salida (cuando la encuentres)     claro: piso y túneles     oscuro: paredes"
+horizontal_alignment = 1
+
+[node name="MapPanel" type="Control" parent="FullMap"]
+layout_mode = 1
+anchor_left = 0.08
+anchor_top = 0.1
+anchor_right = 0.92
+anchor_bottom = 0.88
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_panel")
+PixelsPerCell = 2.0
