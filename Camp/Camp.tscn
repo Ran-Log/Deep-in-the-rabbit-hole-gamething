@@ -7,6 +7,9 @@
 [ext_resource type="PackedScene" path="res://World/Blocks/DestructibleBlock.tscn" id="5_block"]
 [ext_resource type="Script" uid="uid://chxrdb0ssx83v" path="res://Shared/HealthComponent.cs" id="6_health"]
 [ext_resource type="PackedScene" path="res://Camp/WaterBarrel.tscn" id="7_barrel"]
+[ext_resource type="Script" path="res://Camp/CampCore.cs" id="8_core"]
+[ext_resource type="Script" path="res://Camp/TrapPlacer.cs" id="9_traps"]
+[ext_resource type="PackedScene" path="res://Camp/SpikeTrap.tscn" id="10_trap"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_logs"]
 albedo_color = Color(0.33, 0.2, 0.1, 1)
@@ -45,8 +48,10 @@ height = 1.2
 
 [node name="Camp" type="Node3D"]
 
-[node name="CampCore" type="StaticBody3D" parent="." groups=["camp_core"]]
+[node name="CampCore" type="StaticBody3D" parent="." node_paths=PackedStringArray("Health") groups=["camp_core"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -1, -6)
+script = ExtResource("8_core")
+Health = NodePath("Health")
 
 [node name="Ring" type="MeshInstance3D" parent="CampCore"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
@@ -98,3 +103,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, -1, 3)
 [node name="Defenses" type="Node3D" parent="."]
 script = ExtResource("4_defenses")
 BlockScene = ExtResource("5_block")
+
+[node name="Traps" type="Node3D" parent="." node_paths=PackedStringArray("Camp")]
+script = ExtResource("9_traps")
+TrapScene = ExtResource("10_trap")
+Camp = NodePath("../Defenses")

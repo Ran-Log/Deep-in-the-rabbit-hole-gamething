@@ -146,6 +146,15 @@ public partial class AudioManager : Node
 				gas.Exploded += () => Play(Explosion, 4.0f, ExplosionPitch);
 				break;
 
+			case CampCore core:
+				core.Repaired += () => Play(Build);
+				break;
+
+			case SpikeTrap trap:
+				trap.Triggered += () => Play(EnemyHit, -6.0f);
+				trap.Broken += () => Play(BlockBreak);
+				break;
+
 			case WaterBarrel barrel:
 				barrel.Drank += () => Play(Eat);
 				break;

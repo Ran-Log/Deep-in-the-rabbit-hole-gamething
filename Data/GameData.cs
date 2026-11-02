@@ -76,6 +76,19 @@ public static class GameData
 	// La siguiente arma a forjar, o null si ya tiene la mejor.
 	public static WeaponDefinition NextWeapon(WeaponTier current) => Weapon(current + 1);
 
+	public static CampDefinition Camp(int level)
+	{
+		foreach (CampDefinition camp in Catalog.CampLevels)
+		{
+			if (camp.Level == level)
+			{
+				return camp;
+			}
+		}
+
+		return null;
+	}
+
 	public static LightDefinition Light(int level)
 	{
 		foreach (LightDefinition light in Catalog.Lights)

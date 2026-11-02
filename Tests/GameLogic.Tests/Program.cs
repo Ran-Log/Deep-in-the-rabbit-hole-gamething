@@ -287,6 +287,22 @@ Check("armadura: el golpe se resiste si no la supera", CombatRules.IsResisted(2,
 	Check("guardado: un save viejo arranca sin arma y con antorchas comunes", fromOldSave.WeaponLevel == 0 && fromOldSave.LightLevel == 1);
 }
 
+// --- Campamento: nivel y trampas (feature 1.9) ---
+
+{
+	var state = new WorldSaveState { CampLevel = 2 };
+	state.SetTrap(1, 0, -2, 7);
+
+	WorldSaveState restored = WorldSaveState.FromDto(JsonSerializer.Deserialize<WorldSaveData>(JsonSerializer.Serialize(state.ToDto(0, 0, 0))));
+	Check("campamento: se guarda el nivel y los usos de cada trampa",
+		restored.CampLevel == 2 && restored.HasTrap(1, 0, -2) && restored.PlacedTraps[(1, 0, -2)] == 7);
+
+	restored.StartNextLevel();
+	Check("campamento: al bajar se conserva la mejora y las trampas no", restored.CampLevel == 2 && !restored.HasTrap(1, 0, -2));
+
+	Check("campamento: un save viejo arranca en el nivel 1", WorldSaveState.FromDto(new WorldSaveData()).CampLevel == 1);
+}
+
 // --- Techo de las salas (feature 1.5) ---
 
 {

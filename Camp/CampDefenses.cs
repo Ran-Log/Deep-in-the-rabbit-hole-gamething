@@ -17,6 +17,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 	[Export] public PackedScene BlockScene;
 
 	[ExportGroup("Barricada")]
+	// Solo si faltan los datos del campamento; si no, sale de CampDefinition.BarricadeHealth.
 	[Export] public int DefenseHealth = 12;
 
 	[ExportGroup("Zona del campamento")]
@@ -49,6 +50,9 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 		}
 	}
 
+	// Un campamento mejorado hace barricadas más fuertes (las ya puestas no cambian).
+	public int BarricadeHealth => GameData.Camp(WorldState.Instance?.CampLevel ?? 1)?.BarricadeHealth ?? DefenseHealth;
+
 	public bool IsInsideCamp(Vector3I cell)
 	{
 		return cell.X >= MinCell.X && cell.X <= MaxCell.X
@@ -73,7 +77,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 			return false;
 		}
 
-		if (grid.IsOccupied(cell) || grid.HasBodyInCell(GetWorld3D(), cell))
+		if (grid.IsOccupied(cell) || grid.HasBodyInCell(GetWorld3D(), cell) || WorldState.Instance?.HasTrap(cell) == true)
 		{
 			reason = "Hay algo en el camino";
 			return false;
@@ -109,7 +113,7 @@ public partial class CampDefenses : Node3D, IStructurePlacer
 		var block = BlockScene.Instantiate<DestructibleBlock>();
 
 		block.Mineral = MineralType.Stone;
-		block.MaxHealth = DefenseHealth;
+		block.MaxHealth = BarricadeHealth;
 		block.RequiredTool = ToolTier.Basic;
 		block.DisplayName = "Barricada";
 

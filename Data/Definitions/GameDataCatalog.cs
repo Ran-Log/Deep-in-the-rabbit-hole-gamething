@@ -23,6 +23,10 @@ public partial class GameDataCatalog : Resource
 	// Niveles de iluminación, empezando por el 1 (el inicial).
 	[Export] public Godot.Collections.Array<LightDefinition> Lights = new();
 
+	[ExportGroup("Campamento")]
+	// Niveles del campamento, empezando por el 1 (el inicial).
+	[Export] public Godot.Collections.Array<CampDefinition> CampLevels = new();
+
 	[ExportGroup("Niveles")]
 	// En orden: el primero es el nivel 1.
 	[Export] public Godot.Collections.Array<LevelDefinition> Levels = new();

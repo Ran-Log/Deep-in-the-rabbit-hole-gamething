@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="CampDefinition" format=3]
+
+[ext_resource type="Script" path="res://Data/Definitions/CampDefinition.cs" id="1_camp"]
+[ext_resource type="Script" uid="uid://qrau7en4wn8" path="res://Data/Definitions/MineralCost.cs" id="2_cost"]
+
+[sub_resource type="Resource" id="Resource_stone"]
+script = ExtResource("2_cost")
+Mineral = 0
+Amount = 10
+
+[sub_resource type="Resource" id="Resource_iron"]
+script = ExtResource("2_cost")
+Mineral = 2
+Amount = 4
+
+[resource]
+script = ExtResource("1_camp")
+Level = 2
+DisplayName = "Campamento reforzado"
+MaxHealth = 150
+BarricadeHealth = 18
+Cost = Array[ExtResource("2_cost")]([SubResource("Resource_stone"), SubResource("Resource_iron")])

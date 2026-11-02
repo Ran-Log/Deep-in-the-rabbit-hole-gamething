@@ -1,0 +1,79 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://Camp/SpikeTrap.cs" id="1_trap"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_base"]
+albedo_color = Color(0.3, 0.22, 0.14, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_spike"]
+albedo_color = Color(0.55, 0.55, 0.58, 1)
+metallic = 0.7
+roughness = 0.35
+
+[sub_resource type="BoxMesh" id="Mesh_base"]
+material = SubResource("Mat_base")
+size = Vector3(1.8, 0.1, 1.8)
+
+[sub_resource type="CylinderMesh" id="Mesh_spike"]
+material = SubResource("Mat_spike")
+top_radius = 0.0
+bottom_radius = 0.12
+height = 0.6
+radial_segments = 6
+
+[sub_resource type="BoxShape3D" id="Shape_area"]
+size = Vector3(1.8, 1.2, 1.8)
+
+[node name="SpikeTrap" type="Node3D" node_paths=PackedStringArray("Area", "Spikes")]
+script = ExtResource("1_trap")
+Area = NodePath("Area3D")
+Spikes = NodePath("Spikes")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("Mesh_base")
+
+[node name="Spikes" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="Spike1" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.3, -0.55)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike2" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.55)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike3" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.3, -0.55)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike4" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.3, 0)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike5" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike6" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.3, 0)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike7" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.3, 0.55)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike8" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0.55)
+mesh = SubResource("Mesh_spike")
+
+[node name="Spike9" type="MeshInstance3D" parent="Spikes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 0.3, 0.55)
+mesh = SubResource("Mesh_spike")
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("Shape_area")

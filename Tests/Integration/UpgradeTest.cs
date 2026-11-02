@@ -85,15 +85,16 @@ public class UpgradeTest
 	}
 
 	[TestCase]
-	public async Task ElMenuTieneLasTresLineasYSeCierra()
+	public async Task ElMenuTieneLasCuatroLineasYSeCierra()
 	{
 		var (menu, equipment) = await LoadMenu();
 		var options = UpgradeTable.Options(equipment);
 
-		AssertThat(options.Count).IsEqual(3);
+		AssertThat(options.Count).IsEqual(4);
 		AssertThat(options[0].Title).IsEqual("Pico");
 		AssertThat(options[1].Title).IsEqual("Arma");
 		AssertThat(options[2].Title).IsEqual("Antorchas");
+		AssertThat(options[3].Title).IsEqual("Campamento");
 		AssertThat(menu.IsOpen).IsTrue();
 
 		menu.Close();

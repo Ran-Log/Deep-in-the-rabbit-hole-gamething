@@ -28,6 +28,7 @@ public partial class BuildComponent : Node3D
 	{
 		new BuildOption("Barricada", $"{UpgradeTable.DefenseStoneCost} Piedra · solo en el campamento", CampDefenses.Group, new Vector3(2.02f, 2.02f, 2.02f)),
 		new BuildOption("Antorcha", $"{UpgradeTable.TorchCoalCost} Carbón · en cualquier suelo", TorchPlacer.Group, new Vector3(0.5f, 2.0f, 0.5f)),
+		new BuildOption("Trampa de pinchos", $"{UpgradeTable.FormatCost(UpgradeTable.TrapCost)} · suelo del campamento", TrapPlacer.Group, new Vector3(1.8f, 0.4f, 1.8f)),
 	};
 
 	[Signal]
@@ -77,14 +78,21 @@ public partial class BuildComponent : Node3D
 		if (@event.IsActionPressed("build"))
 		{
 			SetActive(!active);
+			return;
 		}
-		else if (active && @event.IsActionPressed("build_option_1"))
+
+		if (!active)
 		{
-			Select(0);
+			return;
 		}
-		else if (active && @event.IsActionPressed("build_option_2"))
+
+		// build_option_1, build_option_2... una acción por opción del menú.
+		for (int i = 0; i < Options.Length; i++)
 		{
-			Select(1);
+			if (@event.IsActionPressed($"build_option_{i + 1}"))
+			{
+				Select(i);
+			}
 		}
 	}
 
@@ -105,7 +113,10 @@ public partial class BuildComponent : Node3D
 
 		bool valid = placer.CanPlace(cell, onTop, out _);
 
-		ghost.GlobalPosition = BlockGrid.Instance.GridToWorld(cell);
+		// Apoyado en el fondo de la celda (la trampa es baja; la barricada la llena entera).
+		float cellSize = BlockGrid.Instance.CellSize;
+		float lift = (cellSize - Options[selected].GhostSize.Y) * 0.5f;
+		ghost.GlobalPosition = BlockGrid.Instance.GridToWorld(cell) - new Vector3(0.0f, lift, 0.0f);
 		ghost.Visible = true;
 		ghostMaterial.AlbedoColor = valid ? ValidColor : InvalidColor;
 
