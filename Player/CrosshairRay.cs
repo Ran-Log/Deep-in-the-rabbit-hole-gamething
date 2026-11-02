@@ -20,7 +20,11 @@ public static class CrosshairRay
 		}
 	}
 
-	/// <summary>Devuelve false si no hay nada dentro de <paramref name="range"/> metros.</summary>
+	/// <summary>
+	/// Devuelve false si no hay nada dentro de <paramref name="range"/> metros, medidos desde el jugador.
+	/// Se suma lo que la cámara está detrás de él: así el alcance es el mismo en primera o tercera
+	/// persona y con cualquier zoom.
+	/// </summary>
 	public static bool Cast(Camera3D camera, float range, uint collisionMask, CollisionObject3D excluded, out Hit hit)
 	{
 		hit = default;
@@ -32,8 +36,11 @@ public static class CrosshairRay
 
 		Vector2 screenCenter = camera.GetViewport().GetVisibleRect().Size * 0.5f;
 
+		// La cámara es hija del CameraRig (centrado en el jugador): su Position es cuánto se alejó.
+		float cameraBehind = camera.Position.Length();
+
 		Vector3 from = camera.ProjectRayOrigin(screenCenter);
-		Vector3 to = from + camera.ProjectRayNormal(screenCenter) * range;
+		Vector3 to = from + camera.ProjectRayNormal(screenCenter) * (range + cameraBehind);
 
 		var query = PhysicsRayQueryParameters3D.Create(from, to);
 		query.CollisionMask = collisionMask;

@@ -35,7 +35,8 @@ public partial class MiningComponent : Node3D
 	[Export] public PlayerEquipment Equipment;
 
 	[ExportGroup("Minado")]
-	[Export] public float Range = 6.0f;
+	// Metros desde el jugador (CrosshairRay suma la distancia de la cámara).
+	[Export] public float Range = 4.0f;
 	// Segundos entre golpe y golpe mientras se mantiene presionado.
 	[Export] public float HitCooldown = 0.3f;
 	[Export(PropertyHint.Layers3DPhysics)] public uint TargetLayers = 1;

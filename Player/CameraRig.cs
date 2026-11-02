@@ -1,8 +1,9 @@
 using Godot;
 
 /// <summary>
-/// Cámara en tercera persona sobre el hombro: mouse para girar, rueda para zoom,
-/// R para cambiar de hombro. Se acerca sola si una pared la tapa (túneles angostos).
+/// Cámara en tercera persona sobre el hombro (mouse para girar, rueda para zoom, R para cambiar de
+/// hombro; se acerca sola si una pared la tapa) o en primera persona (V cambia entre las dos).
+/// En primera persona la cámara deja de dibujar el cuerpo del jugador (su capa de render).
 /// </summary>
 public partial class CameraRig : Node3D
 {
@@ -30,6 +31,18 @@ public partial class CameraRig : Node3D
 	[Export] public float CollisionMargin = 0.25f;
 	[Export(PropertyHint.Layers3DPhysics)] public uint CollisionMask = 1;
 
+	[ExportGroup("Primera persona")]
+	// Altura de los ojos sobre el centro del rig.
+	[Export] public float EyeHeight = 0.2f;
+	// Capa de render (1-20) del cuerpo del jugador: en primera persona la cámara no la dibuja.
+	[Export(PropertyHint.Range, "1,20,1")] public int BodyRenderLayer = 2;
+
+	// Se recuerda durante la sesión (al morir o bajar de nivel la escena se vuelve a cargar).
+	private static bool firstPerson;
+
+	// 0 = tercera persona, 1 = primera; se mueve suave entre los dos.
+	private float firstPersonBlend;
+
 	private float pitch = 0.0f;
 	private float side = 1.0f;
 	private float currentSide = 1.0f;
@@ -44,6 +57,8 @@ public partial class CameraRig : Node3D
 
 		targetDistance = Distance;
 		currentDistance = Distance;
+		firstPersonBlend = firstPerson ? 1.0f : 0.0f;
+		UpdateBodyVisibility();
 
 		// Al empezar, capturar el mouse
 		Input.MouseMode = Input.MouseModeEnum.Captured;
@@ -78,15 +93,20 @@ public partial class CameraRig : Node3D
 			return;
 		}
 
-		if (@event.IsActionPressed("zoom_in"))
+		if (@event.IsActionPressed("toggle_view"))
+		{
+			ToggleView();
+		}
+		// Zoom y hombro solo tienen sentido en tercera persona.
+		else if (!firstPerson && @event.IsActionPressed("zoom_in"))
 		{
 			targetDistance = Mathf.Clamp(targetDistance - ZoomStep, MinDistance, MaxDistance);
 		}
-		else if (@event.IsActionPressed("zoom_out"))
+		else if (!firstPerson && @event.IsActionPressed("zoom_out"))
 		{
 			targetDistance = Mathf.Clamp(targetDistance + ZoomStep, MinDistance, MaxDistance);
 		}
-		else if (@event.IsActionPressed("swap_shoulder"))
+		else if (!firstPerson && @event.IsActionPressed("swap_shoulder"))
 		{
 			side = -side;
 		}
@@ -124,8 +144,24 @@ public partial class CameraRig : Node3D
 
 		currentSide = Mathf.Lerp(currentSide, side, t);
 		currentDistance = Mathf.Lerp(currentDistance, targetDistance, t);
+		firstPersonBlend = Mathf.Lerp(firstPersonBlend, firstPerson ? 1.0f : 0.0f, t);
 
 		PlaceCamera();
+		UpdateBodyVisibility();
+	}
+
+	public bool IsFirstPerson => firstPerson;
+
+	// Público para los tests (el input simulado no llega en modo headless).
+	public void ToggleView()
+	{
+		firstPerson = !firstPerson;
+	}
+
+	// El cuerpo se esconde a mitad de la transición, cuando la cámara ya está casi en la cabeza.
+	private void UpdateBodyVisibility()
+	{
+		camera?.SetCullMaskValue(BodyRenderLayer, firstPersonBlend < 0.5f);
 	}
 
 	/// <summary>Dirección hacia adelante en el plano (para caminar).</summary>
@@ -181,6 +217,8 @@ public partial class CameraRig : Node3D
 			desiredLocal = pivotLocal + offset.Normalized() * safeLength;
 		}
 
-		camera.Position = desiredLocal;
+		// Primera persona: en los ojos. Entre medio, una mezcla suave de las dos posiciones.
+		Vector3 eyes = new Vector3(0.0f, EyeHeight, 0.0f);
+		camera.Position = desiredLocal.Lerp(eyes, firstPersonBlend);
 	}
 }

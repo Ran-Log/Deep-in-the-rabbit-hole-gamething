@@ -48,7 +48,8 @@ public partial class BuildComponent : Node3D
 	[Export] public MiningComponent Mining;
 
 	[ExportGroup("Construcción")]
-	[Export] public float Range = 8.0f;
+	// Metros desde el jugador (CrosshairRay suma la distancia de la cámara).
+	[Export] public float Range = 6.0f;
 
 	[ExportGroup("Visual")]
 	[Export] public Color ValidColor = new Color(0.3f, 1.0f, 0.4f, 0.35f);

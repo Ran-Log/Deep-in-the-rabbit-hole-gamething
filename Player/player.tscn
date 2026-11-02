@@ -33,6 +33,7 @@ Hunger = NodePath("Hunger")
 Thirst = NodePath("Thirst")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+layers = 2
 mesh = SubResource("CylinderMesh_kedfu")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -96,7 +97,6 @@ Equipment = NodePath("../Equipment")
 script = ExtResource("8_interaction")
 Camera = NodePath("../CameraRig/Camera3D")
 Player = NodePath("..")
-Range = 6.0
 
 [node name="BuildComponent" type="Node3D" parent="." node_paths=PackedStringArray("Camera", "ExcludedBody", "Mining")]
 script = ExtResource("9_build")
