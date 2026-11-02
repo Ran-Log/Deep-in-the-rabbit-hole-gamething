@@ -21,8 +21,8 @@ public partial class CombatComponent : Node3D
 	[Export] public PlayerEquipment Equipment;
 
 	[ExportGroup("Combate")]
-	// Se mide desde la cámara, que está ~2 m detrás del jugador.
-	[Export] public float Range = 5.0f;
+	// Metros desde el jugador (CrosshairRay suma la distancia de la cámara).
+	[Export] public float Range = 3.0f;
 	[Export] public float AttackCooldown = 0.45f;
 	[Export(PropertyHint.Layers3DPhysics)] public uint TargetLayers = 1;
 	// Cada cuánto se puede repetir el aviso de "arma muy débil".

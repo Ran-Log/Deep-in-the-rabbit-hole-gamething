@@ -15,7 +15,8 @@ public partial class InteractionComponent : Node3D
 	[Export] public Player Player;
 
 	[ExportGroup("Alcance")]
-	[Export] public float Range = 5.0f;
+	// Metros desde el jugador (CrosshairRay suma la distancia de la cámara).
+	[Export] public float Range = 4.0f;
 	[Export(PropertyHint.Layers3DPhysics)] public uint TargetLayers = 1;
 
 	private Interactable current;
