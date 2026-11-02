@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://UI/PauseMenu.tscn" id="14_pause"]
 [ext_resource type="PackedScene" path="res://UI/UpgradeMenu.tscn" id="15_upgrade"]
 [ext_resource type="PackedScene" path="res://UI/WorldMap.tscn" id="16_map"]
+[ext_resource type="PackedScene" path="res://UI/JournalScreen.tscn" id="17_journal"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_main"]
 
@@ -78,3 +79,5 @@ Eat = NodePath("../Player/EatComponent")
 [node name="PauseMenu" parent="." instance=ExtResource("14_pause")]
 
 [node name="UpgradeMenu" parent="." instance=ExtResource("15_upgrade")]
+
+[node name="JournalScreen" parent="." instance=ExtResource("17_journal")]

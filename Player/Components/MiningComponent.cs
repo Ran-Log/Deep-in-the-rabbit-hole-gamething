@@ -23,6 +23,10 @@ public partial class MiningComponent : Node3D
 	[Signal]
 	public delegate void BlockHitEventHandler(int mineral);
 
+	// El mineral entró a la mochila (con la mochila llena se pierde y no se avisa).
+	[Signal]
+	public delegate void MineralCollectedEventHandler(string itemId);
+
 	[ExportCategory("MiningComponent")]
 	[ExportGroup("Referencias")]
 	[Export] public Camera3D Camera;
@@ -143,13 +147,21 @@ public partial class MiningComponent : Node3D
 		}
 	}
 
-	private static void CollectMineral(MineralType mineral)
+	private void CollectMineral(MineralType mineral)
 	{
 		string itemId = ItemCatalog.IdOf(mineral);
 
-		if (WorldState.Instance != null && !WorldState.Instance.TryAddItem(itemId))
+		if (WorldState.Instance == null)
+		{
+			return;
+		}
+
+		if (!WorldState.Instance.TryAddItem(itemId))
 		{
 			GameEvents.PostMessage($"Mochila llena: se perdió 1 {ItemCatalog.DisplayName(itemId)}");
+			return;
 		}
+
+		EmitSignal(SignalName.MineralCollected, itemId);
 	}
 }
