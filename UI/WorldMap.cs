@@ -16,6 +16,7 @@ public partial class WorldMap : CanvasLayer
 	[Export] public MapPanel Minimap;
 	[Export] public MapPanel FullMapPanel;
 	[Export] public Control FullMap;
+	[Export] public Compass Compass;
 
 	[ExportGroup("Mapa")]
 	// Lado de la imagen en celdas; el campamento queda en el medio.
@@ -85,8 +86,27 @@ public partial class WorldMap : CanvasLayer
 
 	public override void _Process(double delta)
 	{
-		UpdatePanel(Minimap);
-		UpdatePanel(FullMapPanel);
+		if (Player == null)
+		{
+			return;
+		}
+
+		// Se calcula una vez y lo usan los dos mapas y la brújula.
+		Vector2 playerCell = ToCell(Player.GlobalPosition);
+		Vector2 facing = Vector2.Up;
+
+		if (Player.CameraRig != null)
+		{
+			Vector3 forward = Player.CameraRig.GetForwardDirection();
+			facing = new Vector2(forward.X, forward.Z);
+		}
+
+		Vector2? campCell = GetTree().GetFirstNodeInGroup(Enemy.CampCoreGroup) is Node3D camp ? ToCell(camp.GlobalPosition) : null;
+		Vector2? exitCell = KnownExitCell();
+
+		UpdatePanel(Minimap, playerCell, facing, campCell, exitCell);
+		UpdatePanel(FullMapPanel, playerCell, facing, campCell, exitCell);
+		UpdateCompass(playerCell, facing, campCell, exitCell);
 	}
 
 	// No pausa ni suelta el mouse: como la mochila, mirar el mapa te deja expuesto.
@@ -135,24 +155,44 @@ public partial class WorldMap : CanvasLayer
 		image.SetPixel(px, pz, kind == MapCell.Wall ? WallColor : FloorColor);
 	}
 
-	private void UpdatePanel(MapPanel panel)
+	private static void UpdatePanel(MapPanel panel, Vector2 playerCell, Vector2 facing, Vector2? campCell, Vector2? exitCell)
 	{
-		if (panel == null || !panel.IsVisibleInTree() || Player == null)
+		if (panel == null || !panel.IsVisibleInTree())
 		{
 			return;
 		}
 
-		panel.PlayerCell = ToCell(Player.GlobalPosition);
+		panel.PlayerCell = playerCell;
+		panel.PlayerFacing = facing;
+		panel.CampCell = campCell;
+		panel.ExitCell = exitCell;
+		panel.QueueRedraw();
+	}
 
-		if (Player.CameraRig != null)
+	// Mismos colores que los marcadores del mapa, para reconocerlos.
+	private void UpdateCompass(Vector2 playerCell, Vector2 facing, Vector2? campCell, Vector2? exitCell)
+	{
+		if (Compass == null || !Compass.IsVisibleInTree())
 		{
-			Vector3 forward = Player.CameraRig.GetForwardDirection();
-			panel.PlayerFacing = new Vector2(forward.X, forward.Z);
+			return;
 		}
 
-		panel.CampCell = GetTree().GetFirstNodeInGroup(Enemy.CampCoreGroup) is Node3D camp ? ToCell(camp.GlobalPosition) : null;
-		panel.ExitCell = KnownExitCell();
-		panel.QueueRedraw();
+		Compass.Heading = Compass.BearingOf(facing.X, facing.Y);
+		Compass.Markers.Clear();
+
+		if (campCell is Vector2 camp)
+		{
+			Vector2 toCamp = camp - playerCell;
+			Compass.Markers.Add((Compass.BearingOf(toCamp.X, toCamp.Y), Minimap?.CampColor ?? Colors.Orange));
+		}
+
+		if (exitCell is Vector2 exit)
+		{
+			Vector2 toExit = exit - playerCell;
+			Compass.Markers.Add((Compass.BearingOf(toExit.X, toExit.Y), Minimap?.ExitColor ?? Colors.Green));
+		}
+
+		Compass.QueueRedraw();
 	}
 
 	// La salida aparece en el mapa solo después de entrar a su sala.

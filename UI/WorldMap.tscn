@@ -2,12 +2,27 @@
 
 [ext_resource type="Script" path="res://UI/WorldMap.cs" id="1_map"]
 [ext_resource type="Script" path="res://UI/MapPanel.cs" id="2_panel"]
+[ext_resource type="Script" path="res://UI/Compass.cs" id="3_compass"]
 
-[node name="WorldMap" type="CanvasLayer" node_paths=PackedStringArray("Minimap", "FullMapPanel", "FullMap")]
+[node name="WorldMap" type="CanvasLayer" node_paths=PackedStringArray("Minimap", "FullMapPanel", "FullMap", "Compass")]
 script = ExtResource("1_map")
 Minimap = NodePath("Minimap")
 FullMapPanel = NodePath("FullMap/MapPanel")
 FullMap = NodePath("FullMap")
+Compass = NodePath("Compass")
+
+[node name="Compass" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -180.0
+offset_top = 36.0
+offset_right = 180.0
+offset_bottom = 62.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("3_compass")
 
 [node name="Minimap" type="Control" parent="."]
 layout_mode = 3

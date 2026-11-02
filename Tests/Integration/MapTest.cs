@@ -73,6 +73,20 @@ public class MapTest
 			&& Mathf.Abs(a.B - b.B) < Tolerance && Mathf.Abs(a.A - b.A) < Tolerance;
 	}
 
+	[TestCase]
+	public void LaBrujulaSabeHaciaDondeMira()
+	{
+		// El norte es -Z (arriba en el mapa) y el este +X.
+		AssertThat(Compass.BearingOf(0, -1)).IsEqualApprox(0.0f, 0.01f);
+		AssertThat(Compass.BearingOf(1, 0)).IsEqualApprox(90.0f, 0.01f);
+		AssertThat(Compass.BearingOf(0, 1)).IsEqualApprox(180.0f, 0.01f);
+		AssertThat(Compass.BearingOf(-1, 0)).IsEqualApprox(270.0f, 0.01f);
+
+		// Mirando al norte, el oeste queda 90° a la izquierda; cruzar el norte no da la vuelta larga.
+		AssertThat(Compass.DeltaFrom(0, 270)).IsEqualApprox(-90.0f, 0.01f);
+		AssertThat(Compass.DeltaFrom(350, 10)).IsEqualApprox(20.0f, 0.01f);
+	}
+
 	private static async Task<(MapRevealer, Node3D)> LoadRevealer()
 	{
 		var root = new Node3D();
