@@ -27,6 +27,14 @@ public partial class WorldState : Node
 	[Signal]
 	public delegate void CampLevelChangedEventHandler(int level);
 
+	// Subió una línea de mejora (UpgradeTable.PickaxeLine, ...) en `levels` niveles.
+	[Signal]
+	public delegate void UpgradedEventHandler(string line, int levels);
+
+	// Primera vez que se entra a una sala.
+	[Signal]
+	public delegate void RoomDiscoveredEventHandler(Vector2I room);
+
 	private static readonly string SavePath = "user://savegame.json";
 
 	// Raciones con las que empieza una partida nueva.
@@ -221,6 +229,7 @@ public partial class WorldState : Node
 				return;
 			}
 
+			NotifyIfUpgraded(UpgradeTable.PickaxeLine, state.ToolLevel, (int)value);
 			state.ToolLevel = (int)value;
 			EmitSignal(SignalName.ToolChanged, (int)value);
 		}
@@ -236,6 +245,7 @@ public partial class WorldState : Node
 				return;
 			}
 
+			NotifyIfUpgraded(UpgradeTable.WeaponLine, state.WeaponLevel, (int)value);
 			state.WeaponLevel = (int)value;
 			EmitSignal(SignalName.WeaponChanged, (int)value);
 		}
@@ -251,6 +261,7 @@ public partial class WorldState : Node
 				return;
 			}
 
+			NotifyIfUpgraded(UpgradeTable.LightLine, state.LightLevel, value);
 			state.LightLevel = value;
 			EmitSignal(SignalName.LightChanged, value);
 		}
@@ -266,8 +277,18 @@ public partial class WorldState : Node
 				return;
 			}
 
+			NotifyIfUpgraded(UpgradeTable.CampLine, state.CampLevel, value);
 			state.CampLevel = value;
 			EmitSignal(SignalName.CampLevelChanged, value);
+		}
+	}
+
+	// Solo si sube (el diario cuenta mejoras; cargar una partida o empezar de cero no son mejoras).
+	private void NotifyIfUpgraded(string line, int oldLevel, int newLevel)
+	{
+		if (newLevel > oldLevel)
+		{
+			EmitSignal(SignalName.Upgraded, line, newLevel - oldLevel);
 		}
 	}
 
@@ -336,7 +357,17 @@ public partial class WorldState : Node
 	public bool IsRoomVisited(Vector2I room) => state.IsRoomVisited(room.X, room.Y);
 
 	// true solo la primera vez que se entra a la sala.
-	public bool MarkRoomVisited(Vector2I room) => state.MarkRoomVisited(room.X, room.Y);
+	public bool MarkRoomVisited(Vector2I room)
+	{
+		bool isNew = state.MarkRoomVisited(room.X, room.Y);
+
+		if (isNew)
+		{
+			EmitSignal(SignalName.RoomDiscovered, room);
+		}
+
+		return isNew;
+	}
 
 	// --- Mapa (fog of war), por columna (x, z) de la grilla ---
 

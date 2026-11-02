@@ -85,6 +85,11 @@ public partial class AudioManager : Node
 			GameEvents.Instance.LevelCompleted += () => Play(Victory);
 		}
 
+		if (SessionJournal.Instance != null)
+		{
+			SessionJournal.Instance.GoalCompleted += _ => Play(Upgrade, -4.0f);
+		}
+
 		SetNight(false);
 	}
 
@@ -166,7 +171,7 @@ public partial class AudioManager : Node
 				break;
 
 			case BuildComponent build:
-				build.StructureBuilt += () => Play(Build);
+				build.StructureBuilt += _ => Play(Build);
 				break;
 
 			case LampComponent lamp:

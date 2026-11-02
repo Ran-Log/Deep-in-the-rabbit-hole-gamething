@@ -328,6 +328,32 @@ Check("armadura: el golpe se resiste si no la supera", CombatRules.IsResisted(2,
 	Check("mapa: en el nivel siguiente empieza en blanco", restored.Map.Count == 0);
 }
 
+// --- Diario de la sesión (feature 1.11) ---
+
+{
+	var journal = new Journal();
+	JournalGoal gold = journal.AddGoal(GoalKind.Collect, "Gold", 5);
+
+	journal.Record(GoalKind.Collect, "Stone", 3);
+	Check("diario: recolectar otra cosa no avanza el objetivo", gold.Progress == 0);
+
+	journal.Record(GoalKind.Collect, "Gold", 4);
+	var justDone = journal.Record(GoalKind.Collect, "Gold");
+	Check("diario: al llegar a la meta se cumple y avisa una vez", gold.IsDone && justDone.Count == 1 && justDone[0] == gold);
+	Check("diario: pasarse de la meta no vuelve a avisar", journal.Record(GoalKind.Collect, "Gold").Count == 0);
+	Check("diario: pasarse de la meta queda en verde (excedido)", gold.IsExceeded);
+
+	journal.SetTarget(gold, 10);
+	Check("diario: subir la meta descuenta lo hecho (6 de 10, faltan 4)", gold.Progress == 6 && gold.Remaining == 4 && !gold.IsDone);
+
+	JournalGoal same = journal.AddGoal(GoalKind.Collect, "Gold", 8);
+	Check("diario: el mismo objetivo no se duplica, cambia la meta", same == gold && journal.Goals.Count == 1 && gold.Target == 8);
+
+	Check("diario: el resumen cuenta todo lo de la sesión", journal.SessionTotal(GoalKind.Collect, "Stone") == 3 && journal.SessionTotal(GoalKind.Collect, "Gold") == 6);
+	Check("diario: la meta mínima es 1", journal.AddGoal(GoalKind.Explore, "Salas", 0).Target == 1);
+	Check("diario: se puede quitar un objetivo", journal.RemoveGoal(gold) && journal.Goals.Count == 1);
+}
+
 // --- Techo de las salas (feature 1.5) ---
 
 {

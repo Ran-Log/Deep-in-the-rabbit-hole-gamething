@@ -1,0 +1,103 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://UI/JournalScreen.cs" id="1_journal"]
+
+[node name="JournalScreen" type="CanvasLayer" node_paths=PackedStringArray("Panel", "SectionOption", "SubjectOption", "AmountSpin", "AddButton", "GoalsContainer", "SummaryLabel", "CloseButton")]
+script = ExtResource("1_journal")
+Panel = NodePath("Panel")
+SectionOption = NodePath("Panel/Margin/VBox/NewGoal/SectionOption")
+SubjectOption = NodePath("Panel/Margin/VBox/NewGoal/SubjectOption")
+AmountSpin = NodePath("Panel/Margin/VBox/NewGoal/AmountSpin")
+AddButton = NodePath("Panel/Margin/VBox/NewGoal/AddButton")
+GoalsContainer = NodePath("Panel/Margin/VBox/GoalsScroll/Goals")
+SummaryLabel = NodePath("Panel/Margin/VBox/SummaryLabel")
+CloseButton = NodePath("Panel/Margin/VBox/CloseButton")
+
+[node name="Panel" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.04, 0.03, 0.85)
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 24
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Diario de la sesión   [J] cerrar"
+
+[node name="NewGoalLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.55, 1)
+text = "Nuevo objetivo"
+
+[node name="NewGoal" type="HBoxContainer" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SectionOption" type="OptionButton" parent="Panel/Margin/VBox/NewGoal"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
+[node name="SubjectOption" type="OptionButton" parent="Panel/Margin/VBox/NewGoal"]
+custom_minimum_size = Vector2(190, 0)
+layout_mode = 2
+
+[node name="AmountSpin" type="SpinBox" parent="Panel/Margin/VBox/NewGoal"]
+layout_mode = 2
+min_value = 1.0
+max_value = 999.0
+value = 5.0
+
+[node name="AddButton" type="Button" parent="Panel/Margin/VBox/NewGoal"]
+layout_mode = 2
+text = "Agregar"
+
+[node name="GoalsLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.55, 1)
+text = "Objetivos"
+
+[node name="GoalsScroll" type="ScrollContainer" parent="Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Goals" type="VBoxContainer" parent="Panel/Margin/VBox/GoalsScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SummaryTitle" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.55, 1)
+text = "Esta sesión"
+
+[node name="SummaryLabel" type="RichTextLabel" parent="Panel/Margin/VBox"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="CloseButton" type="Button" parent="Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Cerrar"

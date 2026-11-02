@@ -37,8 +37,9 @@ public partial class BuildComponent : Node3D
 	[Signal]
 	public delegate void SelectionChangedEventHandler(int index);
 
+	// name = BuildOption.Name ("Barricada", "Antorcha"...).
 	[Signal]
-	public delegate void StructureBuiltEventHandler();
+	public delegate void StructureBuiltEventHandler(string name);
 
 	[ExportCategory("BuildComponent")]
 	[ExportGroup("Referencias")]
@@ -122,7 +123,7 @@ public partial class BuildComponent : Node3D
 
 		if (CrosshairRay.PlayerHasControl() && Input.IsActionJustPressed("mine") && placer.TryPlace(cell, onTop))
 		{
-			EmitSignal(SignalName.StructureBuilt);
+			EmitSignal(SignalName.StructureBuilt, Options[selected].Name);
 		}
 	}
 

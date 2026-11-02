@@ -7,6 +7,14 @@ using System.Linq;
 /// </summary>
 public static class UpgradeTable
 {
+	// Nombres de las líneas de mejora (filas del menú; el diario los usa como "qué mejorar").
+	public const string PickaxeLine = "Pico";
+	public const string WeaponLine = "Arma";
+	public const string LightLine = "Antorchas";
+	public const string CampLine = "Campamento";
+
+	public static readonly string[] Lines = { PickaxeLine, WeaponLine, LightLine, CampLine };
+
 	public const int DefenseStoneCost = 2;
 
 	public const int TorchCoalCost = 1;
@@ -91,10 +99,10 @@ public static class UpgradeTable
 
 		if (!TryGetNext(current, out ToolTier next, out var cost))
 		{
-			return new UpgradeOption("Pico", currentName, "", NoCost, _ => false);
+			return new UpgradeOption(PickaxeLine, currentName, "", NoCost, _ => false);
 		}
 
-		return new UpgradeOption("Pico", currentName, ItemCatalog.ToolName(next), cost, equipment => equipment.UpgradeTo(next));
+		return new UpgradeOption(PickaxeLine, currentName, ItemCatalog.ToolName(next), cost, equipment => equipment.UpgradeTo(next));
 	}
 
 	private static UpgradeOption WeaponOption(WeaponTier current)
@@ -104,10 +112,10 @@ public static class UpgradeTable
 
 		if (next == null)
 		{
-			return new UpgradeOption("Arma", currentName, "", NoCost, _ => false);
+			return new UpgradeOption(WeaponLine, currentName, "", NoCost, _ => false);
 		}
 
-		return new UpgradeOption("Arma", currentName, next.DisplayName, next.CostByItemId(), equipment => equipment.UpgradeWeaponTo(next.Tier));
+		return new UpgradeOption(WeaponLine, currentName, next.DisplayName, next.CostByItemId(), equipment => equipment.UpgradeWeaponTo(next.Tier));
 	}
 
 	private static UpgradeOption LightOption(int currentLevel)
@@ -117,10 +125,10 @@ public static class UpgradeTable
 
 		if (next == null)
 		{
-			return new UpgradeOption("Antorchas", currentName, "", NoCost, _ => false);
+			return new UpgradeOption(LightLine, currentName, "", NoCost, _ => false);
 		}
 
-		return new UpgradeOption("Antorchas", currentName, next.DisplayName, next.CostByItemId(), equipment => equipment.UpgradeLightTo(next.Level));
+		return new UpgradeOption(LightLine, currentName, next.DisplayName, next.CostByItemId(), equipment => equipment.UpgradeLightTo(next.Level));
 	}
 
 	// El campamento no es equipo del jugador: el nivel se guarda directo en WorldState.
@@ -132,12 +140,12 @@ public static class UpgradeTable
 
 		if (next == null)
 		{
-			return new UpgradeOption("Campamento", currentName, "", NoCost, _ => false);
+			return new UpgradeOption(CampLine, currentName, "", NoCost, _ => false);
 		}
 
 		string nextName = $"{next.DisplayName} ({next.MaxHealth} vida)";
 
-		return new UpgradeOption("Campamento", currentName, nextName, next.CostByItemId(), _ =>
+		return new UpgradeOption(CampLine, currentName, nextName, next.CostByItemId(), _ =>
 		{
 			if (WorldState.Instance == null)
 			{
